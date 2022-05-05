@@ -10,6 +10,10 @@ const config = require('../../config/config');
 
 const router = express.Router();
 
+router.get('/status', (req, res) => {
+  res.send('OK');
+});
+
 const defaultRoutes = [
   // {
   //   path: '/auth',
