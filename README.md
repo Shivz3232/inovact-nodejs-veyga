@@ -1,4 +1,4 @@
-# RESTful API Node Server Boilerplate
+<!-- # RESTful API Node Server Boilerplate
 
 [![Build Status](https://travis-ci.org/hagopj13/node-express-boilerplate.svg?branch=master)](https://travis-ci.org/hagopj13/node-express-boilerplate)
 [![Coverage Status](https://coveralls.io/repos/github/hagopj13/node-express-boilerplate/badge.svg?branch=master)](https://coveralls.io/github/hagopj13/node-express-boilerplate?branch=master)
@@ -21,7 +21,7 @@ Or
 ```bash
 npm init nodejs-express-app <project-name>
 ```
-
+ -->
 ## Manual Installation
 
 If you would still prefer to do the installation manually, follow these steps:
@@ -50,21 +50,21 @@ cp .env.example .env
 
 ## Table of Contents
 
-- [Features](#features)
+<!-- - [Features](#features) -->
 - [Commands](#commands)
 - [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
 - [API Documentation](#api-documentation)
 - [Error Handling](#error-handling)
-- [Validation](#validation)
-- [Authentication](#authentication)
-- [Authorization](#authorization)
+<!-- - [Validation](#validation) -->
+<!-- - [Authentication](#authentication) -->
+<!-- - [Authorization](#authorization) -->
 - [Logging](#logging)
-- [Custom Mongoose Plugins](#custom-mongoose-plugins)
+<!-- - [Custom Mongoose Plugins](#custom-mongoose-plugins) -->
 - [Linting](#linting)
-- [Contributing](#contributing)
+<!-- - [Contributing](#contributing) -->
 
-## Features
+<!-- ## Features
 
 - **NoSQL database**: [MongoDB](https://www.mongodb.com) object data modeling using [Mongoose](https://mongoosejs.com)
 - **Authentication and authorization**: using [passport](http://www.passportjs.org)
@@ -86,7 +86,7 @@ cp .env.example .env
 - **Code quality**: with [Codacy](https://www.codacy.com)
 - **Git hooks**: with [husky](https://github.com/typicode/husky) and [lint-staged](https://github.com/okonet/lint-staged)
 - **Linting**: with [ESLint](https://eslint.org) and [Prettier](https://prettier.io)
-- **Editor config**: consistent editor configuration using [EditorConfig](https://editorconfig.org)
+- **Editor config**: consistent editor configuration using [EditorConfig](https://editorconfig.org) -->
 
 ## Commands
 
@@ -273,7 +273,7 @@ const router = express.Router();
 router.post('/users', validate(userValidation.createUser), userController.createUser);
 ```
 
-## Authentication
+<!-- ## Authentication
 
 To require authentication for certain routes, you can use the `auth` middleware.
 
@@ -319,7 +319,7 @@ In the example above, an authenticated user can access this route only if that u
 
 The permissions are role-based. You can view the permissions/rights of each role in the `src/config/roles.js` file.
 
-If the user making the request does not have the required permissions to access this route, a Forbidden (403) error is thrown.
+If the user making the request does not have the required permissions to access this route, a Forbidden (403) error is thrown. -->
 
 ## Logging
 
@@ -346,7 +346,7 @@ This app uses pm2 in production mode, which is already configured to store the l
 
 Note: API request information (request url, response code, timestamp, etc.) are also automatically logged (using [morgan](https://github.com/expressjs/morgan)).
 
-## Custom Mongoose Plugins
+<!-- ## Custom Mongoose Plugins
 
 The app also contains 2 custom mongoose plugins that you can attach to any mongoose model schema. You can find the plugins in `src/models/plugins`.
 
@@ -411,7 +411,7 @@ The `paginate` method returns a Promise, which fulfills with an object having th
   "totalPages": 10,
   "totalResults": 48
 }
-```
+``` -->
 
 ## Linting
 
@@ -425,16 +425,20 @@ To prevent a certain file or directory from being linted, add it to `.eslintigno
 
 To maintain a consistent coding style across different IDEs, the project contains `.editorconfig`
 
-## Contributing
+<!-- ## Contributing
 
-Contributions are more than welcome! Please check out the [contributing guide](CONTRIBUTING.md).
+Contributions are more than welcome! Please check out the [contributing guide](CONTRIBUTING.md). -->
 
-## Inspirations
+<!-- ## Inspirations
 
 - [danielfsousa/express-rest-es2017-boilerplate](https://github.com/danielfsousa/express-rest-es2017-boilerplate)
 - [madhums/node-express-mongoose](https://github.com/madhums/node-express-mongoose)
-- [kunalkapadia/express-mongoose-es6-rest-api](https://github.com/kunalkapadia/express-mongoose-es6-rest-api)
+- [kunalkapadia/express-mongoose-es6-rest-api](https://github.com/kunalkapadia/express-mongoose-es6-rest-api) -->
 
-## License
+<!-- ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) -->
+
+## Boilerplate Credits
+
+[GitHub Repository](https://github.com/hagopj13/node-express-boilerplate)
