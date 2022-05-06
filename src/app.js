@@ -50,6 +50,11 @@ app.options('*', cors());
 //   app.use('/v1/auth', authLimiter);
 // }
 
+// API to check server status
+app.get('/status', (req, res) => {
+  res.send('OK');
+});
+
 // v1 api routes
 app.use('/v1', routes);
 
