@@ -51,6 +51,10 @@ app.options('*', cors());
 // }
 
 // API to check server status
+app.get('/', (req, res) => {
+  res.send('PONG');
+});
+
 app.get('/status', (req, res) => {
   res.send('OK');
 });
