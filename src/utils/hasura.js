@@ -11,7 +11,7 @@ async function query(queryString, variables = {}) {
   const result = await axios
     .post(
       config.hasuraApi,
-      { queryString, variables },
+      { query: queryString, variables },
       {
         headers: {
           'content-type': 'application/json',
