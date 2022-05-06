@@ -1,0 +1,46 @@
+const catchAsync = require('../../utils/catchAsync');
+const { getUserQuery, getUserById } = require('./queries/queries');
+const { query: Hasura } = require('../../utils/hasura');
+const cleanUserDoc = require('../../utils/cleanUserDoc');
+
+const getUser = catchAsync(async (req, res) => {
+  const { id, cognito_sub } = req.query;
+
+  let query;
+  let variables;
+
+  if (id) {
+    query = getUserById;
+
+    variables = {
+      id: {
+        _eq: id,
+      },
+    };
+  } else {
+    query = getUserQuery;
+
+    variables = {
+      cognito_sub: {
+        _eq: cognito_sub,
+      },
+    };
+  }
+
+  const response = await Hasura(query, variables);
+
+  if (!response.success)
+    return res.json({
+      success: false,
+      errorCode: 'InternalServerError',
+      errorMessage: JSON.stringify(response.errors),
+    });
+
+  const cleanedUserDoc = cleanUserDoc(response.result.data.user[0]);
+
+  res.json(cleanedUserDoc);
+});
+
+module.exports = {
+  getUser,
+};
