@@ -1,5 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
-const { getUserQuery, getUserById } = require('./queries/queries');
+const { getUser: getUserQuery, getUserById } = require('./queries/queries');
 const { query: Hasura } = require('../../utils/hasura');
 const cleanUserDoc = require('../../utils/cleanUserDoc');
 
