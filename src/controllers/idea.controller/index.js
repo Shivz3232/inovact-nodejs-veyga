@@ -1,9 +1,9 @@
 const catchAsync = require('../../utils/catchAsync');
 const cleanIdeaDoc = require('../../utils/cleanIdeaDoc');
 const { query: Hasura } = require('../../utils/hasura');
-const { getIdea, getIdeas, getConnections } = require('./queries/queries');
+const { getIdea, getIdeas: getIdeasQuery, getConnections } = require('./queries/queries');
 
-const getIdeaPosts = catchAsync(async (req, res) => {
+const getIdeas = catchAsync(async (req, res) => {
     const id = await req.query.id;
 
     const response = await Hasura(getConnections, { cognito_sub: req.query.cognito_sub });
@@ -56,7 +56,7 @@ const getIdeaPosts = catchAsync(async (req, res) => {
             cognito_sub: req.query.cognito_sub,
         };
 
-        const response = await Hasura(getIdeas, variables);
+        const response = await Hasura(getIdeasQuery, variables);
 
         if (response.success) {
             const cleanedIdeas = response.result.data.idea.map(doc => {
@@ -78,5 +78,5 @@ const getIdeaPosts = catchAsync(async (req, res) => {
 })
 
 module.exports = {
-    getIdeaPosts,
+    getIdeas,
 }

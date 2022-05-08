@@ -1,5 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
-const { query: Hasura } = require('.././../utils/hasura');
+const { query: Hasura } = require('../../utils/hasura');
 const { getProjects, getProject, getConnections } = require('./queries/queries');
 const cleanPostDoc = require('./utils/cleanPostDoc');
 

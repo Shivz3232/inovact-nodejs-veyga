@@ -1,9 +1,9 @@
 const catchAsync = require('../../utils/catchAsync');
 const cleanThoughtDoc = require('../../utils/cleanThoughtDoc');
 const { query: Hasura } = require('../../utils/hasura');
-const { getThought, getThoughts, getConnections } = require('./queries/queries');
+const { getThought, getThoughts: getThoughtsQuery, getConnections } = require('./queries/queries');
 
-const getAllThoughts = catchAsync(async (req, res) => {
+const getThoughts = catchAsync(async (req, res) => {
     const id = await req.query.id;
 
     const response = await Hasura(getConnections, { cognito_sub: req.query.cognito_sub });
@@ -64,7 +64,7 @@ const getAllThoughts = catchAsync(async (req, res) => {
             cognito_sub: req.query.cognito_sub,
         };
 
-        const response = await Hasura(getThoughts, variables);
+        const response = await Hasura(getThoughtsQuery, variables);
 
         if (!response.success) {
             return res.json(null, {
@@ -86,5 +86,5 @@ const getAllThoughts = catchAsync(async (req, res) => {
 })
 
 module.exports = {
-    getAllThoughts,
+    getThoughts,
 }
