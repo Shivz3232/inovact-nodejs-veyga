@@ -4,7 +4,7 @@ const { query: Hasura } = require('../../utils/hasura');
 const cleanUserDoc = require('../../utils/cleanUserDoc');
 
 const getUser = catchAsync(async (req, res) => {
-  const { id, cognito_sub } = req.query;
+  const { id, cognito_sub } = req.body;
 
   let query;
   let variables;
