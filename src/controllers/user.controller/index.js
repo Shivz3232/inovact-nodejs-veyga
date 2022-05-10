@@ -1,10 +1,10 @@
 const catchAsync = require('../../utils/catchAsync');
-const { getUserQuery, getUserById } = require('./queries/queries');
+const { getUser: getUserQuery, getUserById } = require('./queries/queries');
 const { query: Hasura } = require('../../utils/hasura');
 const cleanUserDoc = require('../../utils/cleanUserDoc');
 
 const getUser = catchAsync(async (req, res) => {
-  const { id, cognito_sub } = req.query;
+  const { id, cognito_sub } = req.body;
 
   let query;
   let variables;

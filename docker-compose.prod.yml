@@ -4,3 +4,5 @@ services:
   node-app:
     container_name: node-app-prod
     command: yarn start
+    ports:
+      - '80:3000'

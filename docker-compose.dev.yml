@@ -4,3 +4,5 @@ services:
   node-app:
     container_name: node-app-dev
     command: yarn dev -L
+    ports:
+      - '3000:3000'
