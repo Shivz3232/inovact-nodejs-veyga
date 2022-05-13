@@ -15,6 +15,6 @@ const getPendingConnection = `query getConnection($user1: Int, $user2: Int) {
   `;
 
 module.exports = {
-    getPendingConnection,
-    getUserId,
+  getPendingConnection,
+  getUserId,
 };

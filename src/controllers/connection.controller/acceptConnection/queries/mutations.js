@@ -7,5 +7,5 @@ const acceptConnection = `mutation acceptConnection($user1: Int, $user2: Int, $f
   }`;
 
 module.exports = {
-    acceptConnection,
+  acceptConnection,
 };
