@@ -7,9 +7,9 @@ const thoughtsController = require('../../controllers/thoughts.controller');
 const router = express.Router();
 
 router
-    .route('/')
-    // .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-    .get(thoughtsController.getThoughts);
+  .route('/')
+  // .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
+  .post(thoughtsController.getThoughts);
 
 // router
 //   .route('/:userId')

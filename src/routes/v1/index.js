@@ -28,7 +28,7 @@ const defaultRoutes = [
     route: ideaRoute,
   },
   {
-    path: '/thoughts',
+    path: '/thought',
     route: thoughtsRoute,
   },
   {
