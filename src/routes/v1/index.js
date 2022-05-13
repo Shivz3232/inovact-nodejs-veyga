@@ -3,8 +3,8 @@ const express = require('express');
 const userRoute = require('./user.route');
 const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
-const thoughtsRoute = require('./thoughts.route');
-const connectionsRoute = require('./connections.route');
+const thoughtRoute = require('./thought.route');
+const connectionRoute = require('./connection.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -29,11 +29,11 @@ const defaultRoutes = [
   },
   {
     path: '/thought',
-    route: thoughtsRoute,
+    route: thoughtRoute,
   },
   {
-    path: '/connections',
-    route: connectionsRoute,
+    path: '/connection',
+    route: connectionRoute,
   },
   {
     path: '/user',
