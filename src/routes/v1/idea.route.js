@@ -7,9 +7,9 @@ const ideaController = require('../../controllers/idea.controller');
 const router = express.Router();
 
 router
-    .route('/')
-    // .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-    .get(ideaController.getIdeas);
+  .route('/')
+  // .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
+  .post(ideaController.getIdeas);
 
 // router
 //   .route('/:userId')
