@@ -2,20 +2,17 @@ const express = require('express');
 // const auth = require('../../middlewares/auth');
 // const validate = require('../../middlewares/validate');
 // const userValidation = require('../../validations/user.validation');
-const thoughtsController = require('../../controllers/thoughts.controller');
+const connectionsController = require('../../controllers/connection.controller');
 
 const router = express.Router();
 
-router
-  .route('/')
-  // .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-  .get(thoughtsController.getThoughts);
+router.route('/').post(connectionsController.getConnection);
 
-// router
-//   .route('/:userId')
-//   .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
-//   .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
-//   .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
+router.route('/accept').post(connectionsController.acceptConnection);
+
+router.route('/reject').post(connectionsController.rejectConnection);
+
+router.route('/add').post(connectionsController.addConnection);
 
 module.exports = router;
 
