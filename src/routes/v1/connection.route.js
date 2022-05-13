@@ -12,6 +12,8 @@ router.route('/accept').post(connectionsController.acceptConnection);
 
 router.route('/reject').post(connectionsController.rejectConnection);
 
+router.route('/add').post(connectionsController.addConnection);
+
 module.exports = router;
 
 /**
