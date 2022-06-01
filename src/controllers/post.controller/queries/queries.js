@@ -3,6 +3,7 @@ const getProjects = `query getProjects($cognito_sub: String) {
       id
       title
       description
+      link
       project_tags {
         hashtag {
           name
@@ -81,6 +82,7 @@ const getProject = `query getProject($id: Int, $cognito_sub: String) {
       id
       title
       description
+      link
       project_tags {
         hashtag {
           name
