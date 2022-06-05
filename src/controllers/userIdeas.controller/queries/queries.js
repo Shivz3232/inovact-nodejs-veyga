@@ -6,6 +6,7 @@ const getUserIdeasById = `query getUserIdeasById($user_id: Int, $cognito_sub: St
       user_id
       team_id
       status
+      link
       idea_tags {
         hashtag {
           name

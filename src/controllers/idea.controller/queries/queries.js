@@ -6,6 +6,7 @@ const getIdeas = `query getIdeas($cognito_sub: String) {
       user_id
       team_id
       status
+      link
       idea_tags {
         hashtag {
           name
@@ -59,6 +60,7 @@ const getIdea = `query getIdea($id: Int, $cognito_sub: String) {
       team_id
       user_id
       status
+      link
       idea_tags {
         hashtag {
           name
