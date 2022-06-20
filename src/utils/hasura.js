@@ -1,5 +1,4 @@
-const axios = require('axios');
-const config = require('../config/config');
+const axios = require('./axios');
 
 /**
  * This is a utility function for querying the postgresql database
@@ -10,14 +9,8 @@ const config = require('../config/config');
 async function query(queryString, variables = {}) {
   const result = await axios
     .post(
-      config.hasuraApi,
-      { query: queryString, variables },
-      {
-        headers: {
-          'content-type': 'application/json',
-          'x-hasura-admin-secret': config.hasuraAdminSecret,
-        },
-      }
+      null,
+      { query: queryString, variables }
     )
     .then((response) => {
       const responseData = response.data;
