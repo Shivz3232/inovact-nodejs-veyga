@@ -1,7 +1,8 @@
 const AWS = require('aws-sdk');
+const config = require('../config/config');
 
 const sqs = new AWS.SQS({
-  region: process.env.REGION,
+  region: config.region,
 });
 
 const notify = (entityTypeId, entityId, actorId, notifierIds) =>
@@ -13,7 +14,7 @@ const notify = (entityTypeId, entityId, actorId, notifierIds) =>
         actorId,
         notifierIds,
       }),
-      QueueUrl: process.env.NOTIFY_QUEUE_URL,
+      QueueUrl: config.notifyQueueUrl,
     };
 
     sqs.sendMessage(params, (err, data) => {

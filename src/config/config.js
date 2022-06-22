@@ -10,6 +10,8 @@ const envVarsSchema = Joi.object()
     PORT: Joi.number().default(3000),
     HASURA_ADMIN_SECRET: Joi.string().required(),
     HASURA_API: Joi.string().required(),
+    REGION: Joi.string().default('ap-south-1'),
+    NOTIFY_QUEUE_URL: Joi.string().required(),
     // MONGODB_URL: Joi.string().required().description('Mongo DB url'),
     // JWT_SECRET: Joi.string().required().description('JWT secret key'),
     // JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
@@ -39,6 +41,8 @@ module.exports = {
   port: envVars.PORT,
   hasuraAdminSecret: envVars.HASURA_ADMIN_SECRET,
   hasuraApi: envVars.HASURA_API,
+  region: envVars.REGION,
+  notifyQueueUrl: envVars.NOTIFY_QUEUE_URL,
   // mongoose: {
   //   url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
   //   options: {
