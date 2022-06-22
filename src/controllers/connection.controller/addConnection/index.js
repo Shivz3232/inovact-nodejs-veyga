@@ -2,6 +2,8 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId, checkValidRequest } = require('./queries/queries');
 const { addConnection: addConnectionQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
+const notify = require('../../../utils/notify');
 
 const addConnection = catchAsync(async (req, res) => {
   const { user_id, cognito_sub } = req.body;
@@ -58,6 +60,11 @@ const addConnection = catchAsync(async (req, res) => {
 
   // Add the connection
   const response3 = await Hasura(addConnectionQuery, variables);
+
+  // Notify the user
+  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [user_id])
+    .then(logger.info)
+    .catch(logger.info);
 
   if (!response3.success) res.json(response3.errors);
 
