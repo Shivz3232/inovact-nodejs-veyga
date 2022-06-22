@@ -8,10 +8,7 @@ const axios = require('./axios');
  */
 async function query(queryString, variables = {}) {
   const result = await axios
-    .post(
-      null,
-      { query: queryString, variables }
-    )
+    .post(null, { query: queryString, variables })
     .then((response) => {
       const responseData = response.data;
 
