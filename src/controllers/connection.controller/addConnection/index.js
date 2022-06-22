@@ -62,9 +62,9 @@ const addConnection = catchAsync(async (req, res) => {
   const response3 = await Hasura(addConnectionQuery, variables);
 
   // Notify the user
-  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [user_id])
-    .then(logger.info)
-    .catch(logger.info);
+  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [
+    user_id,
+  ]).catch(logger.debug);
 
   if (!response3.success) res.json(response3.errors);
 
