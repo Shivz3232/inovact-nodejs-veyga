@@ -1,12 +1,13 @@
-const getUserId = `query getUser($cognito_sub: String_comparison_exp) {
-  user(where: { cognito_sub: $cognito_sub }) {
-    id
+const getPrivateChats = `query getPrivateChats($connection_ids: [Int!]) {
+  private_messages(where: {connection_id: {_in: $connection_ids}}, distinct_on: connection_id) {
+    connection_id
+    created_at
   }
-}
-`;
+}`;
 
-const getUserConnections = `query getMyConnections($user_id: Int) {
-  connections(where: {_or: [{user2: {_eq: $user_id}, status: {_eq: "pending"}}, {_and: [{status: {_eq: "connected"}, _or: [{user1: {_eq: $user_id}}, {user2: {_eq: $user_id}}]}]}]}) {
+const getUserConnections = `query getMyConnections($cognito_sub: String) {
+  connections(where: {_or: [{userByUser2: {cognito_sub: {_eq: $cognito_sub}}, status: {_eq: "pending"}}, {_and: [{status: {_eq: "connected"}, _or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}]}]}) {
+    id
     user1
     user2
     status
@@ -27,11 +28,12 @@ const getUserConnections = `query getMyConnections($user_id: Int) {
       user_name
     }
   }
-}
-
-`;
+  user(where: {cognito_sub: {_eq: $cognito_sub}}) {
+    id
+  }
+}`;
 
 module.exports = {
   getUserConnections,
-  getUserId,
+  getPrivateChats,
 };
