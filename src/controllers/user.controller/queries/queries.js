@@ -77,16 +77,9 @@ query getUser($id: Int, $cognito_sub: String) {
         interest
       }
     }
-  }
-  connections(where: { _or: [
-    {
-      _and: [{user1: { _eq: $id }}, {userByUser2: {cognito_sub: { _eq: $cognito_sub }}}]
-    },
-    {
-      _and: [{user: { cognito_sub: { _eq: $cognito_sub }}}, {user2: { _eq: $id }}]
+    connections(where: {_or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}) {
+      status
     }
-  ]}) {
-    status
   }
 }
 
