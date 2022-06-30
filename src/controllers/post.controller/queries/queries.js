@@ -174,7 +174,7 @@ const getConnections = `query getConnections($cognito_sub: String) {
   }`;
 
 module.exports = {
-    getProjects,
-    getProject,
-    getConnections,
+  getProjects,
+  getProject,
+  getConnections,
 };
