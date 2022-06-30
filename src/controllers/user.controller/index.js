@@ -13,17 +13,14 @@ const getUser = catchAsync(async (req, res) => {
     query = getUserById;
 
     variables = {
-      id: {
-        _eq: id,
-      },
+      id,
+      cognito_sub,
     };
   } else {
     query = getUserQuery;
 
     variables = {
-      cognito_sub: {
-        _eq: cognito_sub,
-      },
+      cognito_sub,
     };
   }
 

@@ -3,6 +3,8 @@ function cleanUserdoc(userDoc) {
 
   if (!Number.isNaN(temp)) userDoc.graduation_year = temp.getFullYear();
 
+  const connection_status = userDoc.connections.length ? userDoc.connections[0].status : 'not connected';
+
   return {
     ...userDoc,
     user_interests: userDoc.user_interests.map((user_interest) => {
@@ -11,6 +13,7 @@ function cleanUserdoc(userDoc) {
         interest: user_interest.area_of_interest.interest,
       };
     }),
+    connection_status,
   };
 }
 
