@@ -33,7 +33,7 @@ const getUser = catchAsync(async (req, res) => {
       errorMessage: JSON.stringify(response.errors),
     });
 
-  const cleanedUserDoc = cleanUserDoc(response.result.data.user[0], response.result.data.connections)[0];
+  const cleanedUserDoc = cleanUserDoc(response.result.data.user[0], response.result.data.connections[0]);
 
   res.json(cleanedUserDoc);
 });
