@@ -3,7 +3,7 @@ function cleanUserdoc(userDoc, connection) {
 
   if (!Number.isNaN(temp)) userDoc.graduation_year = temp.getFullYear();
 
-  const connection_status = connection ? connection.status : 'not connected';
+  const connections_status = connection ? connection.status : 'not connected';
 
   return {
     ...userDoc,
@@ -13,7 +13,7 @@ function cleanUserdoc(userDoc, connection) {
         interest: user_interest.area_of_interest.interest,
       };
     }),
-    connection_status,
+    connections_status,
   };
 }
 
