@@ -1,9 +1,9 @@
-function cleanUserdoc(userDoc) {
+function cleanUserdoc(userDoc, connection) {
   const temp = new Date(userDoc.graduation_year);
 
   if (!Number.isNaN(temp)) userDoc.graduation_year = temp.getFullYear();
 
-  const connection_status = userDoc.connections.length ? userDoc.connections[0].status : 'not connected';
+  const connection_status = connection ? connection.status : 'not connected';
 
   return {
     ...userDoc,
