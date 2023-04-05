@@ -1,24 +1,25 @@
 const express = require('express');
-// const authRoute = require('./auth.route');
+const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
+const tagRoute = require('./getTags.route')
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
 const router = express.Router();
 
 const defaultRoutes = [
-  // {
-  //   path: '/auth',
-  //   route: authRoute,
-  // },
-  // {
-  //   path: '/users',
-  //   route: userRoute,
-  // },
+  {
+    path: '/auth',
+    route: authRoute,
+  },
+  {
+    path: '/users',
+    route: userRoute,
+  },
   {
     path: '/post',
     route: postRoute,
@@ -39,6 +40,11 @@ const defaultRoutes = [
     path: '/user',
     route: userRoute,
   },
+  {
+    path : '/tags',
+    route : tagRoute
+
+  }
 ];
 
 const devRoutes = [
