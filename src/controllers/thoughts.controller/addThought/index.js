@@ -12,7 +12,7 @@ const addThoughts = catchAsync( async (req,res)=>{
 
   // If failed to find user return error
   if (!response1.success)
-    res.json({
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find login user',
@@ -33,7 +33,7 @@ const addThoughts = catchAsync( async (req,res)=>{
       errorMessage: 'Failed to save thought',
     });
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
