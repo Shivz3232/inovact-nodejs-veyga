@@ -21,11 +21,13 @@ const getThoughts = catchAsync(async (req, res) => {
 
   const connections = {};
   response.result.data.connections.forEach((doc) => {
+
+    connections[doc.user1] = doc.status;
+
     if (doc.user1 === userId) {
       connections[doc.user2] = doc.status;
-    } else {
-      connections[doc.user1] = doc.status;
     }
+
   });
 
   if (id) {
@@ -81,8 +83,8 @@ const getThoughts = catchAsync(async (req, res) => {
       return doc;
     });
 
-    res.json(cleanedThoughts);
+    return res.json(cleanedThoughts);
   }
 });
 
-module.exports =  getThoughts
+module.exports = getThoughts

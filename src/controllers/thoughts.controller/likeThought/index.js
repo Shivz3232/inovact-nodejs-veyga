@@ -47,7 +47,7 @@ const likeThought = catchAsync(async (req,res)=>{
       response.result.data.thoughts[0].user_id,
     ]).catch(console.log);
 
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -63,7 +63,7 @@ const likeThought = catchAsync(async (req,res)=>{
         errorMessage: 'Failed to unlike the thought',
       });
 
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
