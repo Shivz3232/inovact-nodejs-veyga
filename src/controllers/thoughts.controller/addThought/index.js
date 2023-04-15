@@ -33,7 +33,8 @@ const addThoughts = catchAsync( async (req,res)=>{
       errorMessage: 'Failed to save thought',
     });
 
-  return sres.json({
+
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
