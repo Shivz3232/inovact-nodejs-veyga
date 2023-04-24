@@ -4,7 +4,7 @@ const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
-const likeProject = catchAsync(async (req,res)=>{
+const likeProject = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
   const response1 = await Hasura(getUserId, {
@@ -12,7 +12,7 @@ const likeProject = catchAsync(async (req,res)=>{
   });
 
   if (!response1.success)
-    return res.json( {
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find logged in user',
@@ -23,19 +23,21 @@ const likeProject = catchAsync(async (req,res)=>{
     project_id: req.body.project_id,
   };
   const response = await Hasura(getPostId, variable);
-  if (!response.success)
-    return res.json( {
+  if (!response.success) {
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find project',
     });
+
+  }
 
   if (response.result.data.project_like.length == 0) {
     const response2 = await Hasura(add_likePost, variable);
 
     // If failed to insert project return error
     if (!response2.success)
-      return res.json( {
+      return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: 'Failed to like the post',
@@ -46,7 +48,7 @@ const likeProject = catchAsync(async (req,res)=>{
       response.result.data.project[0].user_id,
     ]).catch(console.log);
 
-    res.json( {
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -56,13 +58,13 @@ const likeProject = catchAsync(async (req,res)=>{
     const response3 = await Hasura(delete_like, variable);
 
     if (!response3.success)
-      return res.json( {
+      return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: 'Failed to unlike the post',
       });
 
-    res.json( {
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',

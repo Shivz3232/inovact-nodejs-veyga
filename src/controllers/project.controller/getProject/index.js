@@ -59,7 +59,7 @@ const getProject = catchAsync (async (req,res)=>{
       return doc;
     });
 
-    res.json(cleanedPosts[0]);
+    return res.json(cleanedPosts[0]);
   } else {
     const variables = {
       cognito_sub,

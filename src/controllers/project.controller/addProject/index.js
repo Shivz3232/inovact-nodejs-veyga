@@ -159,7 +159,7 @@ const addProject = catchAsync(async(req,res)=>{
     const response6 = await Hasura(addDocuments, documentsData);
   }
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
