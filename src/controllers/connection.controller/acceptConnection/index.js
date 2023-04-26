@@ -64,7 +64,7 @@ const acceptConnection = catchAsync(async (req, res) => {
     logger.debug
   );
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

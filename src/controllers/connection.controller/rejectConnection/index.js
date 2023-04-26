@@ -44,7 +44,7 @@ const rejectConnection = catchAsync(async (req, res) => {
       data: null,
     });
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

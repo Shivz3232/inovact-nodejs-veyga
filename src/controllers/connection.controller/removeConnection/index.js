@@ -32,14 +32,14 @@ const removeConnection = catchAsync(async (req,res)=>{
   console.log(response2.result.data.delete_connections)
 
   if (!response2.success)
-    res.json({
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response2.errors),
       data: null,
     });
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

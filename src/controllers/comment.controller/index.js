@@ -6,9 +6,9 @@ const notify = require('../../utils/notify');
 const { query: Hasura } = require('../../utils/hasura')
 const catchAsync = require('../../utils/catchAsync');
 
-const addComment = catchAsync(async (req,res)=>{
-  const { text, cognito_sub, article_id } =req.body;
-  let { article_type } =req.body;
+const addComment = catchAsync(async (req, res) => {
+  const { text, cognito_sub, article_id } = req.body;
+  let { article_type } = req.body;
 
   // Find user id
   const response1 = await Hasura(getUserId, {
@@ -63,8 +63,13 @@ const addComment = catchAsync(async (req,res)=>{
       data: null,
     });
 
+  // Notify the user
+  await notify(entity_type_id, article_id, response1.result.data.user[0].id, [
+    notifier_id,
+  ]).catch(console.log);
+
   if (article_type == 'project') {
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -77,7 +82,7 @@ const addComment = catchAsync(async (req,res)=>{
       },
     });
   } else if (article_type == 'idea') {
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -90,7 +95,7 @@ const addComment = catchAsync(async (req,res)=>{
       },
     });
   } else {
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -104,10 +109,7 @@ const addComment = catchAsync(async (req,res)=>{
     });
   }
 
-  // Notify the user
-  await notify(entity_type_id, article_id, response1.result.data.user[0].id, [
-    notifier_id,
-  ]).catch(console.log);
+
 });
 
 module.exports = addComment

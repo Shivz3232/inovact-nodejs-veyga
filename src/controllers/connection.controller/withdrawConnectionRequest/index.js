@@ -42,7 +42,7 @@ const withdrawRequest = catchAsync(async(req,res)=>{
     });
   }
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

@@ -20,7 +20,7 @@ const getUserNotification = catchAsync(async (req,res)=>{
   const notifications =
     response.result.data.notification.map(cleanNotificationDoc);
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
