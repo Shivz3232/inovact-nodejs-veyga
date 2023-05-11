@@ -1,9 +1,5 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const {
-  updateThought_query,
-  getUserId,
-  getThoughtUserId,
-} = require('./queries/queries');
+const { updateThought_query, getUserId, getThoughtUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const updateThought = catchAsync(async (req, res) => {
@@ -21,7 +17,7 @@ const updateThought = catchAsync(async (req, res) => {
       data: null,
     });
 
-  const id = await req.body.id;
+  const id = req.body.id;
   const variable = {
     id,
   };
@@ -63,15 +59,14 @@ const updateThought = catchAsync(async (req, res) => {
       errorMessage: 'Failed to update thought',
       data: null,
     });
-
   }
+
   return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
     data: null,
   });
-
 });
 
-module.exports = updateThought
+module.exports = updateThought;

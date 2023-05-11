@@ -3,9 +3,10 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { addThought } = require('./queries/mutations');
 const { getUser, getThought } = require('./queries/queries');
 
-const addThoughts = catchAsync( async (req,res)=>{
+const addThoughts = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
+
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -33,7 +34,6 @@ const addThoughts = catchAsync( async (req,res)=>{
       errorMessage: 'Failed to save thought',
     });
 
-
   return res.json({
     success: true,
     errorCode: '',
@@ -42,4 +42,4 @@ const addThoughts = catchAsync( async (req,res)=>{
   });
 });
 
-module.exports = addThoughts
+module.exports = addThoughts;

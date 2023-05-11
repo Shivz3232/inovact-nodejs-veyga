@@ -21,13 +21,11 @@ const getThoughts = catchAsync(async (req, res) => {
 
   const connections = {};
   response.result.data.connections.forEach((doc) => {
-
     connections[doc.user1] = doc.status;
 
     if (doc.user1 === userId) {
       connections[doc.user2] = doc.status;
     }
-
   });
 
   if (id) {
@@ -54,13 +52,14 @@ const getThoughts = catchAsync(async (req, res) => {
         data: null,
       });
     }
+
     const cleanedThoughts = response1.result.data.thoughts.map((doc) => {
       doc = cleanThoughtDoc(doc);
       doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
       return doc;
     });
 
-    res.json(cleanedThoughts[0]);
+    return res.json(cleanedThoughts[0]);
   } else {
     const variables = {
       cognito_sub,
@@ -87,4 +86,4 @@ const getThoughts = catchAsync(async (req, res) => {
   }
 });
 
-module.exports = getThoughts
+module.exports = getThoughts;

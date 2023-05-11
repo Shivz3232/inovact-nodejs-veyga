@@ -4,8 +4,7 @@ const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
-
-const likeThought = catchAsync(async (req,res)=>{
+const likeThought = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
   const response1 = await Hasura(getUserId, {
@@ -72,6 +71,4 @@ const likeThought = catchAsync(async (req,res)=>{
   }
 });
 
-
-module.exports = likeThought
-
+module.exports = likeThought;

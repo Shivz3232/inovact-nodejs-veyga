@@ -1,10 +1,6 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const {
-  delete_thought,
-  getUserId,
-  getThoughtUserId,
-} = require('./queries/queries');
+const { delete_thought, getUserId, getThoughtUserId } = require('./queries/queries');
 
 const deleteThought = catchAsync(async (req, res) => {
   // Find user id
@@ -45,28 +41,27 @@ const deleteThought = catchAsync(async (req, res) => {
       data: null,
     });
   }
+
   const variables = {
     id,
   };
   const response = await Hasura(delete_thought, variables);
 
-  if (response.success) {
+  if (!response.success) {
     return res.json({
-      success: true,
-      errorCode: '',
-      errorMessage: '',
+      success: false,
+      errorCode: 'InternalServerError',
+      errorMessage: 'Failed to delete thought',
       data: null,
     });
   }
 
   return res.json({
-    success: false,
-    errorCode: 'InternalServerError',
-    errorMessage: 'Failed to delete thought',
+    success: true,
+    errorCode: '',
+    errorMessage: '',
     data: null,
   });
-
-
 });
 
-module.exports = deleteThought
+module.exports = deleteThought;
