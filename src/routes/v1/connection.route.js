@@ -14,6 +14,10 @@ router.route('/reject').post(connectionsController.rejectConnection);
 
 router.route('/add').post(connectionsController.addConnection);
 
+router.route('/remove').post(connectionsController.removeConnection)
+
+router.route('/withdraw').post(connectionsController.withdrawRequest)
+
 module.exports = router;
 
 /**

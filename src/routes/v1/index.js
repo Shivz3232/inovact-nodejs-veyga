@@ -5,6 +5,11 @@ const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
+const interestRoute = require('./interest.route')
+const skillRoute = require('./skills.route')
+const teamRoute = require('./teams.route')
+const commentRoute = require('./comment.route')
+const notificationRoute = require('./notification.route')
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -39,6 +44,26 @@ const defaultRoutes = [
     path: '/user',
     route: userRoute,
   },
+  {
+    path : '/team',
+    route : teamRoute
+  },
+  {
+    path : '/interest',
+    route : interestRoute
+  },
+  {
+    path : '/skill',
+    route : skillRoute
+  },
+  {
+    path : '/comment',
+    route : commentRoute
+  },
+  {
+    path : '/notification',
+    route : notificationRoute
+  }
 ];
 
 const devRoutes = [
