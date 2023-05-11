@@ -59,21 +59,21 @@ const getIdeas = catchAsync(async (req, res) => {
       return doc;
     });
 
-    res.json(cleanedIdeas[0]);
+    return res.json(cleanedIdeas[0]);
   } else {
     const variables = {
       cognito_sub,
     };
-
     const response1 = await Hasura(getIdeasQuery, variables);
 
-    if (!response1.success)
+    if (!response1.success) {
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: JSON.stringify(response1.errors),
         data: null,
       });
+    }
 
     const cleanedIdeas = response1.result.data.idea.map((doc) => {
       doc = cleanIdeaDoc(doc);
@@ -81,8 +81,8 @@ const getIdeas = catchAsync(async (req, res) => {
       return doc;
     });
 
-    res.json(cleanedIdeas);
+    return res.json(cleanedIdeas);
   }
 });
 
-module.exports = getIdeas
+module.exports = getIdeas;

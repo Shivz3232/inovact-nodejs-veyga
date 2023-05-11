@@ -2,9 +2,9 @@ const { add_likeIdea, delete_like } = require('./queries/mutations');
 const { getUserId, getideaId } = require('./queries/queries');
 const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
-const catchAsync = require('../../../utils/catchAsync')
+const catchAsync = require('../../../utils/catchAsync');
 
-const likeIdea = catchAsync(async (req,res)=>{
+const likeIdea = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
   const response1 = await Hasura(getUserId, {
@@ -18,11 +18,12 @@ const likeIdea = catchAsync(async (req,res)=>{
       errorMessage: 'Failed to find logged in user',
     });
 
-  const variable = await {
+  const variable = {
     user_id: response1.result.data.user[0].id,
     idea_id: req.body.idea_id,
   };
   const response = await Hasura(getideaId, variable);
+
   if (!response.success)
     return res.json({
       success: false,
@@ -42,11 +43,11 @@ const likeIdea = catchAsync(async (req,res)=>{
       });
 
     // Notify the user
-    await notify(6, req.body.idea_id, response1.result.data.user[0].id, [
-      response.result.data.idea[0].user_id,
-    ]).catch(console.log);
+    await notify(6, req.body.idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(
+      console.log
+    );
 
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -62,7 +63,7 @@ const likeIdea = catchAsync(async (req,res)=>{
         errorMessage: 'Failed to unlike the Idea',
       });
 
-    res.json({
+    return res.json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -71,4 +72,4 @@ const likeIdea = catchAsync(async (req,res)=>{
   }
 });
 
-module.exports = likeIdea
+module.exports = likeIdea;
