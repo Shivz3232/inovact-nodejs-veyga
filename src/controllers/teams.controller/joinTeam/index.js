@@ -9,15 +9,14 @@ const {
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
 
-const joinTeam = catchAsync(async (req,res)=>{
+const joinTeam = catchAsync(async (req, res) => {
   const team_id = req.body.team_id;
   const roleRequirementId = req.body.role_requirement_id;
   const cognito_sub = req.body.cognito_sub;
 
   const variables = {
     team_id,
-    role_requirement_id:
-      typeof roleRequirementId == 'number' ? roleRequirementId : 0,
+    role_requirement_id: typeof roleRequirementId == 'number' ? roleRequirementId : 0,
     cognito_sub,
   };
 
@@ -51,8 +50,7 @@ const joinTeam = catchAsync(async (req,res)=>{
     return res.json({
       success: false,
       errorCode: 'Forbidden',
-      errorMessage:
-        'You have already requested to join this team for this role.',
+      errorMessage: 'You have already requested to join this team for this role.',
       data: null,
     });
 
@@ -60,8 +58,7 @@ const joinTeam = catchAsync(async (req,res)=>{
     return res.json({
       success: false,
       errorCode: 'Forbidden',
-      errorMessage:
-        'You have received an invitation from this team. Please act on that',
+      errorMessage: 'You have received an invitation from this team. Please act on that',
       data: null,
     });
 
@@ -152,10 +149,10 @@ const joinTeam = catchAsync(async (req,res)=>{
     23,
     team_id,
     user_id,
-    response.result.data.notifier_ids.map(x => x.user_id)
+    response.result.data.notifier_ids.map((x) => x.user_id)
   ).catch(console.log);
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -163,4 +160,4 @@ const joinTeam = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = joinTeam
+module.exports = joinTeam;

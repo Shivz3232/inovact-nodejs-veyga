@@ -3,7 +3,7 @@ const { possibleToInviteUser } = require('./queries/queries.js');
 const { addTeamInvite } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
-const inviteToTeam = catchAsync(async (req,res)=>{
+const inviteToTeam = catchAsync(async (req, res) => {
   const team_id = req.body.team_id;
   const user_id = req.body.user_id;
   const cognito_sub = req.body.cognito_sub;
@@ -30,10 +30,7 @@ const inviteToTeam = catchAsync(async (req,res)=>{
       data: null,
     });
 
-  if (
-    response.result.data.current_user.length == 0 ||
-    !response.result.data.current_user[0].admin
-  )
+  if (response.result.data.current_user.length == 0 || !response.result.data.current_user[0].admin)
     return res.json({
       success: false,
       errorCode: 'Forbidden',
@@ -77,7 +74,7 @@ const inviteToTeam = catchAsync(async (req,res)=>{
       data: null,
     });
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -85,4 +82,4 @@ const inviteToTeam = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = inviteToTeam
+module.exports = inviteToTeam;

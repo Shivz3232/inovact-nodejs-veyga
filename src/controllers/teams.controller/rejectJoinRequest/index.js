@@ -1,9 +1,9 @@
 const { query: Hasura } = require('../../../utils/hasura');
 const { checkIfPossibleToAccept } = require('./queries/queries');
-const { rejectJoinRequest : rejectJoinRequestQuery } = require('./queries/mutations');
+const { rejectJoinRequest: rejectJoinRequestQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
-const rejectJoinRequest = catchAsync(async(req,res)=>{
+const rejectJoinRequest = catchAsync(async (req, res) => {
   const request_id = req.body.request_id;
   const cognito_sub = req.body.cognito_sub;
 
@@ -30,10 +30,7 @@ const rejectJoinRequest = catchAsync(async(req,res)=>{
       data: null,
     });
 
-  if (
-    response1.result.data.team_members.length == 0 ||
-    !response1.result.data.team_members[0].admin
-  )
+  if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
     return res.json({
       success: false,
       errorCode: 'Forbidden',
@@ -55,7 +52,7 @@ const rejectJoinRequest = catchAsync(async(req,res)=>{
       data: null,
     });
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -63,4 +60,4 @@ const rejectJoinRequest = catchAsync(async(req,res)=>{
   });
 });
 
-module.exports = rejectJoinRequest 
+module.exports = rejectJoinRequest;

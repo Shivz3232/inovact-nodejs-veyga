@@ -3,16 +3,8 @@ const { checkIfMember } = require('./queries/queries');
 const { updateTeam } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
-const updateTeams = catchAsync(async (req,res) => {
-  const {
-    team_id,
-    avatar,
-    cognito_sub,
-    team_name,
-    looking_for_members,
-    looking_for_mentors,
-    team_on_inovact,
-  } = req.body;
+const updateTeams = catchAsync(async (req, res) => {
+  const { team_id, avatar, cognito_sub, team_name, looking_for_members, looking_for_mentors, team_on_inovact } = req.body;
 
   const variables = {
     team_id,
@@ -29,10 +21,7 @@ const updateTeams = catchAsync(async (req,res) => {
       data: null,
     });
 
-  if (
-    response1.result.data.team_members.length == 0 ||
-    !response1.result.data.team_members[0].admin
-  )
+  if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
     return res.json({
       success: false,
       errorCode: 'Forbidden',
@@ -72,4 +61,4 @@ const updateTeams = catchAsync(async (req,res) => {
   });
 });
 
-module.exports = updateTeams
+module.exports = updateTeams;

@@ -1,9 +1,9 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const { deleteTeam : deleteTeamQuery } = require('./queries/mutations');
+const { deleteTeam: deleteTeamQuery } = require('./queries/mutations');
 const { getUserId, checkTeamAdmin } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
-const deleteTeam = catchAsync(async (req,res)=>{
+const deleteTeam = catchAsync(async (req, res) => {
   const team_id = await req.body.team_id;
 
   // Find user id
@@ -25,10 +25,7 @@ const deleteTeam = catchAsync(async (req,res)=>{
   if (!response2.success) return res.json(response2.errors);
 
   // If not
-  if (
-    response2.result.data.team_members.length == 0 ||
-    !response2.result.data.team_members[0].admin
-  )
+  if (response2.result.data.team_members.length == 0 || !response2.result.data.team_members[0].admin)
     return callback('Only team admin can delete the team');
 
   // If yes
@@ -36,7 +33,7 @@ const deleteTeam = catchAsync(async (req,res)=>{
 
   if (!response3.success) return res.json(response3.errors);
 
-  res.json(response3.result);
+  return res.json(response3.result);
 });
 
-module.exports = deleteTeam
+module.exports = deleteTeam;

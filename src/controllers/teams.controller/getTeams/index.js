@@ -1,7 +1,7 @@
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserTeams, getTeam } = require('./queries/queries');
 const cleanTeamDocs = require('../../../utils/cleanTeamDocs');
-const catchAsync = require('../../../utils/catchAsync')
+const catchAsync = require('../../../utils/catchAsync');
 
 const getTeams = catchAsync(async (req, res) => {
   const team_id = req.body.team_id;
@@ -45,13 +45,13 @@ const getTeams = catchAsync(async (req, res) => {
     } else {
       const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
 
-      res.json(cleanedTeamDoc);
+      return res.json(cleanedTeamDoc);
     }
   } else {
     const cleanedTeamDocs = response.result.data.team.map(cleanTeamDocs);
 
-    res.json(cleanedTeamDocs);
+    return res.json(cleanedTeamDocs);
   }
 });
 
-module.exports = getTeams
+module.exports = getTeams;

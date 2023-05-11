@@ -3,7 +3,7 @@ const { checkIfCanDelete } = require('./queries/queries.js');
 const { deleteTeamMember } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
-const deleteTeamMembers = catchAsync(async (req,res)=>{
+const deleteTeamMembers = catchAsync(async (req, res) => {
   const { user_id, cognito_sub, team_id } = req.body;
 
   const variables = {
@@ -74,5 +74,4 @@ const deleteTeamMembers = catchAsync(async (req,res)=>{
   });
 });
 
-
-module.exports = deleteTeamMembers
+module.exports = deleteTeamMembers;

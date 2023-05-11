@@ -1,16 +1,10 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const {
-  checkIfPossibleToAccept,
-  getRoleRequirement,
-} = require('./queries/queries');
-const {
-  acceptJoinRequest1,
-  acceptJoinRequest2,
-} = require('./queries/mutations');
+const { checkIfPossibleToAccept, getRoleRequirement } = require('./queries/queries');
+const { acceptJoinRequest1, acceptJoinRequest2 } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
 
-const acceptJoinRequest = catchAsync(async(req,res)=>{
+const acceptJoinRequest = catchAsync(async (req, res) => {
   const request_id = req.body.request_id;
   const cognito_sub = req.body.cognito_sub;
 
@@ -37,10 +31,7 @@ const acceptJoinRequest = catchAsync(async(req,res)=>{
       data: null,
     });
 
-  if (
-    response1.result.data.team_members.length == 0 ||
-    !response1.result.data.team_members[0].admin
-  )
+  if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
     return res.json({
       success: false,
       errorCode: 'Forbidden',
@@ -57,8 +48,7 @@ const acceptJoinRequest = catchAsync(async(req,res)=>{
 
   if (response1.result.data.team_requests[0].role_requirement_id != null) {
     const response2 = await Hasura(getRoleRequirement, {
-      roleRequirementId:
-        response1.result.data.team_requests[0].role_requirement_id,
+      roleRequirementId: response1.result.data.team_requests[0].role_requirement_id,
     });
 
     if (!response2.success)
@@ -69,10 +59,8 @@ const acceptJoinRequest = catchAsync(async(req,res)=>{
         data: null,
       });
 
-    variables2['role'] =
-      response2.result.data.team_role_requirements[0].role_name;
-    variables2['role_requirement_id'] =
-      response1.result.data.team_requests[0].role_requirement_id;
+    variables2['role'] = response2.result.data.team_role_requirements[0].role_name;
+    variables2['role_requirement_id'] = response1.result.data.team_requests[0].role_requirement_id;
 
     query = acceptJoinRequest1;
   } else {
@@ -92,14 +80,11 @@ const acceptJoinRequest = catchAsync(async(req,res)=>{
     });
 
   // Notify the user
-  await notify(
-    21,
-    response1.result.data.team_requests[0].team_id,
-    response1.result.data.team_members[0].user_id,
-    [response1.result.data.team_requests[0].user_id]
-  ).catch(console.log);
+  await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [
+    response1.result.data.team_requests[0].user_id,
+  ]).catch(console.log);
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -107,4 +92,4 @@ const acceptJoinRequest = catchAsync(async(req,res)=>{
   });
 });
 
-module.exports = acceptJoinRequest
+module.exports = acceptJoinRequest;

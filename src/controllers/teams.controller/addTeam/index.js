@@ -1,28 +1,16 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const {
-  addTeam,
-  addInvitations,
-  addRoles,
-  addMembers,
-  addTeamTags,
-  addSkills,
-} = require('./queries/mutations');
+const { addTeam, addInvitations, addRoles, addMembers, addTeamTags, addSkills } = require('./queries/mutations');
 const { getUsersFromEmailId, getUserId } = require('./queries/queries');
 
-const createTeam =  catchAsync( async (req,res) => {
-  const name =
-    typeof req.body.name == 'string' && req.body.name.length != 0
-      ? req.body.name
-      : false;
+const createTeam = catchAsync(async (req, res) => {
+  const name = typeof req.body.name == 'string' && req.body.name.length != 0 ? req.body.name : false;
   const avatar =
     typeof req.body.avatar == 'string' && req.body.avatar.length != 0
       ? req.body.avatar
       : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
   const description =
-    typeof req.body.description == 'string' && req.body.description.length != 0
-      ? req.body.description
-      : '';
+    typeof req.body.description == 'string' && req.body.description.length != 0 ? req.body.description : '';
   const tags = req.body.tags instanceof Array ? req.body.tags : false;
   const members = req.body.members instanceof Array ? req.body.members : false;
 
@@ -58,7 +46,7 @@ const createTeam =  catchAsync( async (req,res) => {
       data: null,
     });
 
-  console.log(response1.result)
+  console.log(response1.result);
   const team = response1.result.data.insert_team.returning[0];
 
   // Add current user as a member with admin: true
@@ -71,7 +59,6 @@ const createTeam =  catchAsync( async (req,res) => {
       },
     ],
   };
-
 
   // Add members
   for (const member of members) {
@@ -134,7 +121,7 @@ const createTeam =  catchAsync( async (req,res) => {
   // Save the tags associated with the team
   if (tags.length) {
     const tagsData = {
-      objects: tags.map(tag_name => {
+      objects: tags.map((tag_name) => {
         return {
           hashtag: {
             data: {
@@ -154,7 +141,7 @@ const createTeam =  catchAsync( async (req,res) => {
     const response4 = await Hasura(addTeamTags, tagsData);
   }
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -165,4 +152,4 @@ const createTeam =  catchAsync( async (req,res) => {
   // @TODO Send invites over mail using emails of existing users
 });
 
-module.exports = createTeam
+module.exports = createTeam;

@@ -3,7 +3,7 @@ const { makeAdmin } = require('./queries/mutations');
 const { checkIfCanMakeAdmin } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 
-const toggleAdmin = catchAsync(async (req,res)=>{
+const toggleAdmin = catchAsync(async (req, res) => {
   const { user_id, team_id, cognito_sub } = req.body;
 
   const variables = {
@@ -69,4 +69,4 @@ const toggleAdmin = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = toggleAdmin
+module.exports = toggleAdmin;

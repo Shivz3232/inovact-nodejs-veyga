@@ -1,8 +1,8 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const {  rejectInvite :rejectInviteQuery} = require('./queries/mutations');
-const catchAsync = require('../../../utils/catchAsync')
+const { rejectInvite: rejectInviteQuery } = require('./queries/mutations');
+const catchAsync = require('../../../utils/catchAsync');
 
-const rejectInvite = catchAsync(async (req , res)=>{
+const rejectInvite = catchAsync(async (req, res) => {
   const invitation_id = req.body.invitation_id;
   const cognito_sub = req.body.cognito_sub;
 
@@ -29,7 +29,7 @@ const rejectInvite = catchAsync(async (req , res)=>{
       data: null,
     });
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -37,4 +37,4 @@ const rejectInvite = catchAsync(async (req , res)=>{
   });
 });
 
-module.exports = rejectInvite
+module.exports = rejectInvite;

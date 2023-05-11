@@ -3,7 +3,7 @@ const { checkCanDeleteRequest } = require('./queries/queries');
 const { deleteRequest } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
-const withdrawRequest = catchAsync(async (req,res)=>{
+const withdrawRequest = catchAsync(async (req, res) => {
   const { cognito_sub, request_id } = req.bod;
 
   const variables = {
@@ -42,7 +42,7 @@ const withdrawRequest = catchAsync(async (req,res)=>{
     });
   }
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -50,4 +50,4 @@ const withdrawRequest = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = withdrawRequest
+module.exports = withdrawRequest;
