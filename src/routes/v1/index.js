@@ -6,6 +6,7 @@ const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
 const projectRoute = require('./project.route')
+const privateMessageRoute = require('./privateMessage.route')
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -43,6 +44,10 @@ const defaultRoutes = [
   {
     path : '/project',
     route : projectRoute
+  },
+  {
+    path : '/messaging',
+    route :privateMessageRoute
   }
 ];
 
