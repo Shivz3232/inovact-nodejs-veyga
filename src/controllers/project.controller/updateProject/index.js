@@ -3,7 +3,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { updatePost_query } = require('./queries/queries');
 
 const updateProject = catchAsync(async (req, res) => {
-  let variables = await {
+  let variables = {
     id: {
       _eq: req.body.id,
     },
@@ -16,7 +16,7 @@ const updateProject = catchAsync(async (req, res) => {
 
   const response = await Hasura(updatePost_query, variables);
 
-  console.log(response)
+  console.log(response);
 
   if (!response.success) {
     return res.json({
@@ -24,7 +24,6 @@ const updateProject = catchAsync(async (req, res) => {
       errorCode: 'InternalServerError',
       errorMessage: '',
     });
-
   }
 
   return res.json({
@@ -34,4 +33,4 @@ const updateProject = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = updateProject
+module.exports = updateProject;

@@ -5,7 +5,7 @@ const { deletequery } = require('./queries/queries');
 const deleteProject = catchAsync(async (req, res) => {
   const id = await req.body.id;
 
-  const variables = await {
+  const variables = {
     id,
   };
   const response = await Hasura(deletequery, variables);
@@ -17,7 +17,6 @@ const deleteProject = catchAsync(async (req, res) => {
       errorMessage: '',
       data: null,
     });
-
   }
 
   return res.json({
@@ -26,6 +25,5 @@ const deleteProject = catchAsync(async (req, res) => {
     errorMessage: '',
     data: null,
   });
-
 });
-module.exports = deleteProject
+module.exports = deleteProject;
