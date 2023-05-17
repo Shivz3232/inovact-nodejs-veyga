@@ -5,6 +5,7 @@ const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
+const projectRoute = require('./project.route')
 const tagRoute = require('./getTags.route')
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -41,9 +42,12 @@ const defaultRoutes = [
     route: userRoute,
   },
   {
+    path : '/project',
+    route : projectRoute
+  },
+  {
     path : '/tags',
     route : tagRoute
-
   }
 ];
 
