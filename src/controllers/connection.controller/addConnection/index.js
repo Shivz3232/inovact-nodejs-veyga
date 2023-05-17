@@ -66,9 +66,9 @@ const addConnection = catchAsync(async (req, res) => {
     user_id,
   ]).catch(logger.debug);
 
-  if (!response3.success) res.json(response3.errors);
+  if (!response3.success) return res.json(response3.errors);
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
