@@ -6,12 +6,12 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const envVarsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
+    NODE_ENV: Joi.string().valid('production', 'development', 'test'),
     PORT: Joi.number().default(3000),
     HASURA_ADMIN_SECRET: Joi.string().required(),
     HASURA_API: Joi.string().required(),
     REGION: Joi.string().default('ap-south-1'),
-    NOTIFY_QUEUE_URL: Joi.string().required(),
+    NOTIFY_QUEUE_URL: Joi.string(),
     // MONGODB_URL: Joi.string().required().description('Mongo DB url'),
     // JWT_SECRET: Joi.string().required().description('JWT secret key'),
     // JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
