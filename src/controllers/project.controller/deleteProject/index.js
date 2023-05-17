@@ -26,4 +26,5 @@ const deleteProject = catchAsync(async (req, res) => {
     data: null,
   });
 });
+
 module.exports = deleteProject;

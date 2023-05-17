@@ -16,8 +16,6 @@ const updateProject = catchAsync(async (req, res) => {
 
   const response = await Hasura(updatePost_query, variables);
 
-  console.log(response);
-
   if (!response.success) {
     return res.json({
       success: false,

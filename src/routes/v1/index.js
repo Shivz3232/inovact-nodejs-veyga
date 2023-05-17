@@ -5,6 +5,7 @@ const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
+const privateMessageRoute = require('./privateMessage.route')
 const interestRoute = require('./interest.route')
 const skillRoute = require('./skills.route')
 const teamRoute = require('./teams.route')
@@ -68,6 +69,10 @@ const defaultRoutes = [
   },
     path : '/project',
     route : projectRoute
+  },
+  {
+    path : '/messaging',
+    route :privateMessageRoute
   },
   {
     path : '/tags',
