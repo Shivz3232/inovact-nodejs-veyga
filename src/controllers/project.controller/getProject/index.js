@@ -1,9 +1,9 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const { getProjects, getProject : getProjectQuery, getConnections } = require('./queries/queries');
+const { getProjects, getProject: getProjectQuery, getConnections } = require('./queries/queries');
 const cleanPostDoc = require('../../../utils/cleanPostDoc');
 const catchAsync = require('../../../utils/catchAsync');
 
-const getProject = catchAsync (async (req,res)=>{
+const getProject = catchAsync(async (req, res) => {
   const { id, cognito_sub } = req.body;
 
   const response = await Hasura(getConnections, { cognito_sub });
@@ -81,8 +81,8 @@ const getProject = catchAsync (async (req,res)=>{
       return doc;
     });
 
-    res.json(cleanedPosts);
+    return res.json(cleanedPosts);
   }
 });
 
-module.exports = getProject
+module.exports = getProject;

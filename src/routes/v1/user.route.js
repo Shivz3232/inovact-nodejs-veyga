@@ -5,13 +5,11 @@ const router = express.Router();
 
 router.post('/interest', userController.addAreaOfInterest);
 router.delete('/interest', userController.deleteAreaOfInterest);
-
 router.get('/', userController.fetchUser);
 router.get('/username', userController.getUsername);
 router.put('/', userController.updateUser);
 router.delete('/', userController.deleteUser);
 router.post('/deactivate', userController.deactivateUser);
-
 router.get('/idea', userController.getUserIdea);
 router.get('/project', userController.getUserProject);
 router.get('/teams', userController.getUserTeams);

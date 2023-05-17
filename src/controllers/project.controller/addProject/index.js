@@ -1,5 +1,5 @@
 const {
-  addProject : addProjectQuery ,
+  addProject: addProjectQuery,
   addMentions,
   addTags,
   addDocuments,
@@ -11,7 +11,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
-const addProject = catchAsync(async(req,res)=>{
+const addProject = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
   const response1 = await Hasura(getUser, {
@@ -73,7 +73,7 @@ const addProject = catchAsync(async(req,res)=>{
 
   // Insert roles required and skills required
   role_if: if (req.body.roles_required.length > 0 && projectData.team_id) {
-    const roles_data = req.body.roles_required.map(ele => {
+    const roles_data = req.body.roles_required.map((ele) => {
       return {
         team_id: projectData.team_id,
         role_name: ele.role_name,
@@ -89,8 +89,7 @@ const addProject = catchAsync(async(req,res)=>{
     for (const i in req.body.roles_required) {
       for (const skill of req.body.roles_required[i].skills_required) {
         skills_data.push({
-          role_requirement_id:
-            response1.result.data.insert_team_role_requirements.returning[i].id,
+          role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
           skill_name: skill,
         });
       }
@@ -101,7 +100,7 @@ const addProject = catchAsync(async(req,res)=>{
 
   // Insert mentions
   if (req.body.mentions.length) {
-    const mentions = req.body.mentions.map(user_id => {
+    const mentions = req.body.mentions.map((user_id) => {
       return {
         user_id,
         project_id: response2.result.data.insert_project.returning[0].id,
@@ -118,7 +117,7 @@ const addProject = catchAsync(async(req,res)=>{
 
   // Insert tags
   if (req.body.project_tags.length) {
-    const tags = req.body.project_tags.map(tag_name => {
+    const tags = req.body.project_tags.map((tag_name) => {
       return {
         hashtag: {
           data: {
@@ -143,12 +142,12 @@ const addProject = catchAsync(async(req,res)=>{
 
   // Insert Documents
   if (req.body.documents.length) {
-    const documents = req.body.documents.map(document => {
-      return {
+    const documents = req.body.documents.map((document) => {
+      return res.json({
         name: document.name,
         url: document.url,
         project_id: response2.result.data.insert_project.returning[0].id,
-      };
+      });
     });
 
     const documentsData = {
@@ -167,4 +166,4 @@ const addProject = catchAsync(async(req,res)=>{
   });
 });
 
-module.exports = addProject
+module.exports = addProject;
