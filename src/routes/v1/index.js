@@ -5,14 +5,14 @@ const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
-const privateMessageRoute = require('./privateMessage.route')
-const interestRoute = require('./interest.route')
-const skillRoute = require('./skills.route')
-const teamRoute = require('./teams.route')
-const commentRoute = require('./comment.route')
-const notificationRoute = require('./notification.route')
-const projectRoute = require('./project.route')
-const tagRoute = require('./getTags.route')
+const privateMessageRoute = require('./privateMessage.route');
+const interestRoute = require('./interest.route');
+const skillRoute = require('./skills.route');
+const teamRoute = require('./teams.route');
+const commentRoute = require('./comment.route');
+const notificationRoute = require('./notification.route');
+const projectRoute = require('./project.route');
+const tagRoute = require('./getTags.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -48,36 +48,37 @@ const defaultRoutes = [
     route: userRoute,
   },
   {
-    path : '/team',
-    route : teamRoute
+    path: '/team',
+    route: teamRoute,
   },
   {
-    path : '/interest',
-    route : interestRoute
+    path: '/interest',
+    route: interestRoute,
   },
   {
-    path : '/skill',
-    route : skillRoute
+    path: '/skill',
+    route: skillRoute,
   },
   {
-    path : '/comment',
-    route : commentRoute
+    path: '/comment',
+    route: commentRoute,
   },
   {
-    path : '/notification',
-    route : notificationRoute
-  },
-    path : '/project',
-    route : projectRoute
+    path: '/notification',
+    route: notificationRoute,
   },
   {
-    path : '/messaging',
-    route :privateMessageRoute
+    path: '/project',
+    route: projectRoute,
   },
   {
-    path : '/tags',
-    route : tagRoute
-  }
+    path: '/messaging',
+    route: privateMessageRoute,
+  },
+  {
+    path: '/tags',
+    route: tagRoute,
+  },
 ];
 
 const devRoutes = [
