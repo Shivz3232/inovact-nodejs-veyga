@@ -15,6 +15,7 @@ const projectRoute = require('./project.route');
 const tagRoute = require('./getTags.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
+const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 
 const router = express.Router();
 
@@ -90,7 +91,7 @@ const devRoutes = [
 ];
 
 defaultRoutes.forEach((route) => {
-  router.use(route.path, route.route);
+  router.use(route.path, firebaseAuthorizer, route.route);
 });
 
 /* istanbul ignore next */
