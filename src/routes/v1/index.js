@@ -1,7 +1,6 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
-const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
@@ -30,7 +29,7 @@ const defaultRoutes = [
   },
   {
     path: '/post',
-    route: postRoute,
+    route: projectRoute,
   },
   {
     path: '/idea',
@@ -67,10 +66,6 @@ const defaultRoutes = [
   {
     path: '/notification',
     route: notificationRoute,
-  },
-  {
-    path: '/project',
-    route: projectRoute,
   },
   {
     path: '/messaging',
