@@ -7,6 +7,7 @@ const connectionRoute = require('./connection.route');
 const privateMessageRoute = require('./privateMessage.route');
 const interestRoute = require('./interest.route');
 const skillRoute = require('./skills.route');
+const roleRoute = require('./roles.route');
 const teamRoute = require('./teams.route');
 const commentRoute = require('./comment.route');
 const notificationRoute = require('./notification.route');
@@ -58,6 +59,10 @@ const defaultRoutes = [
   {
     path: '/skill',
     route: skillRoute,
+  },
+  {
+    path: '/roles',
+    route: roleRoute,
   },
   {
     path: '/comment',

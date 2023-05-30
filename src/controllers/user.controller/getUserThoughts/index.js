@@ -15,7 +15,7 @@ const getUserThoughts = catchAsync(async (req, res) => {
   if (!user_id) {
     query = getUserThoughtsWithCognitoSub;
   } else {
-    variables['user_id'] = req.body.user_id;
+    variables['user_id'] = user_id;
     query = getUserThoughtsQuery;
   }
 

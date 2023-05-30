@@ -21,8 +21,9 @@ const likeProject = catchAsync(async (req, res) => {
 
   const variable = {
     user_id: response1.result.data.user[0].id,
-    project_id: req.body.project_id,
+    project_id: req.query.project_id,
   };
+
   const response = await Hasura(getPostId, variable);
   if (!response.success) {
     return res.json({
@@ -44,7 +45,7 @@ const likeProject = catchAsync(async (req, res) => {
       });
 
     // Notify the user
-    await notify(1, req.body.project_id, response1.result.data.user[0].id, [response.result.data.project[0].user_id]).catch(
+    await notify(1, project_id, response1.result.data.user[0].id, [response.result.data.project[0].user_id]).catch(
       console.log
     );
 
