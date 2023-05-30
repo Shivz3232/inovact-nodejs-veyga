@@ -12,7 +12,7 @@ router.delete('/', userController.deleteUser);
 router.post('/deactivate', userController.deactivateUser);
 router.get('/idea', userController.getUserIdea);
 router.get('/post', userController.getUserProject);
-router.get('/teams', userController.getUserTeams);
-router.get('/thoughts', userController.getUserThoughts);
+router.get('/team', userController.getUserTeams);
+router.get('/thought', userController.getUserThoughts);
 
 module.exports = router;

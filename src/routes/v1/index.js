@@ -37,11 +37,11 @@ const defaultRoutes = [
     route: ideaRoute,
   },
   {
-    path: '/thought',
+    path: '/thoughts',
     route: thoughtRoute,
   },
   {
-    path: '/connection',
+    path: '/connections',
     route: connectionRoute,
   },
   {
@@ -53,11 +53,11 @@ const defaultRoutes = [
     route: teamRoute,
   },
   {
-    path: '/interest',
+    path: '/interests',
     route: interestRoute,
   },
   {
-    path: '/skill',
+    path: '/skills',
     route: skillRoute,
   },
   {
@@ -69,7 +69,7 @@ const defaultRoutes = [
     route: commentRoute,
   },
   {
-    path: '/notification',
+    path: '/notifications',
     route: notificationRoute,
   },
   {
