@@ -27,13 +27,14 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const response = await Hasura(query, variables);
 
-  console.log(response.errors);
-  if (!response.success)
+  if (!response.success) {
+    console.log(response.errors);
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to fetch user data',
     });
+  }
 
   const userData = response.result.data.user[0];
   if (!userData) {
