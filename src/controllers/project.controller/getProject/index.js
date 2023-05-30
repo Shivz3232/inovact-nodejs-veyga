@@ -4,7 +4,8 @@ const cleanPostDoc = require('../../../utils/cleanPostDoc');
 const catchAsync = require('../../../utils/catchAsync');
 
 const getProject = catchAsync(async (req, res) => {
-  const { id, cognito_sub } = req.body;
+  const { cognito_sub } = req.body;
+  const id = req.query.id;
 
   const response = await Hasura(getConnections, { cognito_sub });
 

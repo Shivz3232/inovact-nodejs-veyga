@@ -4,7 +4,7 @@ const { getUser, getUserById } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const fetchUser = catchAsync(async (req, res) => {
-  const id = req.body.id;
+  const id = req.query.id;
   const cognito_sub = req.body.cognito_sub;
 
   let query;

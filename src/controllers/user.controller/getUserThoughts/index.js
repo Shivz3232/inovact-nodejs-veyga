@@ -1,13 +1,10 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const {
-  getUserThoughtsWithCognitoSub,
-  getUserThoughts : getUserThoughtsQuery,
-} = require('./queries/queries');
+const { getUserThoughtsWithCognitoSub, getUserThoughts: getUserThoughtsQuery } = require('./queries/queries');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const catchAsync = require('../../../utils/catchAsync');
 
-const getUserThoughts = catchAsync(async (req,res)=>{
-  const user_id = req.body.user_id;
+const getUserThoughts = catchAsync(async (req, res) => {
+  const user_id = req.query.user_id;
 
   let variables = {
     cognito_sub: req.body.cognito_sub,
@@ -37,5 +34,4 @@ const getUserThoughts = catchAsync(async (req,res)=>{
   res.json(cleanedThoughts);
 });
 
-
-module.exports = getUserThoughts
+module.exports = getUserThoughts;

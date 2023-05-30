@@ -11,7 +11,7 @@ router.put('/', userController.updateUser);
 router.delete('/', userController.deleteUser);
 router.post('/deactivate', userController.deactivateUser);
 router.get('/idea', userController.getUserIdea);
-router.get('/project', userController.getUserProject);
+router.get('/post', userController.getUserProject);
 router.get('/teams', userController.getUserTeams);
 router.get('/thoughts', userController.getUserThoughts);
 
