@@ -21,7 +21,7 @@ const likeProject = catchAsync(async (req, res) => {
 
   const variable = {
     user_id: response1.result.data.user[0].id,
-    project_id: req.query.project_id,
+    project_id,
   };
 
   const response = await Hasura(getPostId, variable);

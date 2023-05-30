@@ -7,7 +7,7 @@ router.route('/').get(ideaController.getIdeas);
 router.post('/', ideaController.addIdea);
 router.put('/', ideaController.updateIdea);
 router.delete('/', ideaController.deleteIdea);
-router.post('/like', ideaController.deleteIdea);
+router.post('/like', ideaController.likeIdea);
 
 module.exports = router;
 
