@@ -3,12 +3,11 @@ const thoughtsController = require('../../controllers/thoughts.controller');
 
 const router = express.Router();
 
-router.route('/').post(thoughtsController.getThoughts);
-router.post('/add' , thoughtsController.addThought)
-router.put('/update' , thoughtsController.updateThought)
-router.delete('/delete' , thoughtsController.deleteThought)
-router.post('/like' , thoughtsController.likeThought)
-
+router.route('/').get(thoughtsController.getThoughts);
+router.post('/', thoughtsController.addThought);
+router.put('/', thoughtsController.updateThought);
+router.delete('/', thoughtsController.deleteThought);
+router.post('/like', thoughtsController.likeThought);
 
 module.exports = router;
 

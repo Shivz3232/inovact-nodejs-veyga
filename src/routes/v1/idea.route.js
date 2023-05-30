@@ -3,16 +3,11 @@ const ideaController = require('../../controllers/idea.controller');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .post(ideaController.getIdeas);
-router.post('/add', ideaController.addIdea)
-router.post('/update', ideaController.updateIdea)
-router.post('/delete', ideaController.deleteIdea)
-router.post('/like', ideaController.deleteIdea)
-
-
-
+router.route('/').get(ideaController.getIdeas);
+router.post('/', ideaController.addIdea);
+router.put('/', ideaController.updateIdea);
+router.delete('/', ideaController.deleteIdea);
+router.post('/like', ideaController.deleteIdea);
 
 module.exports = router;
 
