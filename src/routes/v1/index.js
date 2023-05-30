@@ -1,13 +1,13 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
-const postRoute = require('./post.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
 const privateMessageRoute = require('./privateMessage.route');
 const interestRoute = require('./interest.route');
 const skillRoute = require('./skills.route');
+const roleRoute = require('./roles.route');
 const teamRoute = require('./teams.route');
 const commentRoute = require('./comment.route');
 const notificationRoute = require('./notification.route');
@@ -30,7 +30,7 @@ const defaultRoutes = [
   },
   {
     path: '/post',
-    route: postRoute,
+    route: projectRoute,
   },
   {
     path: '/idea',
@@ -61,16 +61,16 @@ const defaultRoutes = [
     route: skillRoute,
   },
   {
+    path: '/roles',
+    route: roleRoute,
+  },
+  {
     path: '/comment',
     route: commentRoute,
   },
   {
     path: '/notification',
     route: notificationRoute,
-  },
-  {
-    path: '/project',
-    route: projectRoute,
   },
   {
     path: '/messaging',

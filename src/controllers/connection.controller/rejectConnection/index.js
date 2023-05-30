@@ -3,7 +3,8 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId, getPendingConnection, deleteConnection } = require('./queries/queries');
 
 const rejectConnection = catchAsync(async (req, res) => {
-  const { user_id, cognito_sub } = req.body;
+  const { cognito_sub } = req.body;
+  const user_id = req.query.user_id;
 
   // Find user id
   const response1 = await Hasura(getUserId, {

@@ -4,7 +4,7 @@ const { getUserId, checkTeamAdmin } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const deleteTeam = catchAsync(async (req, res) => {
-  const team_id = await req.body.team_id;
+  const team_id = await req.query.team_id;
 
   // Find user id
   const cognito_sub = req.body.cognito_sub;
