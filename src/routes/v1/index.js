@@ -1,6 +1,7 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
+const allUsersRoute = require('./alluser.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
@@ -26,7 +27,7 @@ const defaultRoutes = [
   },
   {
     path: '/users',
-    route: userRoute,
+    route: allUsersRoute,
   },
   {
     path: '/post',

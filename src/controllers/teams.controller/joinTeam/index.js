@@ -131,6 +131,7 @@ const joinTeam = catchAsync(async (req, res) => {
     variables1 = {
       team_id,
       user_id,
+      roleRequirementId,
     };
   }
 

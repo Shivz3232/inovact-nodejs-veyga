@@ -18,6 +18,8 @@ router.route('/remove').post(connectionsController.removeConnection);
 
 router.route('/request').delete(connectionsController.withdrawRequest);
 
+router.get('/statistics', connectionsController.getNetworkStats);
+
 module.exports = router;
 
 /**
