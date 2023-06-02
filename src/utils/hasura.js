@@ -24,6 +24,7 @@ async function query(queryString, variables = {}) {
       };
     })
     .catch((err) => {
+      console.log(err.response.data);
       return {
         success: false,
         errors: err,

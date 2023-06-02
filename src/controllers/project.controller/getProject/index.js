@@ -69,7 +69,7 @@ const getProject = catchAsync(async (req, res) => {
     const response1 = await Hasura(getProjects, variables);
 
     if (!response1.success)
-      return callback(nul, {
+      return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: JSON.stringify(response1.errors),
