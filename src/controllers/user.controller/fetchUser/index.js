@@ -38,7 +38,7 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const userData = response.result.data.user[0];
   if (!userData) {
-    return callback(null, {
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to fetch user data',

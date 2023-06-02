@@ -1,6 +1,7 @@
 const getNotifications = `query getNotifications($cognito_sub: String) {
-  notification(where: {user: {cognito_sub: {_eq: $cognito_sub}}, status: {_eq: 1}}, order_by: { created_at: desc }, limit: 10) {
+  notification(where: {user: {cognito_sub: {_eq: $cognito_sub}}, status: {_eq: 1}}, order_by: { created_at: desc }) {
     id
+    created_at
     notification_object {
       id
       entity_id
