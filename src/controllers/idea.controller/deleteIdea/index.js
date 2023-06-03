@@ -20,6 +20,7 @@ const deleteIdea = catchAsync(async (req, res) => {
   const response = await Hasura(delete_idea, variables);
 
   if (!response.success) {
+    console.log(response.errors);
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

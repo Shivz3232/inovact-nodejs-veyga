@@ -2,8 +2,8 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUsernameFromEmail } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
-const getUsername = catchAsync(async (req,res)=>{
-  const email = req.body.email;
+const getUsername = catchAsync(async (req, res) => {
+  const email = req.query.email;
 
   const response = await Hasura(getUsernameFromEmail, { email });
 
@@ -33,5 +33,4 @@ const getUsername = catchAsync(async (req,res)=>{
   });
 });
 
-
-module.exports = getUsername
+module.exports = getUsername;

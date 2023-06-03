@@ -1,13 +1,14 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
-const postRoute = require('./post.route');
+const allUsersRoute = require('./alluser.route');
 const ideaRoute = require('./idea.route');
 const thoughtRoute = require('./thought.route');
 const connectionRoute = require('./connection.route');
 const privateMessageRoute = require('./privateMessage.route');
 const interestRoute = require('./interest.route');
 const skillRoute = require('./skills.route');
+const roleRoute = require('./roles.route');
 const teamRoute = require('./teams.route');
 const commentRoute = require('./comment.route');
 const notificationRoute = require('./notification.route');
@@ -15,6 +16,7 @@ const projectRoute = require('./project.route');
 const tagRoute = require('./getTags.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
+const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 
 const router = express.Router();
 
@@ -25,22 +27,22 @@ const defaultRoutes = [
   },
   {
     path: '/users',
-    route: userRoute,
+    route: allUsersRoute,
   },
   {
     path: '/post',
-    route: postRoute,
+    route: projectRoute,
   },
   {
     path: '/idea',
     route: ideaRoute,
   },
   {
-    path: '/thought',
+    path: '/thoughts',
     route: thoughtRoute,
   },
   {
-    path: '/connection',
+    path: '/connections',
     route: connectionRoute,
   },
   {
@@ -52,24 +54,24 @@ const defaultRoutes = [
     route: teamRoute,
   },
   {
-    path: '/interest',
+    path: '/interests',
     route: interestRoute,
   },
   {
-    path: '/skill',
+    path: '/skills',
     route: skillRoute,
+  },
+  {
+    path: '/roles',
+    route: roleRoute,
   },
   {
     path: '/comment',
     route: commentRoute,
   },
   {
-    path: '/notification',
+    path: '/notifications',
     route: notificationRoute,
-  },
-  {
-    path: '/project',
-    route: projectRoute,
   },
   {
     path: '/messaging',
@@ -90,7 +92,7 @@ const devRoutes = [
 ];
 
 defaultRoutes.forEach((route) => {
-  router.use(route.path, route.route);
+  router.use(route.path, firebaseAuthorizer, route.route);
 });
 
 /* istanbul ignore next */

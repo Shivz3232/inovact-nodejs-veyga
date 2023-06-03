@@ -2,8 +2,8 @@ const catchAsync = require('../../utils/catchAsync');
 const { query: Hasura } = require('../../utils/hasura');
 const { getSkills, getSkillsWithPrefix } = require('./queries/queries');
 
-const get_Skills = catchAsync(async (req,res)=>{
-  const prefix = req.body.prefix;
+const get_Skills = catchAsync(async (req, res) => {
+  const prefix = req.query.prefix;
 
   let response;
   if (prefix) {
@@ -16,9 +16,8 @@ const get_Skills = catchAsync(async (req,res)=>{
 
   if (!response.success) {
     return res.json(response.errors);
-    
   }
   return res.json(response.result.data.skills);
 });
 
-module.exports = get_Skills
+module.exports = get_Skills;

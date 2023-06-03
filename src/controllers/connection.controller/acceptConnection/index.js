@@ -6,8 +6,8 @@ const notify = require('../../../utils/notify');
 const logger = require('../../../config/logger');
 
 const acceptConnection = catchAsync(async (req, res) => {
-  const { user_id, cognito_sub } = req.body;
-
+  const { cognito_sub } = req.body;
+  const user_id = req.query.user_id;
   // Find user id
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },

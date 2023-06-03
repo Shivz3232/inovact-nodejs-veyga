@@ -6,17 +6,19 @@ const connectionsController = require('../../controllers/connection.controller')
 
 const router = express.Router();
 
-router.route('/').post(connectionsController.getConnection);
+router.route('/').get(connectionsController.getConnection);
 
 router.route('/accept').post(connectionsController.acceptConnection);
 
 router.route('/reject').post(connectionsController.rejectConnection);
 
-router.route('/add').post(connectionsController.addConnection);
+router.route('/request').post(connectionsController.addConnection);
 
-router.route('/remove').post(connectionsController.removeConnection)
+router.route('/remove').post(connectionsController.removeConnection);
 
-router.route('/withdraw').post(connectionsController.withdrawRequest)
+router.route('/request').delete(connectionsController.withdrawRequest);
+
+router.get('/statistics', connectionsController.getNetworkStats);
 
 module.exports = router;
 

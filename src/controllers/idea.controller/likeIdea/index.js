@@ -7,6 +7,8 @@ const catchAsync = require('../../../utils/catchAsync');
 const likeIdea = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
+  const idea_id = req.query.idea_id;
+
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -20,7 +22,7 @@ const likeIdea = catchAsync(async (req, res) => {
 
   const variable = {
     user_id: response1.result.data.user[0].id,
-    idea_id: req.body.idea_id,
+    idea_id,
   };
   const response = await Hasura(getideaId, variable);
 
@@ -43,9 +45,7 @@ const likeIdea = catchAsync(async (req, res) => {
       });
 
     // Notify the user
-    await notify(6, req.body.idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(
-      console.log
-    );
+    await notify(6, idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(console.log);
 
     return res.json({
       success: true,

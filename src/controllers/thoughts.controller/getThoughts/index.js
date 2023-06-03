@@ -4,7 +4,8 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getThought, getThoughts: getThoughtsQuery, getConnections } = require('./queries/queries');
 
 const getThoughts = catchAsync(async (req, res) => {
-  const { id, cognito_sub } = req.body;
+  const { cognito_sub } = req.body;
+  const id = req.query.id;
 
   const response = await Hasura(getConnections, { cognito_sub });
 

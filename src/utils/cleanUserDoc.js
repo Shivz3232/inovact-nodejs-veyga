@@ -7,6 +7,7 @@ function cleanUserdoc(userDoc, connection) {
 
   return {
     ...userDoc,
+    success: true,
     user_interests: userDoc.user_interests.map((user_interest) => {
       return {
         id: user_interest.area_of_interest.id,

@@ -4,7 +4,7 @@ const { getTags, getTagsWithPrefix } = require('./queries/queries');
 const catchAsync = require('../../utils/catchAsync');
 
 const getTag = catchAsync(async (req, res) => {
-  const prefix = req.body.prefix;
+  const prefix = req.query.prefix;
 
   let response;
   if (prefix) {

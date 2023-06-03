@@ -1,8 +1,8 @@
-const router = require('express').Router()
+const router = require('express').Router();
 
-const notificationController = require('../../controllers/notification.controller')
+const notificationController = require('../../controllers/notification.controller');
 
-router.get('/' , notificationController.getUserNotification)
-router.post('/markAsRead' , notificationController.markAsRead)
+router.get('/', notificationController.getUserNotification);
+router.post('/markasRead', notificationController.markAsRead);
 
-module.exports = router
+module.exports = router;

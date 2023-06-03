@@ -3,8 +3,9 @@ const { decryptMessages } = require('../../../utils/decryptMessages');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
-const getLatestPrivateMessage = catchAsync(async (req,res)=>{
-  const { cognito_sub, user_id, timeStamp } = req.body;
+const getLatestPrivateMessage = catchAsync(async (req, res) => {
+  const { cognito_sub } = req.body;
+  const { user_id, timeStamp } = req.query;
 
   const variables = {
     cognito_sub,
@@ -15,18 +16,16 @@ const getLatestPrivateMessage = catchAsync(async (req,res)=>{
   const response1 = await Hasura(getPrivateMessages, variables);
 
   if (!response1.success)
-    return res.json( {
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to get latest private messages',
       data: null,
     });
 
-  const decryptedMessages = await decryptMessages(
-    response1.result.data.private_messages
-  );
+  const decryptedMessages = await decryptMessages(response1.result.data.private_messages);
 
-  return res.json( {
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -34,4 +33,4 @@ const getLatestPrivateMessage = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = getLatestPrivateMessage
+module.exports = getLatestPrivateMessage;
