@@ -36,8 +36,9 @@ const fetchUser = catchAsync(async (req, res) => {
     });
   }
 
-  const userData = response.result.data.user[0];
-  if (!userData) {
+  const responseData = response.result.data;
+
+  if (!responseData) {
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -45,7 +46,7 @@ const fetchUser = catchAsync(async (req, res) => {
     });
   }
 
-  const cleanedUserDoc = cleanUserdoc(response.result.data.user[0]);
+  const cleanedUserDoc = cleanUserdoc(responseData.user[0], responseData.connections[0]);
 
   res.json(cleanedUserDoc);
 });
