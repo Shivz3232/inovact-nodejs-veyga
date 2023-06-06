@@ -4,6 +4,7 @@ function cleanUserdoc(userDoc, connection) {
   if (!Number.isNaN(temp)) userDoc.graduation_year = temp.getFullYear();
 
   const connections_status = connection ? connection.status : 'not connected';
+  const sender_id = connection ? connection.user1 : -1;
 
   return {
     ...userDoc,
@@ -15,6 +16,7 @@ function cleanUserdoc(userDoc, connection) {
       };
     }),
     connections_status,
+    sender_id,
   };
 }
 

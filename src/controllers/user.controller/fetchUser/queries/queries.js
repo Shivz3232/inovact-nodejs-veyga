@@ -86,7 +86,8 @@ query getUser($id: Int, $cognito_sub: String) {
       _and: [{user: { cognito_sub: { _eq: $cognito_sub }}}, {user2: { _eq: $id }}]
     }
   ]}) {
-      status
+      status,
+      user1
     }
 }`;
 
