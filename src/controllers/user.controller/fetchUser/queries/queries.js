@@ -87,7 +87,7 @@ query getUser($id: Int, $cognito_sub: String) {
     }
   ]}) {
       status,
-      user1
+      sender_id : user1
     }
 }`;
 
