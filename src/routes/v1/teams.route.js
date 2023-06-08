@@ -7,7 +7,7 @@ router.post('/', teamsController.addTeam);
 router.put('/', teamsController.updateTeam);
 router.delete('/', teamsController.deleteTeam);
 
-router.post('/document', teamsController.addTeamDocument);
+router.post('/documents', teamsController.addTeamDocument);
 
 router.delete('/member', teamsController.deleteTeamMember);
 router.post('/member/toggleAdmin', teamsController.toggleAdmin);
