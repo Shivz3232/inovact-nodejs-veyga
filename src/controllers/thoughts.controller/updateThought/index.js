@@ -17,7 +17,7 @@ const updateThought = catchAsync(async (req, res) => {
       data: null,
     });
 
-  const id = req.body.id;
+  const id = req.body.thought_id;
   const variable = {
     id,
   };
@@ -41,10 +41,8 @@ const updateThought = catchAsync(async (req, res) => {
       data: null,
     });
   }
-  let variables = await {
-    id: {
-      _eq: req.body.id,
-    },
+  let variables = {
+    id: req.body.thought_id,
     changes: {},
   };
 
