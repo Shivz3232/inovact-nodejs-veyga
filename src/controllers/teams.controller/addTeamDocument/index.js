@@ -7,8 +7,8 @@ const notify = require('../../../utils/notify');
 const addTeamDocument = catchAsync(async (req, res) => {
   // Check if current user is team admin
   const response1 = await Hasura(checkIfAdmin, {
-    cognito_sub: req.bodycognito_sub,
-    team_id: req.bodyteam_id,
+    cognito_sub: req.body.cognito_sub,
+    team_id: req.body.team_id,
   });
 
   if (!response1.success) {
@@ -29,10 +29,10 @@ const addTeamDocument = catchAsync(async (req, res) => {
 
   // Upload the document info to Hasura
   const response2 = await Hasura(add_TeamDocument, {
-    team_id: req.bodyteam_id,
-    name: req.bodyname,
-    url: req.bodyurl,
-    mime_type: req.bodymime_type,
+    team_id: req.body.team_id,
+    name: req.body.name,
+    url: req.body.url,
+    mime_type: req.body.mime_type,
   });
 
   if (!response2.success) {
@@ -49,7 +49,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
   // Notify the user
   await notify(
     22,
-    req.bodyteam_id,
+    req.body.team_id,
     user_id,
     response1.result.data.team_members.map((team_member) => team_member.user_id).filter((id) => id != user_id)
   ).catch(console.log);
