@@ -17,7 +17,7 @@ const deleteThought = catchAsync(async (req, res) => {
       data: null,
     });
 
-  const id = await req.body.id;
+  const id = req.body.thought_id;
   const variable = {
     id,
   };
