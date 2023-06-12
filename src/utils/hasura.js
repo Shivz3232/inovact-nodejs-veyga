@@ -24,10 +24,10 @@ async function query(queryString, variables = {}) {
       };
     })
     .catch((err) => {
-      console.log(err.response.data);
+      console.log(err.code, err.message);
       return {
         success: false,
-        errors: err,
+        errors: 'Failed to reach database',
       };
     });
 
