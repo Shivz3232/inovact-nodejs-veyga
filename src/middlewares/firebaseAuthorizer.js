@@ -1,10 +1,11 @@
 const admin = require('firebase-admin');
+const logger = require('../config/logger');
 
-firebaseConfiguration = JSON.parse(process.env.FIREBASE_ADMIN_CONFIG);
-firebaseConfiguration['private_key'] = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
+const firebaseConfiguration = JSON.parse(process.env.FIREBASE_ADMIN_CONFIG);
+firebaseConfiguration.private_key = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
 const firebaseAuthorizer = async (req, res, next) => {
-  const authorizationToken = await req.headers['authorization'];
+  const authorizationToken = await req.headers.authorization;
 
   if (!authorizationToken) {
     return res
@@ -19,13 +20,14 @@ const firebaseAuthorizer = async (req, res, next) => {
       return data;
     })
     .catch((err) => {
+      logger.error(err);
       return null;
     });
 
   if (!result) {
     return res
       .status(401)
-      .json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'User Authorization token not found' });
+      .json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'Invalid or expired auth token' });
   }
 
   req.body.cognito_sub = result.uid;

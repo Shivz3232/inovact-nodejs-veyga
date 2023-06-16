@@ -1,19 +1,23 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-labels */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
 const { query: Hasura } = require('../../../utils/hasura');
 const { addIdea, addTags, addSkillsRequired, addRolesRequired } = require('./queries/mutations');
-const { getUser, getIdea } = require('./queries/queries');
+const { getUser } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
-const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const addIdeas = catchAsync(async (req, res) => {
-  const cognito_sub = req.body.cognito_sub;
+  const { cognito_sub } = req.body;
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
 
   // If failed to find user return error
   if (!response1.success)
-    res.json({
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find login user',
@@ -21,7 +25,7 @@ const addIdeas = catchAsync(async (req, res) => {
 
   const allowed_statuses = ['ideation', 'mvp/prototype', 'traction'];
 
-  let ideaData = {
+  const ideaData = {
     description: req.body.description,
     title: req.body.title,
     user_id: response1.result.data.user[0].id,
@@ -37,13 +41,13 @@ const addIdeas = catchAsync(async (req, res) => {
   } else if (req.body.looking_for_members || req.body.looking_for_mentors) {
     teamCreated = await createDefaultTeam(
       response1.result.data.user[0].id,
-      req.body.team_name ? req.body.team_name : req.body.title + ' team',
+      req.body.team_name ? req.body.team_name : `${req.body.title} team`,
       req.body.looking_for_mentors,
       req.body.looking_for_members
     );
 
     if (!teamCreated.success) {
-      return res.json({ teamCreated });
+      return res.json(teamCreated);
     }
 
     ideaData.team_id = teamCreated.team_id;
@@ -54,12 +58,14 @@ const addIdeas = catchAsync(async (req, res) => {
   const response2 = await Hasura(addIdea, ideaData);
 
   // If failed to insert idea return error
-  if (!response2.success)
+  if (!response2.success) {
+    logger.error(response2.errors);
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response2.errors),
     });
+  }
 
   role_if: if (ideaData.team_id && req.body.roles_required.length > 0) {
     const roles_data = req.body.roles_required.map((ele) => {
@@ -73,7 +79,7 @@ const addIdeas = catchAsync(async (req, res) => {
 
     if (!response1.success) break role_if;
 
-    let skills_data = [];
+    const skills_data = [];
 
     for (const i in req.body.roles_required) {
       for (const skill of req.body.roles_required[i].skills_required) {
@@ -85,6 +91,10 @@ const addIdeas = catchAsync(async (req, res) => {
     }
 
     const response2 = await Hasura(addSkillsRequired, { objects: skills_data });
+
+    if (!response2.success) {
+      logger.error(response2.errors);
+    }
   }
 
   // Insert tags
@@ -110,6 +120,10 @@ const addIdeas = catchAsync(async (req, res) => {
 
     // @TODO Fallback if tags fail to be inserted
     const response3 = await Hasura(addTags, tagsData);
+
+    if (!response3.success) {
+      logger.error(response3.errors);
+    }
   }
 
   return res.json({
