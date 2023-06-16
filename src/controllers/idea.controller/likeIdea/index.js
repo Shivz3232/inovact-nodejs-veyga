@@ -3,11 +3,12 @@ const { getUserId, getideaId } = require('./queries/queries');
 const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const likeIdea = catchAsync(async (req, res) => {
   // Find user id
-  const cognito_sub = req.body.cognito_sub;
-  const idea_id = req.query.idea_id;
+  const { cognito_sub } = req.body;
+  const { idea_id } = req.query;
 
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
@@ -33,7 +34,7 @@ const likeIdea = catchAsync(async (req, res) => {
       errorMessage: 'Failed to find idea',
     });
 
-  if (response.result.data.idea_like.length == 0) {
+  if (response.result.data.idea_like.length === 0) {
     const response2 = await Hasura(add_likeIdea, variable);
 
     // If failed to insert project return error
@@ -45,7 +46,7 @@ const likeIdea = catchAsync(async (req, res) => {
       });
 
     // Notify the user
-    await notify(6, idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(console.log);
+    await notify(6, idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(logger.error);
 
     return res.json({
       success: true,
@@ -53,23 +54,22 @@ const likeIdea = catchAsync(async (req, res) => {
       errorMessage: '',
       data: 'Added a like',
     });
-  } else {
-    const response3 = await Hasura(delete_like, variable);
-
-    if (!response3.success)
-      return res.json({
-        success: false,
-        errorCode: 'InternalServerError',
-        errorMessage: 'Failed to unlike the Idea',
-      });
-
-    return res.json({
-      success: true,
-      errorCode: '',
-      errorMessage: '',
-      data: 'Removed a like',
-    });
   }
+  const response3 = await Hasura(delete_like, variable);
+
+  if (!response3.success)
+    return res.json({
+      success: false,
+      errorCode: 'InternalServerError',
+      errorMessage: 'Failed to unlike the Idea',
+    });
+
+  return res.json({
+    success: true,
+    errorCode: '',
+    errorMessage: '',
+    data: 'Removed a like',
+  });
 });
 
 module.exports = likeIdea;
