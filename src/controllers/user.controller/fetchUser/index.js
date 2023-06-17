@@ -2,10 +2,11 @@ const { query: Hasura } = require('../../../utils/hasura');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { getUser, getUserById } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const fetchUser = catchAsync(async (req, res) => {
-  const id = req.query.id;
-  const cognito_sub = req.body.cognito_sub;
+  const { id } = req.query;
+  const { cognito_sub } = req.body;
 
   let query;
   let variables;
@@ -28,7 +29,7 @@ const fetchUser = catchAsync(async (req, res) => {
   const response = await Hasura(query, variables);
 
   if (!response.success) {
-    console.log(response.errors);
+    logger.error(response.errors);
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -41,8 +42,8 @@ const fetchUser = catchAsync(async (req, res) => {
   if (!responseData) {
     return res.json({
       success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to fetch user data',
+      errorCode: 'UserNotFound',
+      errorMessage: 'No user found with this cognito sub',
     });
   }
 
