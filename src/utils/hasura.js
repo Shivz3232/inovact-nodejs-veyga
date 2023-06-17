@@ -1,4 +1,5 @@
-const axios = require('./axios');
+const { createInstance: createAxiosInstance } = require('./axios');
+const logger = require('../config/logger');
 
 /**
  * This is a utility function for querying the postgresql database
@@ -7,24 +8,27 @@ const axios = require('./axios');
  * @returns {Object}
  */
 async function query(queryString, variables = {}) {
-  const result = await axios
+  const axiosInstance = await createAxiosInstance();
+
+  const result = await axiosInstance
     .post(null, { query: queryString, variables })
     .then((response) => {
-      const responseData = response.data;
+      const { data } = response;
 
-      if (responseData.data) {
+      if (data.data) {
         return {
           success: true,
-          result: responseData,
+          result: data,
         };
       }
       return {
         success: false,
-        errors: responseData.errors,
+        errors: data.errors,
       };
     })
     .catch((err) => {
-      console.log(err.code, err.message);
+      logger.error(err.code, err.message);
+
       return {
         success: false,
         errors: 'Failed to reach database',
