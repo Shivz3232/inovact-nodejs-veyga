@@ -9,24 +9,14 @@ const serviceDiscovery = new AWS.ServiceDiscovery({
   region: config.region,
 });
 
-const getHasuraInstancesFromCloudMap = () => {
+const getHasuraInstancesFromCloudMap = async () => {
   const params = {
     ServiceId: config.cloudMapHasuraServiceId,
   };
 
-  const hasuraInstances = serviceDiscovery
-    .listInstances(params, (err, data) => {
-      if (err) {
-        logger.error(err);
-        return;
-      }
+  const data = await serviceDiscovery.listInstances(params).promise().catch(logger.error);
 
-      return data.Instances;
-    })
-    .promise()
-    .catch(logger.error);
-
-  return hasuraInstances;
+  return data.Instances;
 };
 
 let instanceIndex = 0;
