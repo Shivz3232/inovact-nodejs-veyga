@@ -12,6 +12,7 @@ const envVarsSchema = Joi.object()
     HASURA_API: Joi.string().required(),
     REGION: Joi.string().default('ap-south-1'),
     NOTIFY_QUEUE_URL: Joi.string(),
+    CLOUD_MAP_HASURA_SERVICE_ID: Joi.string(),
     // MONGODB_URL: Joi.string().required().description('Mongo DB url'),
     // JWT_SECRET: Joi.string().required().description('JWT secret key'),
     // JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
@@ -43,6 +44,7 @@ module.exports = {
   hasuraApi: envVars.HASURA_API,
   region: envVars.REGION,
   notifyQueueUrl: envVars.NOTIFY_QUEUE_URL,
+  cloudMapHasuraServiceId: envVars.CLOUD_MAP_HASURA_SERVICE_ID,
   // mongoose: {
   //   url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
   //   options: {
