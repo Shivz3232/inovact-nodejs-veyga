@@ -39,7 +39,7 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const responseData = response.result.data;
 
-  if (!responseData) {
+  if (!responseData || responseData.user.length === 0) {
     return res.json({
       success: false,
       errorCode: 'UserNotFound',
