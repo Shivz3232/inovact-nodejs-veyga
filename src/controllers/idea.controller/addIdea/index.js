@@ -10,7 +10,33 @@ const catchAsync = require('../../../utils/catchAsync');
 const logger = require('../../../config/logger');
 
 const addIdeas = catchAsync(async (req, res) => {
-  const { cognito_sub } = req.body;
+  // const { cognito_sub, title, description, link, status, team_id, looking_for_members, looking_for_mentors, team_name, roles_required, idea_tags } = req.body;
+
+  const cognito_sub = typeof req.body.cognito_sub === 'string' && req.body.cognito_sub.trim().length != 0 ? req.body.cognito_sub.trim() : false;
+
+  const title = typeof req.body.title === 'string' && req.body.title.trim().length != 0 ? req.body.title.trim() : false;
+  const description = typeof req.body.description === 'string' && req.body.description.trim().length != 0 ? req.body.description.trim() : false;
+  const link = typeof req.body.link === 'string' && req.body.link.trim().length != 0 ? req.body.link.trim() : false;
+  const idea_tags = typeof req.body.idea_tags === 'string' && req.body.idea_tags.trim().length != 0 ? req.body.idea_tags.trim() : false;
+  const status = typeof req.body.status === 'string' && req.body.status.trim().length != 0 ? req.body.status.trim() : false;
+
+  const team_id = typeof req.body.team_id === 'string' && req.body.team_id.trim().length != 0 ? req.body.team_id.trim() : false;
+  const team_name = typeof req.body.team_name === 'string' && req.body.team_name.trim().length != 0 ? req.body.team_name.trim() : false;
+  const looking_for_members = typeof req.body.looking_for_members === 'string' && req.body.looking_for_members.trim().length != 0 ? req.body.looking_for_members.trim() : false;
+  const looking_for_mentors = typeof req.body.looking_for_mentors === 'string' && req.body.looking_for_mentors.trim().length != 0 ? req.body.looking_for_mentors.trim() : false;
+  const roles_required = typeof req.body.roles_required === 'string' && req.body.roles_required.trim().length != 0 ? req.body.roles_required.trim() : false;
+
+  if (!cognito_sub) {
+    res.status(500);
+    return res.end('Unauthorized');
+  }
+
+  if (!title || !description || !link || !idea_tags || !status || !team_id || !team_name || !looking_for_members || !looking_for_mentors || !roles_required) {
+    res.status(400);
+    res.json('Invalid or missing required parameters');
+    return res.end();
+  }
+
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -39,12 +65,7 @@ const addIdeas = catchAsync(async (req, res) => {
   if (req.body.team_id) {
     ideaData.team_id = req.body.team_id;
   } else if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    teamCreated = await createDefaultTeam(
-      response1.result.data.user[0].id,
-      req.body.team_name ? req.body.team_name : `${req.body.title} team`,
-      req.body.looking_for_mentors,
-      req.body.looking_for_members
-    );
+    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members);
 
     if (!teamCreated.success) {
       return res.json(teamCreated);
