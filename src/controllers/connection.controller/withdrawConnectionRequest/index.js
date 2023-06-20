@@ -15,6 +15,8 @@ const withdrawRequest = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkCanDeleteRequest, variables);
 
   if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -35,6 +37,8 @@ const withdrawRequest = catchAsync(async (req, res) => {
   const response2 = await Hasura(deleteRequest, variables);
 
   if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

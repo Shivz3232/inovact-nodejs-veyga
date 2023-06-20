@@ -1,3 +1,4 @@
+const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId, getPendingConnection, deleteConnection } = require('./queries/queries');
@@ -11,13 +12,16 @@ const rejectConnection = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response1.errors),
       data: null,
     });
+  }
 
   // Fetch connection
   const variables = {
@@ -27,23 +31,29 @@ const rejectConnection = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getPendingConnection, variables);
 
-  if (!response2.success)
+  if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response2.errors),
       data: null,
     });
+  }
 
   const response3 = await Hasura(deleteConnection, variables);
 
-  if (!response3.success)
+  if (!response3.success) {
+    logger.error(JSON.stringify(response3.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response3.errors),
       data: null,
     });
+  }
 
   return res.json({
     success: true,

@@ -48,13 +48,16 @@ const addComment = catchAsync(async (req, res) => {
     });
   }
 
-  if (!response.success)
+  if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response.errors),
       data: null,
     });
+  }
 
   // Notify the user
   await notify(entity_type_id, article_id, response1.result.data.user[0].id, [notifier_id]).catch(logger.error);

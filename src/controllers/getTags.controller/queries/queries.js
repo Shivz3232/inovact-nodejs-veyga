@@ -11,7 +11,7 @@ const getTagsWithPrefix = `query getTagsWithPrefix($_tag: String) {
     }
   }`;
 
-const getTags = `query getTags {
+const getTags = `getTags {
   hashtag {
     id
     name

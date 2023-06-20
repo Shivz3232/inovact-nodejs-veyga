@@ -1,6 +1,7 @@
 const { query: Hasura } = require('../../utils/hasura');
 const { getTags, getTagsWithPrefix } = require('./queries/queries');
 const catchAsync = require('../../utils/catchAsync');
+const logger = require('../../config/logger');
 
 const getTag = catchAsync(async (req, res) => {
   const { prefix } = req.query;
@@ -15,6 +16,7 @@ const getTag = catchAsync(async (req, res) => {
   }
 
   if (!response.success) {
+    logger.error(response.errors);
     return res.json(response.errors);
   }
 
