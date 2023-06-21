@@ -16,12 +16,15 @@ const addIdeas = catchAsync(async (req, res) => {
   });
 
   // If failed to find user return error
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find login user',
     });
+  }
 
   const allowed_statuses = ['ideation', 'mvp/prototype', 'traction'];
 
@@ -36,9 +39,7 @@ const addIdeas = catchAsync(async (req, res) => {
   let teamCreated;
 
   // Create a default team
-  if (req.body.team_id) {
-    ideaData.team_id = req.body.team_id;
-  } else if (req.body.looking_for_members || req.body.looking_for_mentors) {
+  if (req.body.looking_for_members || req.body.looking_for_mentors) {
     teamCreated = await createDefaultTeam(
       response1.result.data.user[0].id,
       req.body.team_name ? req.body.team_name : `${req.body.title} team`,
@@ -47,6 +48,8 @@ const addIdeas = catchAsync(async (req, res) => {
     );
 
     if (!teamCreated.success) {
+      logger.error(JSON.stringify(teamCreated.errors));
+
       return res.json(teamCreated);
     }
 
@@ -59,7 +62,8 @@ const addIdeas = catchAsync(async (req, res) => {
 
   // If failed to insert idea return error
   if (!response2.success) {
-    logger.error(response2.errors);
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -77,7 +81,10 @@ const addIdeas = catchAsync(async (req, res) => {
 
     const response1 = await Hasura(addRolesRequired, { objects: roles_data });
 
-    if (!response1.success) break role_if;
+    if (!response1.success) {
+      logger.error(JSON.stringify(response1.errors));
+      break role_if;
+    }
 
     const skills_data = [];
 
@@ -93,7 +100,9 @@ const addIdeas = catchAsync(async (req, res) => {
     const response2 = await Hasura(addSkillsRequired, { objects: skills_data });
 
     if (!response2.success) {
-      logger.error(response2.errors);
+      logger.error(JSON.stringify(response1.errors));
+
+      return res.json(response2.errors);
     }
   }
 
@@ -122,7 +131,9 @@ const addIdeas = catchAsync(async (req, res) => {
     const response3 = await Hasura(addTags, tagsData);
 
     if (!response3.success) {
-      logger.error(response3.errors);
+      logger.error(JSON.stringify(response3.errors));
+
+      return res.json(response3.errors);
     }
   }
 

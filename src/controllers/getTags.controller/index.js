@@ -16,8 +16,9 @@ const getTag = catchAsync(async (req, res) => {
   }
 
   if (!response.success) {
-    logger.error(response.errors);
-    return res.json(response.errors);
+    logger.error(JSON.stringify(response.errors));
+
+    return res.json(JSON.stringify(response.errors));
   }
 
   return res.json(response.result.data.hashtag);
