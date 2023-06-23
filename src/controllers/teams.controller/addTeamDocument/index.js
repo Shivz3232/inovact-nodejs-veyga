@@ -3,6 +3,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { add_TeamDocument } = require('./queries/mutations');
 const { checkIfAdmin } = require('./queries/queries');
 const notify = require('../../../utils/notify');
+const logger = require('../../../config/logger');
 
 const addTeamDocument = catchAsync(async (req, res) => {
   // Check if current user is team admin
@@ -12,11 +13,13 @@ const addTeamDocument = catchAsync(async (req, res) => {
   });
 
   if (!response1.success) {
-    return {
+    logger.error(JSON.stringify(response1.errors));
+
+    return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response1.errors),
-    };
+    });
   }
 
   if (response1.result.data.current_user.length == 0 || !response1.result.data.current_user[0].admin)
@@ -36,6 +39,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
   });
 
   if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

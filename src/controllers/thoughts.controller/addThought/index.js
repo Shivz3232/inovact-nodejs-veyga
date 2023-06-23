@@ -1,3 +1,4 @@
+const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addThought } = require('./queries/mutations');
@@ -12,12 +13,14 @@ const addThoughts = catchAsync(async (req, res) => {
   });
 
   // If failed to find user return error
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find login user',
     });
+  }
 
   const thoughtData = {
     thought: req.body.thought,
@@ -27,12 +30,14 @@ const addThoughts = catchAsync(async (req, res) => {
   const response2 = await Hasura(addThought, thoughtData);
 
   // If failed to insert thought return error
-  if (!response2.success)
+  if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to save thought',
     });
+  }
 
   return res.json({
     success: true,

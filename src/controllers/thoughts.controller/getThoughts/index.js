@@ -1,3 +1,4 @@
+const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const { query: Hasura } = require('../../../utils/hasura');
@@ -10,6 +11,8 @@ const getThoughts = catchAsync(async (req, res) => {
   const response = await Hasura(getConnections, { cognito_sub });
 
   if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -37,13 +40,16 @@ const getThoughts = catchAsync(async (req, res) => {
 
     const response1 = await Hasura(getThought, variables);
 
-    if (!response1.success)
+    if (!response1.success) {
+      logger.error(JSON.stringify(response1.errors));
+
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: JSON.stringify(response1.errors),
         data: null,
       });
+    }
 
     if (response1.result.data.thoughts.length === 0) {
       return res.json({
@@ -69,6 +75,8 @@ const getThoughts = catchAsync(async (req, res) => {
     const response1 = await Hasura(getThoughtsQuery, variables);
 
     if (!response1.success) {
+      logger.error(JSON.stringify(response1.errors));
+
       return res.json({
         success: false,
         errorCode: 'InternalServerError',

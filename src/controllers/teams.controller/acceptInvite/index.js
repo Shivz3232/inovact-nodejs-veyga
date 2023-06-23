@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getInvitationDetails } = require('./queries/queries');
 const { acceptInvite } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const acceptInvitation = catchAsync(async (req, res) => {
   const invitation_id = req.body.invitation_id;
@@ -9,13 +10,15 @@ const acceptInvitation = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getInvitationDetails, { id: invitation_id });
 
-  if (!response2.success)
+  if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response2.errors),
       data: null,
     });
+  }
 
   // Check if the user is the one invited
   if (response2.result.data.team_invitations[0].user.cognito_sub != cognito_sub)
@@ -25,7 +28,6 @@ const acceptInvitation = catchAsync(async (req, res) => {
       errorMessage: 'You are not the one invited',
       data: null,
     });
-  console.log(response2.result.data);
 
   const variables = {
     user_id: response2.result.data.team_invitations[0].user_id,
@@ -35,13 +37,15 @@ const acceptInvitation = catchAsync(async (req, res) => {
 
   const response3 = await Hasura(acceptInvite, variables);
 
-  if (!response3.success)
+  if (!response3.success) {
+    logger.error(JSON.stringify(response3.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response3.errors),
       data: null,
     });
+  }
 
   return res.json({
     success: true,

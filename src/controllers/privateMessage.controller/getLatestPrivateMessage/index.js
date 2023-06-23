@@ -2,6 +2,7 @@ const { getPrivateMessages } = require('./queries/queries');
 const { decryptMessages } = require('../../../utils/decryptMessages');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const getLatestPrivateMessage = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
@@ -16,7 +17,8 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
   const response1 = await Hasura(getPrivateMessages, variables);
 
   if (!response1.success) {
-    console.log(response1.errors);
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

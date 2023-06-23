@@ -1,3 +1,4 @@
+const logger = require('../../config/logger');
 const catchAsync = require('../../utils/catchAsync');
 const { query: Hasura } = require('../../utils/hasura');
 const { getSkills, getSkillsWithPrefix } = require('./queries/queries');
@@ -15,6 +16,8 @@ const get_Skills = catchAsync(async (req, res) => {
   }
 
   if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json(response.errors);
   }
   return res.json(response.result.data.skills);

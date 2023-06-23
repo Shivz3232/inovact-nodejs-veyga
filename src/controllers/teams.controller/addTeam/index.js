@@ -1,3 +1,4 @@
+const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addTeam, addInvitations, addRoles, addMembers, addTeamTags, addSkills } = require('./queries/mutations');
@@ -5,12 +6,8 @@ const { getUsersFromEmailId, getUserId } = require('./queries/queries');
 
 const createTeam = catchAsync(async (req, res) => {
   const name = typeof req.body.name == 'string' && req.body.name.length != 0 ? req.body.name : false;
-  const avatar =
-    typeof req.body.avatar == 'string' && req.body.avatar.length != 0
-      ? req.body.avatar
-      : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
-  const description =
-    typeof req.body.description == 'string' && req.body.description.length != 0 ? req.body.description : '';
+  const avatar = typeof req.body.avatar == 'string' && req.body.avatar.length != 0 ? req.body.avatar : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
+  const description = typeof req.body.description == 'string' && req.body.description.length != 0 ? req.body.description : '';
   const tags = req.body.tags instanceof Array ? req.body.tags : false;
   const members = req.body.members instanceof Array ? req.body.members : false;
 
@@ -20,13 +17,15 @@ const createTeam = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response5.success)
+  if (!response5.success) {
+    logger.error(JSON.stringify(response5.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find login user',
       data: null,
     });
+  }
 
   // Save team to DB
   const teamData = {
@@ -38,15 +37,16 @@ const createTeam = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(addTeam, teamData);
 
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to save team to db.',
       data: null,
     });
+  }
 
-  console.log(response1.result);
   const team = response1.result.data.insert_team.returning[0];
 
   // Add current user as a member with admin: true
@@ -71,13 +71,15 @@ const createTeam = catchAsync(async (req, res) => {
 
   const response6 = await Hasura(addMembers, memberObjects);
 
-  if (!response6.success)
+  if (!response6.success) {
+    logger.error(JSON.stringify(response6.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to save members',
       data: null,
     });
+  }
 
   // // Save roles required for the team
   // role_if: if (roles.length) {
@@ -139,6 +141,11 @@ const createTeam = catchAsync(async (req, res) => {
 
     // @TODO Fallback if tags fail to be inserted
     const response4 = await Hasura(addTeamTags, tagsData);
+    if (!response4.success) {
+      logger.error(JSON.stringify(response4.errors));
+
+      return res.json(response4.errors);
+    }
   }
 
   return res.json({

@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUserTeams, getTeam } = require('./queries/queries');
 const cleanTeamDocs = require('../../../utils/cleanTeamDocs');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const getTeams = catchAsync(async (req, res) => {
   const team_id = req.query.team_id;
@@ -26,13 +27,16 @@ const getTeams = catchAsync(async (req, res) => {
   // Run the query
   const response = await Hasura(query, variables);
 
-  if (!response.success)
+  if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response.errors),
       data: null,
     });
+  }
 
   if (team_id) {
     if (response.result.data.team.length == 0) {

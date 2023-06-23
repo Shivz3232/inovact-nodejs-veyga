@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { checkIfMember } = require('./queries/queries');
 const { updateTeam } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const updateTeams = catchAsync(async (req, res) => {
   const { team_id, avatar, cognito_sub, team_name, looking_for_members, looking_for_mentors, team_on_inovact } = req.body;
@@ -13,13 +14,16 @@ const updateTeams = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(checkIfMember, variables);
 
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to check if user is admin',
       data: null,
     });
+  }
 
   if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
     return res.json({
@@ -45,13 +49,16 @@ const updateTeams = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(updateTeam, variables2);
 
-  if (!response2.success)
+  if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to update team',
       data: null,
     });
+  }
 
   return res.json({
     success: true,

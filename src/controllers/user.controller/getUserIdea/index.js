@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const { getUserIdeasById, getUserIdeasByCognitoSub } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const getUserIdea = catchAsync(async (req, res) => {
   let user_id = req.query.user_id;
@@ -20,13 +21,16 @@ const getUserIdea = catchAsync(async (req, res) => {
 
   const response = await Hasura(query, variables);
 
-  if (!response.success)
+  if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response.errors),
       data: null,
     });
+  }
 
   const cleanedIdeas = response.result.data.idea.map(cleanIdeaDoc);
 

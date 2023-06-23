@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { possibleToInviteUser } = require('./queries/queries.js');
 const { addTeamInvite } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const inviteToTeam = catchAsync(async (req, res) => {
   const team_id = req.body.team_id;
@@ -22,13 +23,16 @@ const inviteToTeam = catchAsync(async (req, res) => {
    */
   const response = await Hasura(possibleToInviteUser, variables);
 
-  if (!response.success)
+  if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response.errors),
       data: null,
     });
+  }
 
   if (response.result.data.current_user.length == 0 || !response.result.data.current_user[0].admin)
     return res.json({
@@ -58,21 +62,23 @@ const inviteToTeam = catchAsync(async (req, res) => {
     return res.json({
       success: false,
       errorCode: 'Forbidden',
-      errorMessage:
-        'This user has requested to join this team, please accept or reject the request instead of inviting the user',
+      errorMessage: 'This user has requested to join this team, please accept or reject the request instead of inviting the user',
       data: null,
     });
 
   /* Add the user to the team */
   const response1 = await Hasura(addTeamInvite, { team_id, user_id });
 
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response1.errors),
       data: null,
     });
+  }
 
   return res.json({
     success: true,

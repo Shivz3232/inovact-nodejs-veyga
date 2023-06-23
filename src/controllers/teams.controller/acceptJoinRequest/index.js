@@ -3,6 +3,7 @@ const { checkIfPossibleToAccept, getRoleRequirement } = require('./queries/queri
 const { acceptJoinRequest1, acceptJoinRequest2 } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const acceptJoinRequest = catchAsync(async (req, res) => {
   const request_id = req.body.request_id;
@@ -15,13 +16,15 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(checkIfPossibleToAccept, variables);
 
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response1.errors),
       data: null,
     });
+  }
 
   if (response1.result.data.team_requests.length == 0)
     return res.json({
@@ -51,13 +54,15 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
       roleRequirementId: response1.result.data.team_requests[0].role_requirement_id,
     });
 
-    if (!response2.success)
+    if (!response2.success) {
+      logger.error(JSON.stringify(response2.errors));
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: 'Failed to get role requirement details',
         data: null,
       });
+    }
 
     variables2['role'] = response2.result.data.team_role_requirements[0].role_name;
     variables2['role_requirement_id'] = response1.result.data.team_requests[0].role_requirement_id;
@@ -71,18 +76,18 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
 
   const response3 = await Hasura(query, variables2);
 
-  if (!response3.success)
+  if (!response3.success) {
+    logger.error(JSON.stringify(response3.errors));
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: JSON.stringify(response3.errors),
       data: null,
     });
+  }
 
   // Notify the user
-  await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [
-    response1.result.data.team_requests[0].user_id,
-  ]).catch(console.log);
+  await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [response1.result.data.team_requests[0].user_id]).catch(console.log);
 
   return res.json({
     success: true,

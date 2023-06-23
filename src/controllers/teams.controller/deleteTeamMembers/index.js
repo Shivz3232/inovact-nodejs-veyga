@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { checkIfCanDelete } = require('./queries/queries.js');
 const { deleteTeamMember } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const deleteTeamMembers = catchAsync(async (req, res) => {
   const { user_id, cognito_sub, team_id } = req.body;
@@ -15,6 +16,8 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkIfCanDelete, variables);
 
   if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -58,6 +61,8 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   const response2 = await Hasura(deleteTeamMember, variables2);
 
   if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

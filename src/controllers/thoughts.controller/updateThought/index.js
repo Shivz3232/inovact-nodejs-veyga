@@ -1,6 +1,7 @@
 const { query: Hasura } = require('../../../utils/hasura');
 const { updateThought_query, getUserId, getThoughtUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const updateThought = catchAsync(async (req, res) => {
   // Find user id
@@ -9,13 +10,16 @@ const updateThought = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success)
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find login user',
       data: null,
     });
+  }
 
   const id = req.body.thought_id;
   const variable = {
@@ -24,13 +28,16 @@ const updateThought = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getThoughtUserId, variable);
 
-  if (!response2.success)
+  if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
       errorMessage: 'Failed to find thought',
       data: null,
     });
+  }
 
   //check current user
   if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
@@ -51,6 +58,8 @@ const updateThought = catchAsync(async (req, res) => {
   const response = await Hasura(updateThought_query, variables);
 
   if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

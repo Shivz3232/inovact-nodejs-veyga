@@ -3,6 +3,7 @@ const { deleteUser: deleteUserQuery, addUserCause } = require('./queries/mutatio
 const { getUserId } = require('./queries/queries');
 const { deleteUserFunc } = require('../../../utils/deleteFirebaseUser');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const deleteUser = catchAsync(async (req, res) => {
   const { cognito_sub, cause } = req.body;
@@ -12,7 +13,7 @@ const deleteUser = catchAsync(async (req, res) => {
   });
 
   if (!response1.success) {
-    console.log(response1.errors);
+    logger.error(JSON.stringify(response1.errors));
 
     return res.json({
       success: false,
@@ -27,7 +28,7 @@ const deleteUser = catchAsync(async (req, res) => {
   const response2 = await deleteUserFunc(cognito_sub);
 
   if (!response2.success) {
-    console.log(response2.errors);
+    logger.error(JSON.stringify(response2.errors));
 
     return res.json({
       success: false,
@@ -46,7 +47,7 @@ const deleteUser = catchAsync(async (req, res) => {
   const response3 = await Hasura(addUserCause, variables);
 
   if (!response3.success) {
-    console.log(response3.errors);
+    logger.error(JSON.stringify(response3.errors));
 
     return res.json({
       success: false,
@@ -59,7 +60,7 @@ const deleteUser = catchAsync(async (req, res) => {
   const response4 = await Hasura(deleteUserQuery, { user_id });
 
   if (!response4.success) {
-    console.log(response4.errors);
+    logger.error(JSON.stringify(response4.errors));
 
     return res.json({
       success: false,

@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { deleteTeam: deleteTeamQuery } = require('./queries/mutations');
 const { getUserId, checkTeamAdmin } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const deleteTeam = catchAsync(async (req, res) => {
   const team_id = await req.query.team_id;
@@ -12,7 +13,11 @@ const deleteTeam = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success) return res.json(response1.errors);
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
+    return res.json(response1.errors);
+  }
 
   // Check if the current user is an admin of that team
   const checkAdminData = {
@@ -22,16 +27,21 @@ const deleteTeam = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(checkTeamAdmin, checkAdminData);
 
-  if (!response2.success) return res.json(response2.errors);
+  if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+    return res.json(response2.errors);
+  }
 
   // If not
-  if (response2.result.data.team_members.length == 0 || !response2.result.data.team_members[0].admin)
-    return callback('Only team admin can delete the team');
+  if (response2.result.data.team_members.length == 0 || !response2.result.data.team_members[0].admin) return callback('Only team admin can delete the team');
 
   // If yes
   const response3 = await Hasura(deleteTeamQuery, { team_id });
 
-  if (!response3.success) return res.json(response3.errors);
+  if (!response3.success) {
+    logger.error(JSON.stringify(response3.errors));
+    return res.json(response3.errors);
+  }
 
   return res.json(response3.result);
 });

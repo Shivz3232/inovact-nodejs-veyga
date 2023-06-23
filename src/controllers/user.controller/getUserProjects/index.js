@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId, getUserPosts } = require('./queries/queries');
 const cleanPostDoc = require('../../../utils/cleanPostDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const getUserProject = catchAsync(async (req, res) => {
   let { user_id } = req.query;
@@ -14,13 +15,15 @@ const getUserProject = catchAsync(async (req, res) => {
     });
 
     // If failed to find user return error
-    if (!response1.success)
+    if (!response1.success) {
+      logger.error(JSON.stringify(response1.errors));
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: JSON.stringify(response1.errors),
         data: null,
       });
+    }
 
     user_id = response1.result.data.user[0].id;
   }
@@ -32,11 +35,15 @@ const getUserProject = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(getUserPosts, variables);
 
-  if (!response1.success) return res.json(response1.errors);
+  if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
+    return res.json(response1.errors);
+  }
 
   const cleanedPosts = response1.result.data.project.map(cleanPostDoc);
 
-  res.json(cleanedPosts);
+  return res.json(cleanedPosts);
 });
 
 module.exports = getUserProject;

@@ -29,7 +29,8 @@ const fetchUser = catchAsync(async (req, res) => {
   const response = await Hasura(query, variables);
 
   if (!response.success) {
-    logger.error(response.errors);
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',

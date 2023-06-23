@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getProjects, getProject: getProjectQuery, getConnections } = require('./queries/queries');
 const cleanPostDoc = require('../../../utils/cleanPostDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const getProject = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
@@ -10,6 +11,8 @@ const getProject = catchAsync(async (req, res) => {
   const response = await Hasura(getConnections, { cognito_sub });
 
   if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -37,13 +40,16 @@ const getProject = catchAsync(async (req, res) => {
 
     const response1 = await Hasura(getProjectQuery, variables);
 
-    if (!response1.success)
+    if (!response1.success) {
+      logger.error(JSON.stringify(response1.errors));
+
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: JSON.stringify(response1.errors),
         data: null,
       });
+    }
 
     if (response1.result.data.project.length === 0) {
       return res.json({
@@ -68,13 +74,16 @@ const getProject = catchAsync(async (req, res) => {
 
     const response1 = await Hasura(getProjects, variables);
 
-    if (!response1.success)
+    if (!response1.success) {
+      logger.error(JSON.stringify(response1.errors));
+
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
         errorMessage: JSON.stringify(response1.errors),
         data: null,
       });
+    }
 
     const cleanedPosts = response1.result.data.project.map((doc) => {
       doc = cleanPostDoc(doc);

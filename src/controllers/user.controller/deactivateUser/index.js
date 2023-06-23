@@ -3,6 +3,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { toggleStatus, addUserCause } = require('./queries/mutations');
 const { getUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const deactivateUser = catchAsync(async (req, res) => {
   const { cognito_sub, status, cause } = req.body;
@@ -13,7 +14,7 @@ const deactivateUser = catchAsync(async (req, res) => {
   });
 
   if (!response1.success) {
-    console.log(response1.errors);
+    logger.error(JSON.stringify(response1.errors));
 
     return res.json({
       success: false,
@@ -28,7 +29,7 @@ const deactivateUser = catchAsync(async (req, res) => {
   });
 
   if (!response2.success) {
-    console.log(response2);
+    logger.error(JSON.stringify(response2.errors));
 
     return res.json({
       success: false,
@@ -48,9 +49,10 @@ const deactivateUser = catchAsync(async (req, res) => {
 
   if (!status) {
     const response3 = await Hasura(addUserCause, variables);
-    console.log(response3);
 
     if (!response3.success) {
+      logger.error(JSON.stringify(response3.errors));
+
       return res.json({
         success: false,
         errorCode: 'InternalServerError',
@@ -62,7 +64,7 @@ const deactivateUser = catchAsync(async (req, res) => {
     const response4 = await createSchedule(cognito_sub);
 
     if (!response4.success) {
-      console.log(response4.errors);
+      logger.error(JSON.stringify(response4.errors));
 
       return res.json({
         success: false,
@@ -75,7 +77,7 @@ const deactivateUser = catchAsync(async (req, res) => {
     const response5 = await deleteSchedule(cognito_sub);
 
     if (!response5.success) {
-      console.log(response5.errors);
+      logger.error(JSON.stringify(response5.errors));
 
       return res.json({
         success: false,

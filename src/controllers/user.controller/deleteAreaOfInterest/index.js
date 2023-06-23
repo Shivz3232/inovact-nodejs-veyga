@@ -1,8 +1,9 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const { deleteAreaOfInterest  : deleteAreaOfInterestQuery} = require('./queries/mutations');
+const { deleteAreaOfInterest: deleteAreaOfInterestQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
-const deleteAreaOfInterest = catchAsync(async (req,res)=>{
+const deleteAreaOfInterest = catchAsync(async (req, res) => {
   const { cognito_sub, interest_ids } = req.body;
 
   const variables = {
@@ -11,9 +12,10 @@ const deleteAreaOfInterest = catchAsync(async (req,res)=>{
   };
 
   const response = await Hasura(deleteAreaOfInterestQuery, variables);
-  console.log(response)
 
   if (!response.success) {
+    logger.error(JSON.stringify(response.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -30,4 +32,4 @@ const deleteAreaOfInterest = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = deleteAreaOfInterest
+module.exports = deleteAreaOfInterest;

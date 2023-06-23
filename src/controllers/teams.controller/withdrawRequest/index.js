@@ -2,6 +2,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { checkCanDeleteRequest } = require('./queries/queries');
 const { deleteRequest } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const withdrawRequest = catchAsync(async (req, res) => {
   const { cognito_sub, request_id } = req.bod;
@@ -14,6 +15,8 @@ const withdrawRequest = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkCanDeleteRequest, variables);
 
   if (!response1.success) {
+    logger.error(JSON.stringify(response1.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
@@ -34,6 +37,8 @@ const withdrawRequest = catchAsync(async (req, res) => {
   const response2 = await Hasura(deleteRequest, { request_id });
 
   if (!response2.success) {
+    logger.error(JSON.stringify(response2.errors));
+
     return res.json({
       success: false,
       errorCode: 'InternalServerError',
