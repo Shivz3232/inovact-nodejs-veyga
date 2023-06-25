@@ -14,15 +14,6 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(checkIfCanDelete, variables);
 
-  if (!response1.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-  }
-
   if (response1.result.data.admins.length == 0) {
     return res.json({
       success: false,
@@ -56,15 +47,6 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   };
 
   const response2 = await Hasura(deleteTeamMember, variables2);
-
-  if (!response2.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
-  }
 
   return res.json({
     success: true,

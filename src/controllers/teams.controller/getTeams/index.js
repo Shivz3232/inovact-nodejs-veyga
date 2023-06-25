@@ -26,17 +26,9 @@ const getTeams = catchAsync(async (req, res) => {
   // Run the query
   const response = await Hasura(query, variables);
 
-  if (!response.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-
   if (team_id) {
     if (response.result.data.team.length == 0) {
-      res.json({
+      return res.json({
         success: false,
         errorCode: 'NotFound',
         errorMessage: 'Team not found',
