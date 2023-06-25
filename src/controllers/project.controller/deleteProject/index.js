@@ -3,7 +3,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { deletequery } = require('./queries/queries');
 
 const deleteProject = catchAsync(async (req, res) => {
-  const id = await req.body.id;
+  const id = req.body.id;
 
   const variables = {
     id,

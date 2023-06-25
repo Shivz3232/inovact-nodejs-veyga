@@ -1,11 +1,4 @@
-const {
-  addProject: addProjectQuery,
-  addMentions,
-  addTags,
-  addDocuments,
-  addRolesRequired,
-  addSkillsRequired,
-} = require('./queries/mutations');
+const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired } = require('./queries/mutations');
 const { getUser, getProject } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
@@ -40,16 +33,8 @@ const addProject = catchAsync(async (req, res) => {
   let teamCreated;
 
   // Create a default team
-  if (req.body.team_id) {
-    projectData.team_id = req.body.team_id;
-  } else if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    teamCreated = await createDefaultTeam(
-      response1.result.data.user[0].id,
-      req.body.team_name ? req.body.team_name : req.body.title + ' team',
-      req.body.looking_for_mentors,
-      req.body.looking_for_members,
-      req.body.team_on_inovact
-    );
+  if (req.body.looking_for_members || req.body.looking_for_mentors) {
+    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : req.body.title + ' team', req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
 
     if (!teamCreated.success) {
       return res.json(teamCreated);

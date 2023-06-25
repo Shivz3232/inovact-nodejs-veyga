@@ -8,6 +8,7 @@ const likeProject = catchAsync(async (req, res) => {
   // Find user id
   const cognito_sub = req.body.cognito_sub;
   const project_id = req.query.project_id;
+
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -45,9 +46,7 @@ const likeProject = catchAsync(async (req, res) => {
       });
 
     // Notify the user
-    await notify(1, project_id, response1.result.data.user[0].id, [response.result.data.project[0].user_id]).catch(
-      console.log
-    );
+    await notify(1, project_id, response1.result.data.user[0].id, [response.result.data.project[0].user_id]).catch(console.log);
 
     return res.json({
       success: true,
