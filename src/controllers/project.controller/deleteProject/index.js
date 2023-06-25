@@ -10,15 +10,6 @@ const deleteProject = catchAsync(async (req, res) => {
   };
   const response = await Hasura(deletequery, variables);
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: '',
-      data: null,
-    });
-  }
-
   return res.json({
     success: true,
     errorCode: '',

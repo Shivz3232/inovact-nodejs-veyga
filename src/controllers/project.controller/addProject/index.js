@@ -11,15 +11,6 @@ const addProject = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  // If failed to find user return error
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
-    });
-
   // Insert project
   const projectData = {
     description: req.body.description,
@@ -36,25 +27,12 @@ const addProject = catchAsync(async (req, res) => {
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
     teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : req.body.title + ' team', req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
 
-    if (!teamCreated.success) {
-      return res.json(teamCreated);
-    }
-
     projectData.team_id = teamCreated.team_id;
   } else {
     projectData.team_id = null;
   }
 
   const response2 = await Hasura(addProjectQuery, projectData);
-
-  // If failed to insert project return error
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
 
   // Insert roles required and skills required
   role_if: if (req.body.roles_required.length > 0 && projectData.team_id) {
