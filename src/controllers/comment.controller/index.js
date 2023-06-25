@@ -6,7 +6,6 @@ const { getUserId } = require('./queries/queries');
 const notify = require('../../utils/notify');
 const { query: Hasura } = require('../../utils/hasura');
 const catchAsync = require('../../utils/catchAsync');
-const logger = require('../../config/logger');
 
 const addComment = catchAsync(async (req, res) => {
   const { text, cognito_sub, article_id } = req.body;
@@ -44,17 +43,6 @@ const addComment = catchAsync(async (req, res) => {
       success: false,
       errorCode: 'INVALID_ARTICLE_TYPE',
       errorMessage: 'Invalid article type provided',
-      data: null,
-    });
-  }
-
-  if (!response.success) {
-    logger.error(JSON.stringify(response.errors));
-
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
       data: null,
     });
   }

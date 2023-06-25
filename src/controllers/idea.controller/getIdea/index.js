@@ -1,4 +1,3 @@
-const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const { query: Hasura } = require('../../../utils/hasura');
@@ -9,17 +8,6 @@ const getIdeas = catchAsync(async (req, res) => {
   const id = req.query.id;
 
   const response = await Hasura(getConnections, { cognito_sub });
-
-  if (!response.success) {
-    logger.error(JSON.stringify(response.errors));
-
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
-    });
-  }
 
   const userId = response.result.data.user[0].id;
 
@@ -50,13 +38,11 @@ const getIdeas = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(queries, variables);
 
-  if (!response1.success) {
-    logger.error(JSON.stringify(response1.errors));
-
+  if (response1.result.data.idea.length === 0) {
     return res.json({
       success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
+      errorCode: 'NotFound',
+      errorMessage: 'Project not found',
       data: null,
     });
   }

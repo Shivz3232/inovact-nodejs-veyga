@@ -1,4 +1,3 @@
-const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updateIdea_query } = require('./queries/queries');
@@ -20,17 +19,6 @@ const updateIdeas = catchAsync(async (req, res) => {
   if (req.body.link) variables['changes']['link'] = req.body.link;
 
   const response = await Hasura(updateIdea_query, variables);
-
-  if (!response.success) {
-    logger.error(JSON.stringify(response.errors));
-
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to update idea',
-      data: JSON.stringify(response.errors),
-    });
-  }
 
   return res.json({
     success: true,

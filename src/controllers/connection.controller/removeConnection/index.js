@@ -2,7 +2,6 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId } = require('./queries/queries');
 const { removeConnection: removeConnectionQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
-const logger = require('../../../config/logger');
 
 const removeConnection = catchAsync(async (req, res) => {
   const user_id = req.query.user_id;
@@ -13,17 +12,6 @@ const removeConnection = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success) {
-    logger.error(JSON.stringify(response1.errors));
-
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-  }
-
   // Fetch connection
   const variables = {
     user2: response1.result.data.user[0].id,
@@ -31,17 +19,6 @@ const removeConnection = catchAsync(async (req, res) => {
   };
 
   const response2 = await Hasura(removeConnectionQuery, variables);
-
-  if (!response2.success) {
-    logger.error(JSON.stringify(response2.errors));
-
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
-  }
 
   return res.json({
     success: true,

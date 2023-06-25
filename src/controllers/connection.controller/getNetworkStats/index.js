@@ -2,7 +2,6 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getNetworkStatistics } = require('./queries/queries');
 const timeStamps = require('../../../utils/timeStamps');
 const catchAsync = require('../../../utils/catchAsync');
-const logger = require('../../../config/logger');
 
 const getNetworkStats = catchAsync(async (req, res) => {
   const cognito_sub = req.body.cognito_sub;
@@ -16,17 +15,6 @@ const getNetworkStats = catchAsync(async (req, res) => {
   };
 
   const response = await Hasura(getNetworkStatistics, variables);
-
-  if (!response.success) {
-    logger.error(JSON.stringify(response.errors));
-
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
 
   const yesterdaysConnections = response.result.data.connections_till_yesterday_morning.aggregate.count;
   const todaysConnections = response.result.data.connections_till_today_morning.aggregate.count;
