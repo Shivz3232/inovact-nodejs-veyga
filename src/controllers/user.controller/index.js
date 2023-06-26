@@ -10,5 +10,5 @@ module.exports.deactivateUser = require('./deactivateUser');
 
 module.exports.getUserIdea = require('./getUserIdea');
 module.exports.getUserProject = require('./getUserProjects');
-module.exports.getUserTeams = require('./getUsetTeams');
+module.exports.getUserTeams = require('./getUserTeams');
 module.exports.getUserThoughts = require('./getUserThoughts');

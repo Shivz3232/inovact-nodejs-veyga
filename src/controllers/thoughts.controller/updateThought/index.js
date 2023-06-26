@@ -9,28 +9,12 @@ const updateThought = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
-    });
-
   const id = req.body.thought_id;
   const variable = {
     id,
   };
 
   const response2 = await Hasura(getThoughtUserId, variable);
-
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find thought',
-      data: null,
-    });
 
   //check current user
   if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
@@ -49,15 +33,6 @@ const updateThought = catchAsync(async (req, res) => {
   if (req.body.thought) variables['changes']['thought'] = req.body.thought;
 
   const response = await Hasura(updateThought_query, variables);
-
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to update thought',
-      data: null,
-    });
-  }
 
   return res.json({
     success: true,

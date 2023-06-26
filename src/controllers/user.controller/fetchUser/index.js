@@ -28,15 +28,6 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const response = await Hasura(query, variables);
 
-  if (!response.success) {
-    logger.error(response.errors);
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to fetch user data',
-    });
-  }
-
   const responseData = response.result.data;
 
   if (!responseData || responseData.user.length === 0) {
@@ -49,7 +40,7 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const cleanedUserDoc = cleanUserdoc(responseData.user[0], responseData.connections[0]);
 
-  res.json(cleanedUserDoc);
+  return res.json(cleanedUserDoc);
 });
 
 module.exports = fetchUser;
