@@ -33,7 +33,11 @@ async function chooseHasuraInstance() {
 }
 
 const createInstance = async () => {
-  const hasuraInstance = await chooseHasuraInstance();
+  let hasuraInstance;
+
+  if (config.NODE_ENV === 'production') {
+    hasuraInstance = await chooseHasuraInstance();
+  }
 
   let baseURL = config.hasuraApi;
   const headers = {

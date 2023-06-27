@@ -14,10 +14,6 @@ const getTag = catchAsync(async (req, res) => {
     response = await Hasura(getTags);
   }
 
-  if (!response.success) {
-    return res.json(response.errors);
-  }
-
   return res.json(response.result.data.hashtag);
 });
 

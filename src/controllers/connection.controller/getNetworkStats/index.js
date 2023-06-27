@@ -16,15 +16,6 @@ const getNetworkStats = catchAsync(async (req, res) => {
 
   const response = await Hasura(getNetworkStatistics, variables);
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
-
   const yesterdaysConnections = response.result.data.connections_till_yesterday_morning.aggregate.count;
   const todaysConnections = response.result.data.connections_till_today_morning.aggregate.count;
 

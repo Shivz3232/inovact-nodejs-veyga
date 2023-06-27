@@ -20,15 +20,6 @@ const updateIdeas = catchAsync(async (req, res) => {
 
   const response = await Hasura(updateIdea_query, variables);
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to update idea',
-      data: JSON.stringify(response.errors),
-    });
-  }
-
   return res.json({
     success: true,
     errorCode: '',
