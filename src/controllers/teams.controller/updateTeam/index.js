@@ -13,14 +13,6 @@ const updateTeams = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(checkIfMember, variables);
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to check if user is admin',
-      data: null,
-    });
-
   if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
     return res.json({
       success: false,
@@ -44,14 +36,6 @@ const updateTeams = catchAsync(async (req, res) => {
   };
 
   const response2 = await Hasura(updateTeam, variables2);
-
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to update team',
-      data: null,
-    });
 
   return res.json({
     success: true,
