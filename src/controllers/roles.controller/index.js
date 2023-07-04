@@ -14,11 +14,6 @@ const getRoles = catchAsync(async (req, res) => {
     response = await Hasura(getRolesQueries);
   }
 
-  console.log(response);
-
-  if (!response.success) {
-    return res.json(response.errors);
-  }
   return res.json(response.result.data.roles);
 });
 

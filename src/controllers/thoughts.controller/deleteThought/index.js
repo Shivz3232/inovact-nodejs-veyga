@@ -24,14 +24,6 @@ const deleteThought = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getThoughtUserId, variable);
 
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find thought',
-      data: null,
-    });
-
   //check current user
   if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
     return res.json({
@@ -46,15 +38,6 @@ const deleteThought = catchAsync(async (req, res) => {
     id,
   };
   const response = await Hasura(delete_thought, variables);
-
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to delete thought',
-      data: null,
-    });
-  }
 
   return res.json({
     success: true,

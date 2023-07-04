@@ -1,58 +1,20 @@
 /* eslint-disable prefer-const */
-function sortConnections(connections, privateMessages, user_id) {
-  privateMessages = privateMessages.map((privateMessage) => {
-    privateMessage.created_at = new Date(privateMessage.created_at);
-
-    return privateMessage;
+function sortConnections(users) {
+  const sortedByMessage = users.sort((a, b) => {
+    const aDate = a.private_messages.length ? new Date(a.private_messages[0].created_at) : new Date(0);
+    const bDate = b.private_messages.length ? new Date(b.private_messages[0].created_at) : new Date(0);
+    return bDate - aDate;
   });
 
-  let connectionsObject = {};
-
-  connections.forEach((connection) => {
-    connectionsObject[connection.id] = connection;
-  });
-
-  const sortedPrivateMessages = privateMessages.sort(({ created_at: a }, { created_at: b }) => b - a);
-
-  const sortedConnections = new Array(connections.length);
-
-  let i = 0;
-  for (; i < sortedPrivateMessages.length; i += 1) {
-    const { connection_id } = sortedPrivateMessages[i];
-    const connection = connectionsObject[connection_id];
-
-    delete connectionsObject[connection_id];
-
-    let obj = {
-      status: connection.status,
-    };
-
-    if (connection.user1 === user_id) {
-      obj.user = connection.userByUser2;
-    } else {
-      obj.user = connection.user;
-    }
-
-    sortedConnections[i] = obj;
-  }
-
-  // Insert the remainig connections
-  Object.keys(connectionsObject).forEach((connection) => {
+  const SortedConnections = sortedByMessage.map(function (connection) {
     const obj = {
-      status: connectionsObject[connection].status,
+      status: connection.status,
+      id: connection.id,
     };
-
-    if (connectionsObject[connection].user1 === user_id) {
-      obj.user = connectionsObject[connection].userByUser2;
-    } else {
-      obj.user = connectionsObject[connection].user;
-    }
-
-    sortedConnections[i] = obj;
-    i += 1;
+    return obj;
   });
 
-  return sortedConnections;
+  return SortedConnections;
 }
 
 module.exports = sortConnections;
