@@ -1,11 +1,4 @@
-const {
-  addProject: addProjectQuery,
-  addMentions,
-  addTags,
-  addDocuments,
-  addRolesRequired,
-  addSkillsRequired,
-} = require('./queries/mutations');
+const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired } = require('./queries/mutations');
 const { getUser, getProject } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
@@ -17,15 +10,6 @@ const addProject = catchAsync(async (req, res) => {
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
-
-  // If failed to find user return error
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
-    });
 
   // Insert project
   const projectData = {
@@ -40,20 +24,8 @@ const addProject = catchAsync(async (req, res) => {
   let teamCreated;
 
   // Create a default team
-  if (req.body.team_id) {
-    projectData.team_id = req.body.team_id;
-  } else if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    teamCreated = await createDefaultTeam(
-      response1.result.data.user[0].id,
-      req.body.team_name ? req.body.team_name : req.body.title + ' team',
-      req.body.looking_for_mentors,
-      req.body.looking_for_members,
-      req.body.team_on_inovact
-    );
-
-    if (!teamCreated.success) {
-      return res.json(teamCreated);
-    }
+  if (req.body.looking_for_members || req.body.looking_for_mentors) {
+    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : req.body.title + ' team', req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
 
     projectData.team_id = teamCreated.team_id;
   } else {
@@ -61,15 +33,6 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   const response2 = await Hasura(addProjectQuery, projectData);
-
-  // If failed to insert project return error
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
 
   // Insert roles required and skills required
   role_if: if (req.body.roles_required.length > 0 && projectData.team_id) {

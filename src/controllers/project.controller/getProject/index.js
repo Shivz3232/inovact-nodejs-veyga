@@ -9,15 +9,6 @@ const getProject = catchAsync(async (req, res) => {
 
   const response = await Hasura(getConnections, { cognito_sub });
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
-
   const userId = response.result.data.user[0].id;
 
   const connections = {};
@@ -29,61 +20,41 @@ const getProject = catchAsync(async (req, res) => {
     }
   });
 
+  let queries, variables;
+
   if (id) {
-    const variables = {
+    variables = {
       id,
       cognito_sub,
     };
-
-    const response1 = await Hasura(getProjectQuery, variables);
-
-    if (!response1.success)
-      return res.json({
-        success: false,
-        errorCode: 'InternalServerError',
-        errorMessage: JSON.stringify(response1.errors),
-        data: null,
-      });
-
-    if (response1.result.data.project.length === 0) {
-      return res.json({
-        success: false,
-        errorCode: 'NotFound',
-        errorMessage: 'Project not found',
-        data: null,
-      });
-    }
-
-    const cleanedPosts = response1.result.data.project.map((doc) => {
-      doc = cleanPostDoc(doc);
-      doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
-      return doc;
-    });
-
-    return res.json(cleanedPosts[0]);
+    queries = getProjectQuery;
   } else {
-    const variables = {
+    variables = {
       cognito_sub,
     };
-
-    const response1 = await Hasura(getProjects, variables);
-
-    if (!response1.success)
-      return res.json({
-        success: false,
-        errorCode: 'InternalServerError',
-        errorMessage: JSON.stringify(response1.errors),
-        data: null,
-      });
-
-    const cleanedPosts = response1.result.data.project.map((doc) => {
-      doc = cleanPostDoc(doc);
-      doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
-      return doc;
-    });
-
-    return res.json(cleanedPosts);
+    queries = getProjects;
   }
+
+  const response1 = await Hasura(queries, variables);
+
+  if (response1.result.data.project.length === 0) {
+    return res.json({
+      success: false,
+      errorCode: 'NotFound',
+      errorMessage: 'Project not found',
+      data: null,
+    });
+  }
+
+  const cleanedPosts = response1.result.data.project.map((doc) => {
+    doc = cleanPostDoc(doc);
+    doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
+    return doc;
+  });
+
+  if (id) return res.json(cleanedPosts[0]);
+
+  return res.json(cleanedPosts);
 });
 
 module.exports = getProject;
