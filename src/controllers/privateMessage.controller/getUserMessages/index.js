@@ -32,12 +32,6 @@ const getUserMessages = catchAsync(async (req, res) => {
       data: null,
     });
 
-  const sortedByMessage = response2.result.data.users.sort((a, b) => {
-    const aDate = a.private_messages.length ? new Date(a.private_messages[0].created_at) : new Date(0);
-    const bDate = b.private_messages.length ? new Date(b.private_messages[0].created_at) : new Date(0);
-    return bDate - aDate;
-  });
-
   const connections = sortConnections(response2.result.data.users);
 
   return res.json(connections);
