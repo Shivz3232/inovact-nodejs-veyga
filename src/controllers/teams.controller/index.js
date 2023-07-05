@@ -15,4 +15,4 @@ module.exports.rejectInvite = require('./rejectInvite');
 module.exports.joinTeam = require('./joinTeam');
 module.exports.accepetJoinRequest = require('./acceptJoinRequest');
 module.exports.rejectJoinRequest = require('./rejectJoinRequest');
-module.exports.withdrawRequest = require('./updateTeam');
+module.exports.withdrawRequest = require('./withdrawRequest');

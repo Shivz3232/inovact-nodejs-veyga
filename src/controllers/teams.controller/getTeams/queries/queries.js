@@ -62,11 +62,23 @@ const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
       title
       status
       description
+      tags :project_tags{
+        hashtag{
+          id,
+          name
+        }
+      }
     }
     ideas {
       id
       title
       description
+      tags :idea_tags{
+        hashtag{
+          id,
+          name
+        }
+      }
     }
     team_tags {
       hashtag {
@@ -142,11 +154,23 @@ const getTeam = `query getTeam($team_id: Int) {
       title
       status
       description
+      tags :project_tags{
+        hashtag{
+          id,
+          name
+        }
+      }
     }
     ideas {
       id
       title
       description
+      tags :idea_tags{
+        hashtag{
+          id,
+          name
+        }
+      }
     }
     team_tags {
       hashtag {
@@ -154,6 +178,7 @@ const getTeam = `query getTeam($team_id: Int) {
         name
       }
     }
+   
   }
 }`;
 
