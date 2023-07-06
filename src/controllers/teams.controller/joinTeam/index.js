@@ -1,11 +1,6 @@
 const { query: Hasura } = require('../../../utils/hasura');
 const { possibleToJoinTeam } = require('./queries/queries.js');
-const {
-  addTeamRequestByStudent,
-  addTeamRequestByMentor,
-  addTeamRequestByEntrepreneurAsMember,
-  addTeamRequestByEntrepreneurAsMentor,
-} = require('./queries/mutations');
+const { addTeamRequestByStudent, addTeamRequestByMentor, addTeamRequestByEntrepreneurAsMember, addTeamRequestByEntrepreneurAsMentor } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -21,14 +16,6 @@ const joinTeam = catchAsync(async (req, res) => {
   };
 
   const response = await Hasura(possibleToJoinTeam, variables);
-
-  if (!response.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
 
   if (response.result.data.team.length == 0)
     return res.json({
@@ -136,14 +123,6 @@ const joinTeam = catchAsync(async (req, res) => {
   }
 
   const response1 = await Hasura(query, variables1);
-
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
 
   // Notify the user
   await notify(

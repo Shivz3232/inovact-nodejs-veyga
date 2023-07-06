@@ -16,14 +16,6 @@ const updateProject = catchAsync(async (req, res) => {
 
   const response = await Hasura(updatePost_query, variables);
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: '',
-    });
-  }
-
   return res.json({
     success: true,
     errorCode: '',

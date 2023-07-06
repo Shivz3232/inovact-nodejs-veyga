@@ -5,12 +5,8 @@ const { getUsersFromEmailId, getUserId } = require('./queries/queries');
 
 const createTeam = catchAsync(async (req, res) => {
   const name = typeof req.body.name == 'string' && req.body.name.length != 0 ? req.body.name : false;
-  const avatar =
-    typeof req.body.avatar == 'string' && req.body.avatar.length != 0
-      ? req.body.avatar
-      : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
-  const description =
-    typeof req.body.description == 'string' && req.body.description.length != 0 ? req.body.description : '';
+  const avatar = typeof req.body.avatar == 'string' && req.body.avatar.length != 0 ? req.body.avatar : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
+  const description = typeof req.body.description == 'string' && req.body.description.length != 0 ? req.body.description : '';
   const tags = req.body.tags instanceof Array ? req.body.tags : false;
   const members = req.body.members instanceof Array ? req.body.members : false;
 
@@ -19,14 +15,6 @@ const createTeam = catchAsync(async (req, res) => {
   const response5 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
-
-  if (!response5.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
-    });
 
   // Save team to DB
   const teamData = {
@@ -46,7 +34,6 @@ const createTeam = catchAsync(async (req, res) => {
       data: null,
     });
 
-  console.log(response1.result);
   const team = response1.result.data.insert_team.returning[0];
 
   // Add current user as a member with admin: true
@@ -69,15 +56,7 @@ const createTeam = catchAsync(async (req, res) => {
     });
   }
 
-  const response6 = await Hasura(addMembers, memberObjects);
-
-  if (!response6.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to save members',
-      data: null,
-    });
+  const response6 = await Hasura(addMembers, { objects: memberObjects.objects });
 
   // // Save roles required for the team
   // role_if: if (roles.length) {

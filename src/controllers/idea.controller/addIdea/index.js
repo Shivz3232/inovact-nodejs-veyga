@@ -28,18 +28,13 @@ const addIdeas = catchAsync(async (req, res) => {
 
   // Create a default team
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
+
     teamCreated = await createDefaultTeam(
       response1.result.data.user[0].id,
       req.body.team_name ? req.body.team_name : `${req.body.title} team`,
       req.body.looking_for_mentors,
       req.body.looking_for_members
     );
-
-    if (!teamCreated.success) {
-      logger.error(JSON.stringify(teamCreated.errors));
-
-      return res.json(teamCreated);
-    }
 
     ideaData.team_id = teamCreated.team_id;
   } else {

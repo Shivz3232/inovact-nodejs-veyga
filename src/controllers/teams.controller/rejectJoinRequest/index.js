@@ -4,8 +4,7 @@ const { rejectJoinRequest: rejectJoinRequestQuery } = require('./queries/mutatio
 const catchAsync = require('../../../utils/catchAsync');
 
 const rejectJoinRequest = catchAsync(async (req, res) => {
-  const request_id = req.body.request_id;
-  const cognito_sub = req.body.cognito_sub;
+  const { request_id, cognito_sub } = req.body;
 
   const variables = {
     request_id,
@@ -13,14 +12,6 @@ const rejectJoinRequest = catchAsync(async (req, res) => {
   };
 
   const response1 = await Hasura(checkIfPossibleToAccept, variables);
-
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
 
   if (response1.result.data.team_requests.length == 0)
     return res.json({
@@ -43,14 +34,6 @@ const rejectJoinRequest = catchAsync(async (req, res) => {
   };
 
   const response2 = await Hasura(rejectJoinRequestQuery, variables2);
-
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
 
   return res.json({
     success: true,

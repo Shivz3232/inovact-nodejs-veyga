@@ -3,21 +3,12 @@ const { getUserId } = require('./queries/queries');
 const { addUserInterests } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
-const addAreaOfInterest = catchAsync(async (req,res)=>{
+const addAreaOfInterest = catchAsync(async (req, res) => {
   const cognito_sub = req.body.cognito_sub;
 
   const response1 = await Hasura(getUserId, { cognito_sub });
 
-  if (!response1.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-  }
-
-  const interests = req.body.interests.map(interest => {
+  const interests = req.body.interests.map((interest) => {
     return {
       area_of_interest: {
         data: {
@@ -38,16 +29,7 @@ const addAreaOfInterest = catchAsync(async (req,res)=>{
 
   const response = await Hasura(addUserInterests, variables);
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
-
-  res.json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -55,4 +37,4 @@ const addAreaOfInterest = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = addAreaOfInterest
+module.exports = addAreaOfInterest;
