@@ -7,15 +7,6 @@ const getUsername = catchAsync(async (req, res) => {
 
   const response = await Hasura(getUsernameFromEmail, { email });
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
-
   if (response.result.data.user.length == 0) {
     return res.json({
       success: false,

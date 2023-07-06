@@ -5,9 +5,10 @@ const catchAsync = require('../../../utils/catchAsync');
 
 const getUserThoughts = catchAsync(async (req, res) => {
   const user_id = req.query.user_id;
+  const { cognito_sub } = req.body;
 
   let variables = {
-    cognito_sub: req.body.cognito_sub,
+    cognito_sub,
   };
 
   let query;
@@ -21,17 +22,9 @@ const getUserThoughts = catchAsync(async (req, res) => {
 
   const response = await Hasura(query, variables);
 
-  if (!response.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-
   const cleanedThoughts = response.result.data.thoughts.map(cleanThoughtDoc);
 
-  res.json(cleanedThoughts);
+  return res.json(cleanedThoughts);
 });
 
 module.exports = getUserThoughts;

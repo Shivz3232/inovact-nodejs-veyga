@@ -11,14 +11,6 @@ const addTeamDocument = catchAsync(async (req, res) => {
     team_id: req.body.team_id,
   });
 
-  if (!response1.success) {
-    return {
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-    };
-  }
-
   if (response1.result.data.current_user.length == 0 || !response1.result.data.current_user[0].admin)
     return res.json({
       success: false,
@@ -34,15 +26,6 @@ const addTeamDocument = catchAsync(async (req, res) => {
     url: req.body.url,
     mime_type: req.body.mime_type,
   });
-
-  if (!response2.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
-  }
 
   const user_id = response1.result.data.current_user[0].user_id;
 

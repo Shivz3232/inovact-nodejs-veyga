@@ -15,16 +15,6 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(getPrivateMessages, variables);
 
-  if (!response1.success) {
-    console.log(response1.errors);
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to get latest private messages',
-      data: null,
-    });
-  }
-
   const decryptedMessages = await decryptMessages(response1.result.data.private_messages);
 
   return res.json({
