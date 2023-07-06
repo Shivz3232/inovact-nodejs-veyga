@@ -1,32 +1,23 @@
 function cleanTeamDocs(teamDoc) {
   teamDoc.team_role_requirements = teamDoc.team_role_requirements.map((team_role_requirement) => {
-    team_role_requirement.team_skill_requirements = team_role_requirement.team_skill_requirements.map(
-      (ele) => ele.skill_name
-    );
+    team_role_requirement.team_skill_requirements = team_role_requirement.team_skill_requirements.map((ele) => ele.skill_name);
     return team_role_requirement;
   });
 
-  teamDoc.project_tags = [];
-
   for (const project of teamDoc.projects) {
     const temp = project.tags.map((tag) => {
-      return tag.hashtag.name;
+      return { name: tag.hashtag.name };
     });
 
-    delete project.tags;
-
-    teamDoc.project_tags = [...teamDoc.project_tags, temp];
+    project.tags = temp;
   }
-  teamDoc.idea_tags = [];
 
   for (const idea of teamDoc.ideas) {
     const temp = idea.tags.map((tag) => {
-      return tag.hashtag.name;
+      return { name: tag.hashtag.name };
     });
 
-    delete idea.tags;
-
-    teamDoc.idea_tags = [...teamDoc.idea_tags, temp];
+    idea.tags = temp;
   }
 
   teamDoc.team_tags = teamDoc.team_tags.map((team_tag) => {
