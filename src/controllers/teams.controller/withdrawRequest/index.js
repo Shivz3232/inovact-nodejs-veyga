@@ -4,7 +4,7 @@ const { deleteRequest } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
 const withdrawRequest = catchAsync(async (req, res) => {
-  const { cognito_sub, request_id } = req.bod;
+  const { cognito_sub, request_id } = req.body;
 
   const variables = {
     request_id,
