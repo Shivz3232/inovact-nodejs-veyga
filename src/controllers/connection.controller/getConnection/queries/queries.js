@@ -6,7 +6,7 @@ const getPrivateChats = `query getPrivateChats($connection_ids: [Int!]) {
 }`;
 
 const getUserConnections = `query getMyConnections($cognito_sub: String) {
-  connections(where: {_or: [{userByUser2: {cognito_sub: {_eq: $cognito_sub}}, status: {_eq: "pending"}}, {_and: [{status: {_eq: "connected"}, _or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}]}]}) {
+  connections(where: {_or: [{userByUser2: {cognito_sub: {_eq: $cognito_sub}}, status: {_eq: "pending"}}, {_and: [{status: {_eq: "connected"}, _or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}]}]} , order_by :{formed_at :desc}) {
     id
     user1
     user2

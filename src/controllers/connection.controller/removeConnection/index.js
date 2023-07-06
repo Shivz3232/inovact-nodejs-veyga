@@ -12,32 +12,13 @@ const removeConnection = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-
   // Fetch connection
   const variables = {
     user2: response1.result.data.user[0].id,
     user1: user_id,
   };
-  console.log(variables);
 
   const response2 = await Hasura(removeConnectionQuery, variables);
-
-  console.log(response2.result.data.delete_connections);
-
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
 
   return res.json({
     success: true,

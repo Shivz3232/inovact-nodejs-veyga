@@ -3,7 +3,6 @@ const { getUserId, getPendingConnection } = require('./queries/queries');
 const { acceptConnection: acceptConnectionQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 const notify = require('../../../utils/notify');
-const logger = require('../../../config/logger');
 
 const acceptConnection = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
@@ -13,14 +12,6 @@ const acceptConnection = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-
   // Fetch connection
   // eslint-disable-next-line prefer-const
   let variables = {
@@ -29,14 +20,6 @@ const acceptConnection = catchAsync(async (req, res) => {
   };
 
   const response2 = await Hasura(getPendingConnection, variables);
-
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
 
   if (response2.result.data.connections.length === 0 || response2.result.data.connections[0].status !== 'pending') {
     return res.json({
@@ -50,14 +33,6 @@ const acceptConnection = catchAsync(async (req, res) => {
   variables.formedAt = new Date().toISOString();
 
   const response3 = await Hasura(acceptConnectionQuery, variables);
-
-  if (!response3.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response3.errors),
-      data: null,
-    });
 
   // Notify the user
   await notify(17, response2.result.data.connections[0].id, response2.result.data.connections[0].user2, [user_id]).catch(

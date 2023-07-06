@@ -24,9 +24,9 @@ const addProject = catchAsync(async (req, res) => {
   let teamCreated;
 
   // Create a default team
+
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
     teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : req.body.title + ' team', req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
-
     projectData.team_id = teamCreated.team_id;
   } else {
     projectData.team_id = null;
@@ -62,7 +62,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert mentions
-  if (req.body.mentions.length) {
+  if (req.body.mentions) {
     const mentions = req.body.mentions.map((user_id) => {
       return {
         user_id,

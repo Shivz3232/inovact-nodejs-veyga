@@ -6,7 +6,6 @@ const { getUserId } = require('./queries/queries');
 const notify = require('../../utils/notify');
 const { query: Hasura } = require('../../utils/hasura');
 const catchAsync = require('../../utils/catchAsync');
-const logger = require('../../config/logger');
 
 const addComment = catchAsync(async (req, res) => {
   const { text, cognito_sub, article_id } = req.body;
@@ -47,14 +46,6 @@ const addComment = catchAsync(async (req, res) => {
       data: null,
     });
   }
-
-  if (!response.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
 
   // Notify the user
   await notify(entity_type_id, article_id, response1.result.data.user[0].id, [notifier_id]).catch(logger.error);
