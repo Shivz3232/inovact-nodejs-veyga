@@ -17,7 +17,7 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
 
   const decryptedMessages = await decryptMessages(response1.result.data.private_messages);
 
-  return res.json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',

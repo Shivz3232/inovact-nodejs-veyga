@@ -21,7 +21,7 @@ const inviteToTeam = catchAsync(async (req, res) => {
   const response = await Hasura(possibleToInviteUser, variables);
 
   if (response.result.data.current_user.length == 0 || !response.result.data.current_user[0].admin)
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You are not the admin of this team',
@@ -29,7 +29,7 @@ const inviteToTeam = catchAsync(async (req, res) => {
     });
 
   if (response.result.data.team_members.length > 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'This user is already in the team',
@@ -37,7 +37,7 @@ const inviteToTeam = catchAsync(async (req, res) => {
     });
 
   if (response.result.data.team_invitations.length > 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'This user is already invited to this team',
@@ -45,7 +45,7 @@ const inviteToTeam = catchAsync(async (req, res) => {
     });
 
   if (response.result.data.team_requests.length > 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'This user has requested to join this team, please accept or reject the request instead of inviting the user',
@@ -55,7 +55,7 @@ const inviteToTeam = catchAsync(async (req, res) => {
   /* Add the user to the team */
   const response1 = await Hasura(addTeamInvite, { team_id, user_id });
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

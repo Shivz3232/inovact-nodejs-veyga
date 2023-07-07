@@ -39,7 +39,7 @@ const getThoughts = catchAsync(async (req, res) => {
   const response1 = await Hasura(queries, variables);
 
   if (response1.result.data.thoughts.length === 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
       errorMessage: 'Thought not found',
@@ -53,8 +53,8 @@ const getThoughts = catchAsync(async (req, res) => {
     return doc;
   });
 
-  if (id) return res.json(cleanedThoughts[0]);
-  return res.json(cleanedThoughts);
+  if (id) return res.status(200).json(cleanedThoughts[0]);
+  return res.status(200).json(cleanedThoughts);
 });
 
 module.exports = getThoughts;

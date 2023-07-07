@@ -95,7 +95,7 @@ const updateanUser = catchAsync(async (req, res) => {
 
   const cleanedUserDoc = cleanUserdoc(response2.result.data.user[0]);
 
-  return res.json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',

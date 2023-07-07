@@ -5,7 +5,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const getAllUsers = catchAsync(async (req, res) => {
   const response = await Hasura(getAllUserQuery, {});
 
-  return res.json(response.result.data.user);
+  return res.status(200).json(response.result.data.user);
 });
 
 module.exports = getAllUsers;

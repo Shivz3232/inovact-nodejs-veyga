@@ -14,7 +14,7 @@ const withdrawRequest = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkCanDeleteRequest, variables);
 
   if (response1.result.data.team_requests.length == 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'InvalidRequest',
       errorMessage: 'Request not found',
@@ -24,7 +24,7 @@ const withdrawRequest = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(deleteRequest, { request_id });
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

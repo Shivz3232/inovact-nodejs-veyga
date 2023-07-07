@@ -25,7 +25,7 @@ const addConnection = catchAsync(async (req, res) => {
 
   // 1. Check if user is already requested
   if (response2.result.data.connections.length)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'ConnectionExistsError',
       errorMessage: 'Cannot connect to a person you are already connected with',
@@ -36,11 +36,9 @@ const addConnection = catchAsync(async (req, res) => {
   const response3 = await Hasura(addConnectionQuery, variables);
 
   // Notify the user
-  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [
-    user_id,
-  ]).catch(logger.debug);
+  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [user_id]).catch(logger.debug);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

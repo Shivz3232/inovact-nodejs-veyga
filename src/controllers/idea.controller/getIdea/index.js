@@ -39,7 +39,7 @@ const getIdeas = catchAsync(async (req, res) => {
   const response1 = await Hasura(queries, variables);
 
   if (response1.result.data.idea.length === 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
       errorMessage: 'Project not found',
@@ -54,10 +54,10 @@ const getIdeas = catchAsync(async (req, res) => {
   });
 
   if (id) {
-    return res.json(cleanedIdeas[0]);
+    return res.status(200).json(cleanedIdeas[0]);
   }
 
-  return res.json(cleanedIdeas);
+  return res.status(200).json(cleanedIdeas);
 });
 
 module.exports = getIdeas;

@@ -38,7 +38,7 @@ const getProject = catchAsync(async (req, res) => {
   const response1 = await Hasura(queries, variables);
 
   if (response1.result.data.project.length === 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
       errorMessage: 'Project not found',
@@ -52,9 +52,9 @@ const getProject = catchAsync(async (req, res) => {
     return doc;
   });
 
-  if (id) return res.json(cleanedPosts[0]);
+  if (id) return res.status(200).json(cleanedPosts[0]);
 
-  return res.json(cleanedPosts);
+  return res.status(200).json(cleanedPosts);
 });
 
 module.exports = getProject;

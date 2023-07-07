@@ -25,7 +25,7 @@ const getConnection = catchAsync(async (req, res) => {
   //   return obj;
   // });
 
-  return res.json(connections);
+  return res.status(200).json(connections);
 });
 
 module.exports = getConnection;

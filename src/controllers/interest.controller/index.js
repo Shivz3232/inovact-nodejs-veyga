@@ -6,7 +6,7 @@ const catchAsync = require('../../utils/catchAsync');
 const getInterest = catchAsync(async (req, res) => {
   const response = await Hasura(getAreaOfInterests);
 
-  return res.json(response.result.data.area_of_interests);
+  return res.status(200).json(response.result.data.area_of_interests);
 });
 
 module.exports = getInterest;

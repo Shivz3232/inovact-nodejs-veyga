@@ -25,7 +25,7 @@ const getUserProject = catchAsync(async (req, res) => {
 
   const cleanedPosts = response1.result.data.project.map(cleanPostDoc);
 
-  return res.json(cleanedPosts);
+  return res.status(200).json(cleanedPosts);
 });
 
 module.exports = getUserProject;

@@ -8,14 +8,6 @@ const getUserMessages = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(getUserConnections, { cognito_sub });
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-
   const user_id = parseInt(response1.result.data.user[0].id, 10);
 
   const variables = {
@@ -24,17 +16,9 @@ const getUserMessages = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getPrivateChats, variables);
 
-  if (!response2.success)
-    return res.json({
-      sucess: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
-
   const connections = sortConnections(response2.result.data.users);
 
-  return res.json(connections);
+  return res.status(200).json(connections);
 });
 
 module.exports = getUserMessages;

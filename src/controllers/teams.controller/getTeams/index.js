@@ -28,7 +28,7 @@ const getTeams = catchAsync(async (req, res) => {
 
   if (team_id) {
     if (response.result.data.team.length == 0) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         errorCode: 'NotFound',
         errorMessage: 'Team not found',
@@ -37,12 +37,12 @@ const getTeams = catchAsync(async (req, res) => {
     } else {
       const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
 
-      return res.json(cleanedTeamDoc);
+      return res.status(200).json(cleanedTeamDoc);
     }
   } else {
     const cleanedTeamDocs = response.result.data.team.map(cleanTeamDocs);
 
-    return res.json(cleanedTeamDocs);
+    return res.status(200).json(cleanedTeamDocs);
   }
 });
 

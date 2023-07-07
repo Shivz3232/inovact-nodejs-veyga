@@ -31,7 +31,7 @@ const fetchUser = catchAsync(async (req, res) => {
   const responseData = response.result.data;
 
   if (!responseData || responseData.user.length === 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'UserNotFound',
       errorMessage: 'No user found with this cognito sub',
@@ -40,7 +40,7 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const cleanedUserDoc = cleanUserdoc(responseData.user[0], responseData.connections[0]);
 
-  return res.json(cleanedUserDoc);
+  return res.status(200).json(cleanedUserDoc);
 });
 
 module.exports = fetchUser;

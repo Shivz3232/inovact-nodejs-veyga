@@ -21,7 +21,7 @@ const getUserTeams = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getUserTeamsQuery, variables);
 
-  return res.json(response2.result);
+  return res.status(200).json(response2.result);
 });
 
 module.exports = getUserTeams;

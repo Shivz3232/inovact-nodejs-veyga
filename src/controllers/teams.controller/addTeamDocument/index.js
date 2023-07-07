@@ -12,7 +12,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
   });
 
   if (response1.result.data.current_user.length == 0 || !response1.result.data.current_user[0].admin)
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You are not an admin of this team',
@@ -37,7 +37,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
     response1.result.data.team_members.map((team_member) => team_member.user_id).filter((id) => id != user_id)
   ).catch(console.log);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: null,
     errorMessage: null,

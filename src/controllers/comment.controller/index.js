@@ -39,7 +39,7 @@ const addComment = catchAsync(async (req, res) => {
     doc = response.result.data.insert_thought_comments.returning[0];
     notifier_id = doc.thought.user_id;
   } else {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'INVALID_ARTICLE_TYPE',
       errorMessage: 'Invalid article type provided',
@@ -51,7 +51,7 @@ const addComment = catchAsync(async (req, res) => {
   await notify(entity_type_id, article_id, response1.result.data.user[0].id, [notifier_id]).catch(logger.error);
 
   if (article_type === 'project') {
-    return res.json({
+    return res.status(201).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -65,7 +65,7 @@ const addComment = catchAsync(async (req, res) => {
     });
   }
   if (article_type === 'idea') {
-    return res.json({
+    return res.status(201).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -78,7 +78,7 @@ const addComment = catchAsync(async (req, res) => {
       },
     });
   }
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

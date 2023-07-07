@@ -20,7 +20,7 @@ const removeConnection = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(removeConnectionQuery, variables);
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',
