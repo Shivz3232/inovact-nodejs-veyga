@@ -37,12 +37,12 @@ const getTeams = catchAsync(async (req, res) => {
     } else {
       const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
 
-      return res.status(200).json(cleanedTeamDoc);
+      return res.json(cleanedTeamDoc);
     }
   } else {
     const cleanedTeamDocs = response.result.data.team.map(cleanTeamDocs);
 
-    return res.status(200).json(cleanedTeamDocs);
+    return res.json(cleanedTeamDocs);
   }
 });
 

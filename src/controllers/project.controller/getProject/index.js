@@ -52,9 +52,9 @@ const getProject = catchAsync(async (req, res) => {
     return doc;
   });
 
-  if (id) return res.status(200).json(cleanedPosts[0]);
+  if (id) return res.json(cleanedPosts[0]);
 
-  return res.status(200).json(cleanedPosts);
+  return res.json(cleanedPosts);
 });
 
 module.exports = getProject;

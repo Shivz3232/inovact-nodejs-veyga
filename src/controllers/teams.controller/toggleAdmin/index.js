@@ -43,7 +43,7 @@ const toggleAdmin = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(makeAdmin, { team_id, user_id });
 
-  return res.status(200).json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

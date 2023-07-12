@@ -37,7 +37,7 @@ const updateTeams = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(updateTeam, variables2);
 
-  return res.status(200).json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

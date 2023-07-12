@@ -21,7 +21,7 @@ const getUserIdea = catchAsync(async (req, res) => {
 
   const cleanedIdeas = response.result.data.idea.map(cleanIdeaDoc);
 
-  res.status(200).json(cleanedIdeas);
+  res.json(cleanedIdeas);
 });
 
 module.exports = getUserIdea;

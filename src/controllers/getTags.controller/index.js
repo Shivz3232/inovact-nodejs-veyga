@@ -14,7 +14,7 @@ const getTag = catchAsync(async (req, res) => {
     response = await Hasura(getTags);
   }
 
-  return res.status(200).json(response.result.data.hashtag);
+  return res.json(response.result.data.hashtag);
 });
 
 module.exports = getTag;

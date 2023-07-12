@@ -16,7 +16,7 @@ const getUsername = catchAsync(async (req, res) => {
     });
   }
 
-  return res.status(200).json({
+  return res.json({
     success: true,
     errorCode: null,
     errorMessage: null,

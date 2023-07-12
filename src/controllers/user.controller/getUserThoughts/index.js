@@ -24,7 +24,7 @@ const getUserThoughts = catchAsync(async (req, res) => {
 
   const cleanedThoughts = response.result.data.thoughts.map(cleanThoughtDoc);
 
-  return res.status(200).json(cleanedThoughts);
+  return res.json(cleanedThoughts);
 });
 
 module.exports = getUserThoughts;

@@ -4,7 +4,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
 const markAsRead = catchAsync(async (req, res) => {
-  res.status(200).json({
+  res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

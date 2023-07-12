@@ -20,7 +20,7 @@ const updateIdeas = catchAsync(async (req, res) => {
 
   const response = await Hasura(updateIdea_query, variables);
 
-  return res.status(200).json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

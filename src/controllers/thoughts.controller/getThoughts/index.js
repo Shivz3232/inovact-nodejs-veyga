@@ -53,8 +53,8 @@ const getThoughts = catchAsync(async (req, res) => {
     return doc;
   });
 
-  if (id) return res.status(200).json(cleanedThoughts[0]);
-  return res.status(200).json(cleanedThoughts);
+  if (id) return res.json(cleanedThoughts[0]);
+  return res.json(cleanedThoughts);
 });
 
 module.exports = getThoughts;

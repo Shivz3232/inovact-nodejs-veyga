@@ -132,7 +132,7 @@ const joinTeam = catchAsync(async (req, res) => {
     response.result.data.notifier_ids.map((x) => x.user_id)
   ).catch(console.log);
 
-  return res.status(200).json({
+  return res.json({
     success: true,
     errorCode: '',
     errorMessage: '',

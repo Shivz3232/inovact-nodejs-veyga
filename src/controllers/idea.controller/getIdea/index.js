@@ -54,10 +54,10 @@ const getIdeas = catchAsync(async (req, res) => {
   });
 
   if (id) {
-    return res.status(200).json(cleanedIdeas[0]);
+    return res.json(cleanedIdeas[0]);
   }
 
-  return res.status(200).json(cleanedIdeas);
+  return res.json(cleanedIdeas);
 });
 
 module.exports = getIdeas;

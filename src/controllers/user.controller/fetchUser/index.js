@@ -40,7 +40,7 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const cleanedUserDoc = cleanUserdoc(responseData.user[0], responseData.connections[0]);
 
-  return res.status(200).json(cleanedUserDoc);
+  return res.json(cleanedUserDoc);
 });
 
 module.exports = fetchUser;

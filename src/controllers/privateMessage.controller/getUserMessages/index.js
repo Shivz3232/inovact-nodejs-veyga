@@ -18,7 +18,7 @@ const getUserMessages = catchAsync(async (req, res) => {
 
   const connections = sortConnections(response2.result.data.users);
 
-  return res.status(200).json(connections);
+  return res.json(connections);
 });
 
 module.exports = getUserMessages;

@@ -14,7 +14,7 @@ const get_Skills = catchAsync(async (req, res) => {
     response = await Hasura(getSkills);
   }
 
-  return res.status(200).json(response.result.data.skills);
+  return res.json(response.result.data.skills);
 });
 
 module.exports = get_Skills;

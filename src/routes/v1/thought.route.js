@@ -1,9 +1,10 @@
 const express = require('express');
 const thoughtsController = require('../../controllers/thoughts.controller');
+const shareUrl = require('../../middlewares/shareUrl');
 
 const router = express.Router();
 
-router.route('/').get(thoughtsController.getThoughts);
+router.get('/', shareUrl, thoughtsController.getThoughts);
 router.post('/', thoughtsController.addThought);
 router.put('/', thoughtsController.updateThought);
 router.delete('/', thoughtsController.deleteThought);

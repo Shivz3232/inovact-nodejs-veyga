@@ -27,7 +27,7 @@ const getNetworkStats = catchAsync(async (req, res) => {
     percentageGrowth,
   };
 
-  return res.status(200).json({
+  return res.json({
     success: true,
     errorCode: null,
     errorMessage: null,
