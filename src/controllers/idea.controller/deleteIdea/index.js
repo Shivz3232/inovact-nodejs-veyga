@@ -10,7 +10,7 @@ const deleteIdea = catchAsync(async (req, res) => {
   };
   const response = await Hasura(delete_idea, variables);
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

@@ -26,14 +26,6 @@ const createTeam = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(addTeam, teamData);
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to save team to db.',
-      data: null,
-    });
-
   const team = response1.result.data.insert_team.returning[0];
 
   // Add current user as a member with admin: true
@@ -120,7 +112,7 @@ const createTeam = catchAsync(async (req, res) => {
     const response4 = await Hasura(addTeamTags, tagsData);
   }
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

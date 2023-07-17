@@ -19,8 +19,7 @@ const getNetworkStats = catchAsync(async (req, res) => {
   const yesterdaysConnections = response.result.data.connections_till_yesterday_morning.aggregate.count;
   const todaysConnections = response.result.data.connections_till_today_morning.aggregate.count;
 
-  const percentageGrowth =
-    yesterdaysConnections == 0 ? 100 : ((todaysConnections - yesterdaysConnections) / yesterdaysConnections) * 100;
+  const percentageGrowth = yesterdaysConnections == 0 ? 100 : ((todaysConnections - yesterdaysConnections) / yesterdaysConnections) * 100;
 
   const statistics = {
     totalConnections: response.result.data.connections_count.aggregate.count,

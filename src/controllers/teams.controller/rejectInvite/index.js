@@ -13,14 +13,14 @@ const rejectInvite = catchAsync(async (req, res) => {
   const response = await Hasura(rejectInviteQuery, variables);
 
   if (response.result.data.delete_team_invitations.affected_rows === 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
       errorMessage: 'Invitation not found',
       data: null,
     });
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

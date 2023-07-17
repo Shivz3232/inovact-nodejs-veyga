@@ -28,7 +28,7 @@ const getTeams = catchAsync(async (req, res) => {
 
   if (team_id) {
     if (response.result.data.team.length == 0) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         errorCode: 'NotFound',
         errorMessage: 'Team not found',

@@ -8,7 +8,7 @@ const getUsername = catchAsync(async (req, res) => {
   const response = await Hasura(getUsernameFromEmail, { email });
 
   if (response.result.data.user.length == 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
       errorMessage: 'User not found',
@@ -16,7 +16,7 @@ const getUsername = catchAsync(async (req, res) => {
     });
   }
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: null,
     errorMessage: null,

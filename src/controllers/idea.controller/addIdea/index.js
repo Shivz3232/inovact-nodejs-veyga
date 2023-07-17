@@ -28,13 +28,7 @@ const addIdeas = catchAsync(async (req, res) => {
 
   // Create a default team
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
-
-    teamCreated = await createDefaultTeam(
-      response1.result.data.user[0].id,
-      req.body.team_name ? req.body.team_name : `${req.body.title} team`,
-      req.body.looking_for_mentors,
-      req.body.looking_for_members
-    );
+    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members);
 
     ideaData.team_id = teamCreated.team_id;
   } else {
@@ -92,7 +86,7 @@ const addIdeas = catchAsync(async (req, res) => {
     const response3 = await Hasura(addTags, tagsData);
   }
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

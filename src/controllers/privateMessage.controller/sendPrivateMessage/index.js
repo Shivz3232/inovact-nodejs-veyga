@@ -17,7 +17,7 @@ const sendPrivateMessage = catchAsync(async (req, res) => {
   const response1 = await Hasura(getConnectionDetails, variables);
 
   if (response1.result.data.connections.length === 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'UserNotConnected',
       errorMessage: 'User is not connected to the recipient',
@@ -46,7 +46,7 @@ const sendPrivateMessage = catchAsync(async (req, res) => {
   const notificationMessage = `${actorName} sent you a message`;
   notify(notificationMessage, [String(user_id)]);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

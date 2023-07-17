@@ -14,7 +14,7 @@ const updateTeams = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkIfMember, variables);
 
   if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'User is not an admin of the team',
