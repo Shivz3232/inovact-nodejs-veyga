@@ -3,12 +3,23 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { add_TeamDocument } = require('./queries/mutations');
 const { checkIfAdmin } = require('./queries/queries');
 const notify = require('../../../utils/notify');
+const { validationResult } = require('express-validator');
 
 const addTeamDocument = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { cognito_sub, team_id, name, url, mime_type } = req.body;
+
   // Check if current user is team admin
   const response1 = await Hasura(checkIfAdmin, {
-    cognito_sub: req.body.cognito_sub,
-    team_id: req.body.team_id,
+    cognito_sub,
+    team_id,
   });
 
   if (response1.result.data.current_user.length == 0 || !response1.result.data.current_user[0].admin)
@@ -21,10 +32,10 @@ const addTeamDocument = catchAsync(async (req, res) => {
 
   // Upload the document info to Hasura
   const response2 = await Hasura(add_TeamDocument, {
-    team_id: req.body.team_id,
-    name: req.body.name,
-    url: req.body.url,
-    mime_type: req.body.mime_type,
+    team_id,
+    name,
+    url,
+    mime_type,
   });
 
   const user_id = response1.result.data.current_user[0].user_id;

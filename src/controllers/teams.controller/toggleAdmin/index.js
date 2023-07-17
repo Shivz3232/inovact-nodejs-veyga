@@ -2,8 +2,17 @@ const catchAsync = require('../../../utils/catchAsync');
 const { makeAdmin } = require('./queries/mutations');
 const { checkIfCanMakeAdmin } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
+const { validationResult } = require('express-validator');
 
 const toggleAdmin = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { user_id, team_id, cognito_sub } = req.body;
 
   const variables = {

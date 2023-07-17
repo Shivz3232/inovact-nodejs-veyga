@@ -3,8 +3,17 @@ const { deleteUser: deleteUserQuery, addUserCause } = require('./queries/mutatio
 const { getUserId } = require('./queries/queries');
 const { deleteUserFunc } = require('../../../utils/deleteFirebaseUser');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const deleteUser = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub, cause } = req.body;
 
   const response1 = await Hasura(getUserId, {

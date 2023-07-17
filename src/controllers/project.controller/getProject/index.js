@@ -2,10 +2,19 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getProjects, getProject: getProjectQuery, getConnections } = require('./queries/queries');
 const cleanPostDoc = require('../../../utils/cleanPostDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getProject = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub } = req.body;
-  const id = req.query.id;
+  const { id } = req.query;
 
   const response = await Hasura(getConnections, { cognito_sub });
 

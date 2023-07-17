@@ -1,10 +1,10 @@
 const express = require('express');
 const thoughtsController = require('../../controllers/thoughts.controller');
-const { addThoughtSanitizer, deleteThoughtSanitizer, updateThoughtSanitizer, likeThoughtSanitizer } = require('../../controllers/thoughts.controller/sanitizer');
+const { addThoughtSanitizer, deleteThoughtSanitizer, updateThoughtSanitizer, likeThoughtSanitizer, getThoughtsSanitizer } = require('../../controllers/thoughts.controller/sanitizer');
 
 const router = express.Router();
 
-router.route('/').get(thoughtsController.getThoughts);
+router.get('/', getThoughtsSanitizer, thoughtsController.getThoughts);
 router.post('/', addThoughtSanitizer, thoughtsController.addThought);
 router.put('/', updateThoughtSanitizer, thoughtsController.updateThought);
 router.delete('/', deleteThoughtSanitizer, thoughtsController.deleteThought);

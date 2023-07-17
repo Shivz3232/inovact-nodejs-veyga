@@ -1,16 +1,16 @@
-const router = require('express').Router()
+const router = require('express').Router();
 
-const projectController = require('../../controllers/project.controller')
+const projectController = require('../../controllers/project.controller');
+const { addProjectSanitizer, deleteProjectSanitizer, getProjectSanitizer, updateProjectSanitizer, likeProjectSanitizer } = require('../../controllers/project.controller/sanitizer');
 
+router.post('/', addProjectSanitizer, projectController.addProject);
 
-router.post('/' , projectController.addProject)
+router.get('/', getProjectSanitizer, projectController.getProject);
 
-router.get('/' , projectController.getProject)
+router.put('/', updateProjectSanitizer, projectController.updateProject);
 
-router.put('/' , projectController.updateProject)
+router.delete('/', deleteProjectSanitizer, projectController.deleteProject);
 
-router.delete('/' , projectController.deleteProject)
+router.post('/like', likeProjectSanitizer, projectController.likeProject);
 
-router.post('/like' , projectController.likeProject)
-
-module.exports = router
+module.exports = router;

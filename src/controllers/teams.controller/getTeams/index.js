@@ -4,7 +4,7 @@ const cleanTeamDocs = require('../../../utils/cleanTeamDocs');
 const catchAsync = require('../../../utils/catchAsync');
 
 const getTeams = catchAsync(async (req, res) => {
-  const team_id = req.query.team_id;
+  const { team_id } = req.query;
 
   let query;
   let variables = {};

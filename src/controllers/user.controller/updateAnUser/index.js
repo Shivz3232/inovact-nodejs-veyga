@@ -3,9 +3,18 @@ const { getUser } = require('./queries/queries');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { query: Hasura, checkUniquenessOfPhoneNumber } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const updateanUser = catchAsync(async (req, res) => {
-  const cognito_sub = req.body.cognito_sub;
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { cognito_sub } = req.body;
 
   let variables = {
     cognito_sub: {

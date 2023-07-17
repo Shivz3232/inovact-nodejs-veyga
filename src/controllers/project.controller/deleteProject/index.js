@@ -1,9 +1,18 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { deletequery } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const deleteProject = catchAsync(async (req, res) => {
-  const id = req.body.id;
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { id } = req.body;
 
   const variables = {
     id,
