@@ -2,9 +2,18 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getNetworkStatistics } = require('./queries/queries');
 const timeStamps = require('../../../utils/timeStamps');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getNetworkStats = catchAsync(async (req, res) => {
-  const cognito_sub = req.body.cognito_sub;
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { cognito_sub } = req.body;
 
   const variables = {
     cognito_sub,
@@ -19,8 +28,7 @@ const getNetworkStats = catchAsync(async (req, res) => {
   const yesterdaysConnections = response.result.data.connections_till_yesterday_morning.aggregate.count;
   const todaysConnections = response.result.data.connections_till_today_morning.aggregate.count;
 
-  const percentageGrowth =
-    yesterdaysConnections == 0 ? 100 : ((todaysConnections - yesterdaysConnections) / yesterdaysConnections) * 100;
+  const percentageGrowth = yesterdaysConnections == 0 ? 100 : ((todaysConnections - yesterdaysConnections) / yesterdaysConnections) * 100;
 
   const statistics = {
     totalConnections: response.result.data.connections_count.aggregate.count,

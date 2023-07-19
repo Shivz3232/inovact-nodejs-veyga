@@ -113,7 +113,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert Documents
-  if (documents.length) {
+  if (documents?.length) {
     const documents = req.body.documents.map((document) => {
       return res.json({
         name: document.name,

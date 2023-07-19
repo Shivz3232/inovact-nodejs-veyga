@@ -7,9 +7,17 @@ const { addIdea, addTags, addSkillsRequired, addRolesRequired } = require('./que
 const { getUser } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const addIdeas = catchAsync(async (req, res) => {
-  const { cognito_sub } = req.body;
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+  const { cognito_sub, description, title, status, link, looking_for_members, looking_for_mentors, roles_required, idea_tags } = req.body;
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -17,24 +25,18 @@ const addIdeas = catchAsync(async (req, res) => {
   const allowed_statuses = ['ideation', 'mvp/prototype', 'traction'];
 
   const ideaData = {
-    description: req.body.description,
-    title: req.body.title,
+    description,
+    title,
     user_id: response1.result.data.user[0].id,
-    status: allowed_statuses.indexOf(req.body.status) > -1 ? req.body.status : 'ideation',
-    link: req.body.link ? req.body.link : '',
+    status: allowed_statuses.indexOf(status) > -1 ? req.body.status : 'ideation',
+    link,
   };
 
   let teamCreated;
 
   // Create a default team
-  if (req.body.looking_for_members || req.body.looking_for_mentors) {
-
-    teamCreated = await createDefaultTeam(
-      response1.result.data.user[0].id,
-      req.body.team_name ? req.body.team_name : `${req.body.title} team`,
-      req.body.looking_for_mentors,
-      req.body.looking_for_members
-    );
+  if (looking_for_members || looking_for_mentors) {
+    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members);
 
     ideaData.team_id = teamCreated.team_id;
   } else {
@@ -43,8 +45,8 @@ const addIdeas = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(addIdea, ideaData);
 
-  role_if: if (ideaData.team_id && req.body.roles_required.length > 0) {
-    const roles_data = req.body.roles_required.map((ele) => {
+  role_if: if (ideaData.team_id && roles_required.length > 0) {
+    const roles_data = roles_required.map((ele) => {
       return {
         team_id: ideaData.team_id,
         role_name: ele.role_name,
@@ -55,8 +57,8 @@ const addIdeas = catchAsync(async (req, res) => {
 
     const skills_data = [];
 
-    for (const i in req.body.roles_required) {
-      for (const skill of req.body.roles_required[i].skills_required) {
+    for (const i in roles_required) {
+      for (const skill of roles_required[i].skills_required) {
         skills_data.push({
           role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
           skill_name: skill,
@@ -68,8 +70,8 @@ const addIdeas = catchAsync(async (req, res) => {
   }
 
   // Insert tags
-  if (req.body.idea_tags.length) {
-    const tags = req.body.idea_tags.map((tag_name) => {
+  if (idea_tags.length) {
+    const tags = idea_tags.map((tag_name) => {
       return {
         hashtag: {
           data: {

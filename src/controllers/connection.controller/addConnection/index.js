@@ -3,10 +3,19 @@ const { getUserId, checkValidRequest } = require('./queries/queries');
 const { addConnection: addConnectionQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 const notify = require('../../../utils/notify');
+const { validationResult } = require('express-validator');
 
 const addConnection = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub } = req.body;
-  const user_id = req.query.user_id;
+  const { user_id } = req.query;
 
   // Find user id
   const response1 = await Hasura(getUserId, {
@@ -36,9 +45,7 @@ const addConnection = catchAsync(async (req, res) => {
   const response3 = await Hasura(addConnectionQuery, variables);
 
   // Notify the user
-  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [
-    user_id,
-  ]).catch(logger.debug);
+  await notify(16, response3.result.data.insert_connections.returning[0].id, response1.result.data.user[0].id, [user_id]).catch(logger.debug);
 
   return res.json({
     success: true,
