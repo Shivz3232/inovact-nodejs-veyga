@@ -1,10 +1,9 @@
 const express = require('express');
 const ideaController = require('../../controllers/idea.controller');
-const shareUrl = require('../../middlewares/shareUrl');
 
 const router = express.Router();
 
-router.get('/', shareUrl, ideaController.getIdeas);
+router.get('/', ideaController.getIdeas);
 router.post('/', ideaController.addIdea);
 router.put('/', ideaController.updateIdea);
 router.delete('/', ideaController.deleteIdea);
