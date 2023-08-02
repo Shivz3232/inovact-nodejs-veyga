@@ -30,7 +30,7 @@ const rejectConnection = catchAsync(async (req, res) => {
 
   const response3 = await Hasura(deleteConnection, variables);
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

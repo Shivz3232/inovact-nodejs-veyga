@@ -26,7 +26,7 @@ const addThoughts = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(addThought, thoughtData);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

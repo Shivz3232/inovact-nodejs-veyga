@@ -6,7 +6,7 @@ const catchAsync = (fn) => (req, res, next) => {
     if (err.name === 'QueryError') {
       logger.error(JSON.stringify(err));
 
-      return res.json({
+      return res.status(400).json({
         success: false,
         errorCode: err.name,
         errorMessage: JSON.stringify(err.message[0]),
@@ -15,7 +15,7 @@ const catchAsync = (fn) => (req, res, next) => {
     } else if (err.name === 'RequestError') {
       logger.error(JSON.stringify(err));
 
-      return res.json({
+      return res.status(400).json({
         success: false,
         errorCode: err.name,
         errorMessage: err.message,

@@ -24,7 +24,7 @@ const toggleAdmin = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkIfCanMakeAdmin, variables);
 
   if (response1.result.data.members.length == 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'Given user is not a member of this team.',
@@ -33,7 +33,7 @@ const toggleAdmin = catchAsync(async (req, res) => {
   }
 
   if (response1.result.data.members[0].admin) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'Given user is already an admin of this team.',
@@ -42,7 +42,7 @@ const toggleAdmin = catchAsync(async (req, res) => {
   }
 
   if (response1.result.data.admins.length == 0) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You are not an admin of this team.',

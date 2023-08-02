@@ -35,7 +35,7 @@ const likeProject = catchAsync(async (req, res) => {
     // Notify the user
     await notify(1, project_id, response1.result.data.user[0].id, [response.result.data.project[0].user_id]).catch(console.log);
 
-    return res.json({
+    return res.status(201).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -44,7 +44,7 @@ const likeProject = catchAsync(async (req, res) => {
   } else {
     const response3 = await Hasura(delete_like, variable);
 
-    return res.json({
+    return res.status(204).json({
       success: true,
       errorCode: '',
       errorMessage: '',

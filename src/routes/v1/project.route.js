@@ -1,5 +1,4 @@
 const router = require('express').Router();
-
 const projectController = require('../../controllers/project.controller');
 const { addProjectSanitizer, deleteProjectSanitizer, getProjectSanitizer, updateProjectSanitizer, likeProjectSanitizer } = require('../../controllers/project.controller/sanitizer');
 

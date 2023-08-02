@@ -26,7 +26,7 @@ const updateThought = catchAsync(async (req, res) => {
 
   //check current user
   if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'UnauthorizedUserException',
       errorMessage: 'Only the owner the thought can update it.',
@@ -42,7 +42,7 @@ const updateThought = catchAsync(async (req, res) => {
 
   const response = await Hasura(updateThought_query, variables);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

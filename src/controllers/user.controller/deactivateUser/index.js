@@ -41,7 +41,7 @@ const deactivateUser = catchAsync(async (req, res) => {
     const response5 = await deleteSchedule(cognito_sub);
   }
 
-  return res.json({
+  return res.status(202).json({
     success: true,
     errorCode: '',
     errorMessage: '',

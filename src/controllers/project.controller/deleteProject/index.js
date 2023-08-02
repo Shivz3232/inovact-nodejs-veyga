@@ -19,7 +19,7 @@ const deleteProject = catchAsync(async (req, res) => {
   };
   const response = await Hasura(deletequery, variables);
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

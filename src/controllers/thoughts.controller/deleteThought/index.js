@@ -20,14 +20,6 @@ const deleteThought = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
-    });
-
   const id = req.body.thought_id;
   const variable = {
     id,
@@ -37,7 +29,7 @@ const deleteThought = catchAsync(async (req, res) => {
 
   //check current user
   if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'UnauthorizedUserException',
       errorMessage: 'Only the owner the thought can delete it.',
@@ -50,7 +42,7 @@ const deleteThought = catchAsync(async (req, res) => {
   };
   const response = await Hasura(delete_thought, variables);
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

@@ -31,7 +31,7 @@ const acceptConnection = catchAsync(async (req, res) => {
   const response2 = await Hasura(getPendingConnection, variables);
 
   if (response2.result.data.connections.length === 0 || response2.result.data.connections[0].status !== 'pending') {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'ConnectionNotFoundError',
       errorMessage: 'Connection not found',

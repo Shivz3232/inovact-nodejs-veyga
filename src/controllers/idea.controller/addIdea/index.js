@@ -94,7 +94,7 @@ const addIdeas = catchAsync(async (req, res) => {
     const response3 = await Hasura(addTags, tagsData);
   }
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

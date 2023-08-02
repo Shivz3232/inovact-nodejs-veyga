@@ -22,7 +22,7 @@ const deleteTeam = catchAsync(async (req, res) => {
 
   // If not
   if (response2.result.data.team_members.length == 0 || !response2.result.data.team_members[0].admin) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'UnAuthorized',
       erroMessage: 'Only Admin can delete the team',
@@ -33,7 +33,7 @@ const deleteTeam = catchAsync(async (req, res) => {
   // If yes
   const response3 = await Hasura(deleteTeamQuery, { team_id });
 
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     erroMessage: 'Team deleted successfully',

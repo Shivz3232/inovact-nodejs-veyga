@@ -25,7 +25,7 @@ const joinTeam = catchAsync(async (req, res) => {
   const response = await Hasura(possibleToJoinTeam, variables);
 
   if (response.result.data.team.length == 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFoundError',
       errorMessage: 'Team not found',
@@ -33,7 +33,7 @@ const joinTeam = catchAsync(async (req, res) => {
     });
 
   if (response.result.data.team_members.length > 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You are already a member of this team.',
@@ -41,7 +41,7 @@ const joinTeam = catchAsync(async (req, res) => {
     });
 
   if (response.result.data.team_requests.length > 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You have already requested to join this team for this role.',
@@ -49,7 +49,7 @@ const joinTeam = catchAsync(async (req, res) => {
     });
 
   if (response.result.data.team_invitations.length > 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You have received an invitation from this team. Please act on that',
@@ -63,7 +63,7 @@ const joinTeam = catchAsync(async (req, res) => {
 
   if (response.result.data.user[0].role == 'student') {
     if (!response.result.data.team[0].looking_for_members)
-      return res.json({
+      return res.status(400).json({
         success: false,
         errorCode: 'Forbidden',
         errorMessage: 'This team is not looking for members',
@@ -80,7 +80,7 @@ const joinTeam = catchAsync(async (req, res) => {
   } else if (response.result.data.user[0].role == 'entrepreneur') {
     if (response.result.data.team[0].creator.role == 'student') {
       if (!response.result.data.team[0].looking_for_mentors)
-        return res.json({
+        return res.status(400).json({
           success: false,
           errorCode: 'Forbidden',
           errorMessage: 'This team is not looking for mentors',
@@ -95,7 +95,7 @@ const joinTeam = catchAsync(async (req, res) => {
       };
     } else {
       if (!response.result.data.team[0].looking_for_members) {
-        return res.json({
+        return res.status(400).json({
           success: false,
           errorCode: 'Forbidden',
           errorMessage: 'This team is not looking for members',
@@ -113,7 +113,7 @@ const joinTeam = catchAsync(async (req, res) => {
     }
   } else {
     if (!response.result.data.team[0].looking_for_mentors)
-      return res.json({
+      return res.status(400).json({
         success: false,
         errorCode: 'Forbidden',
         errorMessage: 'This team is not looking for mentors',

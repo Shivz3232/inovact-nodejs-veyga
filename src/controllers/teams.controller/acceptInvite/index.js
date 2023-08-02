@@ -10,7 +10,7 @@ const acceptInvitation = catchAsync(async (req, res) => {
 
   // Check if the user is the one invited
   if (response2.result.data.team_invitations[0].user.cognito_sub != cognito_sub)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Unauthorized',
       errorMessage: 'You are not the one invited',
@@ -25,7 +25,7 @@ const acceptInvitation = catchAsync(async (req, res) => {
 
   const response3 = await Hasura(acceptInvite, variables);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

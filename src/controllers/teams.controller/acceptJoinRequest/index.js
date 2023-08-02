@@ -24,7 +24,7 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkIfPossibleToAccept, variables);
 
   if (response1.result.data.team_requests.length == 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'InvalidRequest',
       errorMessage: 'Request not found',
@@ -32,7 +32,7 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
     });
 
   if (response1.result.data.team_members.length == 0 || !response1.result.data.team_members[0].admin)
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You are not an admin of this team',
@@ -66,7 +66,7 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
   // Notify the user
   await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [response1.result.data.team_requests[0].user_id]).catch(console.log);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

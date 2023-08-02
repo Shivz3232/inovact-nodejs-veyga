@@ -25,12 +25,6 @@ const likeThought = catchAsync(async (req, res) => {
     thought_id,
   };
   const response = await Hasura(getThoughtId, variable);
-  if (!response.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find thought',
-    });
 
   if (response.result.data.thought_likes.length == 0) {
     const response2 = await Hasura(add_likeThought, variable);
@@ -38,7 +32,7 @@ const likeThought = catchAsync(async (req, res) => {
     // Notify the user
     await notify(11, thought_id, response1.result.data.user[0].id, [response.result.data.thoughts[0].user_id]).catch(console.log);
 
-    return res.json({
+    return res.status(201).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -47,7 +41,7 @@ const likeThought = catchAsync(async (req, res) => {
   } else {
     const response3 = await Hasura(delete_like, variable);
 
-    return res.json({
+    return res.status(204).json({
       success: true,
       errorCode: '',
       errorMessage: '',
