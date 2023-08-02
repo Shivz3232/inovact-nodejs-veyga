@@ -3,8 +3,17 @@ const { checkIfPossibleToAccept, getRoleRequirement } = require('./queries/queri
 const { acceptJoinRequest1, acceptJoinRequest2 } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const acceptJoinRequest = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { request_id, cognito_sub } = req.body;
 
   const variables = {

@@ -2,8 +2,17 @@ const catchAsync = require('../../../utils/catchAsync');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getThought, getThoughts: getThoughtsQuery, getConnections } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const getThoughts = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub } = req.body;
   const id = req.query.id;
 

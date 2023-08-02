@@ -1,14 +1,14 @@
 const express = require('express');
 const thoughtsController = require('../../controllers/thoughts.controller');
-const shareUrl = require('../../middlewares/shareUrl');
+const { addThoughtSanitizer, deleteThoughtSanitizer, updateThoughtSanitizer, likeThoughtSanitizer, getThoughtsSanitizer } = require('../../controllers/thoughts.controller/sanitizer');
 
 const router = express.Router();
 
-router.get('/', shareUrl, thoughtsController.getThoughts);
-router.post('/', thoughtsController.addThought);
-router.put('/', thoughtsController.updateThought);
-router.delete('/', thoughtsController.deleteThought);
-router.post('/like', thoughtsController.likeThought);
+router.get('/', getThoughtsSanitizer, thoughtsController.getThoughts);
+router.post('/', addThoughtSanitizer, thoughtsController.addThought);
+router.put('/', updateThoughtSanitizer, thoughtsController.updateThought);
+router.delete('/', deleteThoughtSanitizer, thoughtsController.deleteThought);
+router.post('/like', likeThoughtSanitizer, thoughtsController.likeThought);
 
 module.exports = router;
 

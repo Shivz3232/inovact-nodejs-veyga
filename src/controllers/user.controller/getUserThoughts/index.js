@@ -2,9 +2,18 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getUserThoughtsWithCognitoSub, getUserThoughts: getUserThoughtsQuery } = require('./queries/queries');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getUserThoughts = catchAsync(async (req, res) => {
-  const user_id = req.query.user_id;
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { user_id } = req.query;
   const { cognito_sub } = req.body;
 
   let variables = {

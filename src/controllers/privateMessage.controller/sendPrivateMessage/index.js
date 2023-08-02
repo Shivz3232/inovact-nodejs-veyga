@@ -4,8 +4,17 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { KMSEncrypter: encrypt } = require('../../../utils/encrypt');
 const { notify } = require('../../../utils/oneSignal');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const sendPrivateMessage = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub, user_id, message } = req.body;
 
   // Check if logged in user is connected to the recipient
