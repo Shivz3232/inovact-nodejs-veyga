@@ -2,8 +2,17 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { checkIfCanDelete } = require('./queries/queries.js');
 const { deleteTeamMember } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const deleteTeamMembers = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { user_id, cognito_sub, team_id } = req.body;
 
   const variables = {

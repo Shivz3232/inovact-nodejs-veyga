@@ -3,29 +3,38 @@ const { getUser, getProject } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
+const { validationResult } = require('express-validator');
 
 const addProject = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { cognito_sub, description, title, status, completed, link, looking_for_members, looking_for_mentors, roles_required, mentions, project_tags, documents } = req.body;
   // Find user id
-  const cognito_sub = req.body.cognito_sub;
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
 
   // Insert project
   const projectData = {
-    description: req.body.description,
-    title: req.body.title,
+    description: description,
+    title: title,
     user_id: response1.result.data.user[0].id,
-    status: req.body.status,
-    completed: req.body.completed,
-    link: req.body.link,
+    status: status,
+    completed: completed,
+    link: link,
   };
 
   let teamCreated;
 
   // Create a default team
 
-  if (req.body.looking_for_members || req.body.looking_for_mentors) {
+  if (looking_for_members || looking_for_mentors) {
     teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : req.body.title + ' team', req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
     projectData.team_id = teamCreated.team_id;
   } else {
@@ -35,8 +44,8 @@ const addProject = catchAsync(async (req, res) => {
   const response2 = await Hasura(addProjectQuery, projectData);
 
   // Insert roles required and skills required
-  role_if: if (req.body.roles_required.length > 0 && projectData.team_id) {
-    const roles_data = req.body.roles_required.map((ele) => {
+  role_if: if (roles_required.length > 0 && projectData.team_id) {
+    const roles_data = roles_required.map((ele) => {
       return {
         team_id: projectData.team_id,
         role_name: ele.role_name,
@@ -49,8 +58,8 @@ const addProject = catchAsync(async (req, res) => {
 
     let skills_data = [];
 
-    for (const i in req.body.roles_required) {
-      for (const skill of req.body.roles_required[i].skills_required) {
+    for (const i in roles_required) {
+      for (const skill of roles_required[i].skills_required) {
         skills_data.push({
           role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
           skill_name: skill,
@@ -62,7 +71,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert mentions
-  if (req.body.mentions) {
+  if (mentions) {
     const mentions = req.body.mentions.map((user_id) => {
       return {
         user_id,
@@ -79,7 +88,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert tags
-  if (req.body.project_tags.length) {
+  if (project_tags.length) {
     const tags = req.body.project_tags.map((tag_name) => {
       return {
         hashtag: {
@@ -104,7 +113,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert Documents
-  if (req.body.documents.length) {
+  if (documents?.length) {
     const documents = req.body.documents.map((document) => {
       return res.json({
         name: document.name,

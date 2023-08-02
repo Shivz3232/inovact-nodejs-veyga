@@ -3,8 +3,17 @@ const { getUserId, getideaId } = require('./queries/queries');
 const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const likeIdea = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   // Find user id
   const { cognito_sub } = req.body;
   const { idea_id } = req.query;

@@ -2,8 +2,17 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getNotifications } = require('./queries/queries');
 const cleanNotificationDoc = require('../../../utils/cleanNotificationDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getUserNotification = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub } = req.body;
 
   const response = await Hasura(getNotifications, { cognito_sub });

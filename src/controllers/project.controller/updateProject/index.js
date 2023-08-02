@@ -1,11 +1,21 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updatePost_query } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const updateProject = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+  const { id } = req.body;
+
   let variables = {
     id: {
-      _eq: req.body.id,
+      _eq: id,
     },
     changes: {},
   };
