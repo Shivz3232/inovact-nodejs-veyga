@@ -37,7 +37,7 @@ const getUserThoughts = `query getUserThoughts($user_id: Int, $cognito_sub: Stri
 }`;
 
 const getUserThoughtsWithCognitoSub = `query getUserThoughts($cognito_sub: String) {
-  thoughts(where: { user: { cognito_sub: { _eq: $cognito_sub }}}) {
+  thoughts(where: { user: { cognito_sub: { _eq: $cognito_sub }}} , order_by: {created_at: desc}) {
     id
       thought
       user_id
