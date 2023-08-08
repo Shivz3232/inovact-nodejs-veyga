@@ -1,23 +1,24 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId, getPendingConnection, deleteConnection } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const rejectConnection = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub } = req.body;
-  const user_id = req.query.user_id;
+  const { user_id } = req.query;
 
   // Find user id
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
-
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
 
   // Fetch connection
   const variables = {
@@ -27,25 +28,9 @@ const rejectConnection = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getPendingConnection, variables);
 
-  if (!response2.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
-
   const response3 = await Hasura(deleteConnection, variables);
 
-  if (!response3.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response3.errors),
-      data: null,
-    });
-
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

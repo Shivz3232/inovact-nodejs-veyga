@@ -5,8 +5,8 @@ function cleanNotificationDoc(notificationDoc) {
     entity_id: notificationDoc.notification_object.entity_id,
   };
 
-  res['actor'] =
-    notificationDoc.notification_object.notification_changes[0].user;
+  console.log(notificationDoc);
+  res['actor'] = notificationDoc.notification_object.notification_changes[0]?.user;
 
   return res;
 }

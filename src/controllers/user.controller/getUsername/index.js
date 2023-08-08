@@ -1,23 +1,23 @@
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUsernameFromEmail } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getUsername = catchAsync(async (req, res) => {
-  const email = req.query.email;
-
-  const response = await Hasura(getUsernameFromEmail, { email });
-
-  if (!response.success) {
-    return res.json({
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
       success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
+      ...sanitizerErrors,
     });
   }
 
+  const { email } = req.query;
+
+  const response = await Hasura(getUsernameFromEmail, { email });
+
   if (response.result.data.user.length == 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
       errorMessage: 'User not found',
@@ -25,7 +25,7 @@ const getUsername = catchAsync(async (req, res) => {
     });
   }
 
-  res.json({
+  return res.json({
     success: true,
     errorCode: null,
     errorMessage: null,

@@ -1,11 +1,21 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updateIdea_query } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const updateIdeas = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  const { id } = req.body;
   let variables = {
     id: {
-      _eq: req.body.id,
+      _eq: id,
     },
     changes: {},
   };
@@ -19,15 +29,6 @@ const updateIdeas = catchAsync(async (req, res) => {
   if (req.body.link) variables['changes']['link'] = req.body.link;
 
   const response = await Hasura(updateIdea_query, variables);
-
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to update idea',
-      data: JSON.stringify(response.errors),
-    });
-  }
 
   return res.json({
     success: true,

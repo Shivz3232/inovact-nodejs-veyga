@@ -2,8 +2,17 @@ const catchAsync = require('../../../utils/catchAsync');
 const { makeAdmin } = require('./queries/mutations');
 const { checkIfCanMakeAdmin } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
+const { validationResult } = require('express-validator');
 
 const toggleAdmin = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { user_id, team_id, cognito_sub } = req.body;
 
   const variables = {
@@ -14,17 +23,8 @@ const toggleAdmin = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(checkIfCanMakeAdmin, variables);
 
-  if (!response1.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response1.errors),
-      data: null,
-    });
-  }
-
   if (response1.result.data.members.length == 0) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'Given user is not a member of this team.',
@@ -33,7 +33,7 @@ const toggleAdmin = catchAsync(async (req, res) => {
   }
 
   if (response1.result.data.members[0].admin) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'Given user is already an admin of this team.',
@@ -42,7 +42,7 @@ const toggleAdmin = catchAsync(async (req, res) => {
   }
 
   if (response1.result.data.admins.length == 0) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       errorCode: 'Forbidden',
       errorMessage: 'You are not an admin of this team.',
@@ -51,15 +51,6 @@ const toggleAdmin = catchAsync(async (req, res) => {
   }
 
   const response2 = await Hasura(makeAdmin, { team_id, user_id });
-
-  if (!response2.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response2.errors),
-      data: null,
-    });
-  }
 
   return res.json({
     success: true,

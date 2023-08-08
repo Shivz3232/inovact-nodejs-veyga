@@ -2,21 +2,21 @@ const catchAsync = require('../../../utils/catchAsync');
 const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getIdea, getIdeas: getIdeasQuery, getConnections } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const getIdeas = catchAsync(async (req, res) => {
-  const { cognito_sub } = req.body;
-  const id = req.query.id;
-
-  const response = await Hasura(getConnections, { cognito_sub });
-
-  if (!response.success) {
-    return res.json({
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
       success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to find login user',
-      data: null,
+      ...sanitizerErrors,
     });
   }
+
+  const { cognito_sub } = req.body;
+  const { id } = req.query;
+
+  const response = await Hasura(getConnections, { cognito_sub });
 
   const userId = response.result.data.user[0].id;
 
@@ -29,61 +29,44 @@ const getIdeas = catchAsync(async (req, res) => {
     }
   });
 
+  let queries, variables;
+
   if (id) {
-    const variables = {
+    variables = {
       id,
       cognito_sub,
     };
-
-    const response1 = await Hasura(getIdea, variables);
-
-    if (!response1.success)
-      return res.json({
-        success: false,
-        errorCode: 'InternalServerError',
-        errorMessage: JSON.stringify(response1.errors),
-        data: null,
-      });
-
-    if (response1.result.data.idea.length === 0) {
-      return res.json({
-        success: false,
-        errorCode: 'NotFound',
-        errorMessage: 'Project not found',
-        data: null,
-      });
-    }
-
-    const cleanedIdeas = response1.result.data.idea.map((doc) => {
-      doc = cleanIdeaDoc(doc);
-      doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
-      return doc;
-    });
-
-    return res.json(cleanedIdeas[0]);
+    queries = getIdea;
   } else {
-    const variables = {
+    variables = {
       cognito_sub,
     };
-    const response1 = await Hasura(getIdeasQuery, variables);
 
-    if (!response1.success) {
-      return res.json({
-        success: false,
-        errorCode: 'InternalServerError',
-        errorMessage: JSON.stringify(response1.errors),
-        data: null,
-      });
-    }
-
-    const cleanedIdeas = response1.result.data.idea.map((doc) => {
-      doc = cleanIdeaDoc(doc);
-      doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
-      return doc;
-    });
-
-    return res.json(cleanedIdeas);
+    queries = getIdeasQuery;
   }
+
+  const response1 = await Hasura(queries, variables);
+
+  if (response1.result.data.idea.length === 0) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'NotFound',
+      errorMessage: 'Project not found',
+      data: null,
+    });
+  }
+
+  const cleanedIdeas = response1.result.data.idea.map((doc) => {
+    doc = cleanIdeaDoc(doc);
+    doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
+    return doc;
+  });
+
+  if (id) {
+    return res.json(cleanedIdeas[0]);
+  }
+
+  return res.json(cleanedIdeas);
 });
 
 module.exports = getIdeas;

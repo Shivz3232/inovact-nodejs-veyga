@@ -2,8 +2,17 @@ const { getPrivateMessages } = require('./queries/queries');
 const { decryptMessages } = require('../../../utils/decryptMessages');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getLatestPrivateMessage = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub } = req.body;
   const { user_id, timeStamp } = req.query;
 
@@ -14,16 +23,6 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
   };
 
   const response1 = await Hasura(getPrivateMessages, variables);
-
-  if (!response1.success) {
-    console.log(response1.errors);
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to get latest private messages',
-      data: null,
-    });
-  }
 
   const decryptedMessages = await decryptMessages(response1.result.data.private_messages);
 

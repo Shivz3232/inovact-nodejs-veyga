@@ -1,8 +1,17 @@
 const { query: Hasura } = require('../../../utils/hasura');
-const { deleteAreaOfInterest  : deleteAreaOfInterestQuery} = require('./queries/mutations');
+const { deleteAreaOfInterest: deleteAreaOfInterestQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
-const deleteAreaOfInterest = catchAsync(async (req,res)=>{
+const deleteAreaOfInterest = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub, interest_ids } = req.body;
 
   const variables = {
@@ -11,18 +20,8 @@ const deleteAreaOfInterest = catchAsync(async (req,res)=>{
   };
 
   const response = await Hasura(deleteAreaOfInterestQuery, variables);
-  console.log(response)
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
-
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -30,4 +29,4 @@ const deleteAreaOfInterest = catchAsync(async (req,res)=>{
   });
 });
 
-module.exports = deleteAreaOfInterest
+module.exports = deleteAreaOfInterest;

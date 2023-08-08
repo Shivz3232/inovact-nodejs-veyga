@@ -1,8 +1,9 @@
-const router = require('express').Router()
-const privateMessageController = require('../../controllers/privateMessage.controller')
+const router = require('express').Router();
+const privateMessageController = require('../../controllers/privateMessage.controller');
+const { getLatestMessageSanitizer, getUserMessagesSanitizer, sendMessageSanitizer } = require('../../controllers/privateMessage.controller/sanitizer');
 
+router.post('/private', getLatestMessageSanitizer, privateMessageController.sendPrivateMessage);
+router.get('/users', getUserMessagesSanitizer, privateMessageController.getUserMessages);
+router.get('/private', sendMessageSanitizer, privateMessageController.getLatestPrivateMessage);
 
-router.post('/private' , privateMessageController.sendPrivateMessage)
-router.get('/private' , privateMessageController.getLatestPrivateMessage)
-
-module.exports = router
+module.exports = router;

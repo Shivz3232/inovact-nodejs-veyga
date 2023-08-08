@@ -1,18 +1,25 @@
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserTeams: getUserTeamsQuery, getUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
 const getUserTeams = catchAsync(async (req, res) => {
-  let user_id = req.query.user_id;
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
+  let { user_id } = req.query;
 
   if (!user_id) {
     // Find user id
-    const cognito_sub = req.body.cognito_sub;
+    const { cognito_sub } = req.body;
     const response1 = await Hasura(getUserId, {
       cognito_sub: { _eq: cognito_sub },
     });
-
-    if (!response1.success) return res.json(response1.errors);
 
     user_id = response1.result.data.user[0].id;
   }
@@ -23,9 +30,7 @@ const getUserTeams = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getUserTeamsQuery, variables);
 
-  if (!response2.success) return res.json(response2.errors);
-
-  res.json(response2.result);
+  return res.json(response2.result);
 });
 
 module.exports = getUserTeams;

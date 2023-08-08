@@ -3,22 +3,23 @@ const express = require('express');
 // const validate = require('../../middlewares/validate');
 // const userValidation = require('../../validations/user.validation');
 const connectionsController = require('../../controllers/connection.controller');
+const { getConnectionSanitizer, connectionsSanitizer, getNetStatSanitizer } = require('../../controllers/connection.controller/sanitizer');
 
 const router = express.Router();
 
-router.route('/').get(connectionsController.getConnection);
+router.get('/', getConnectionSanitizer, connectionsController.getConnection);
 
-router.route('/accept').post(connectionsController.acceptConnection);
+router.post('/accept', connectionsSanitizer, connectionsController.acceptConnection);
 
-router.route('/reject').post(connectionsController.rejectConnection);
+router.post('/reject', connectionsSanitizer, connectionsController.rejectConnection);
 
-router.route('/request').post(connectionsController.addConnection);
+router.post('/request', connectionsSanitizer, connectionsController.addConnection);
 
-router.route('/remove').post(connectionsController.removeConnection);
+router.post('/remove', connectionsSanitizer, connectionsController.removeConnection);
 
-router.route('/request').delete(connectionsController.withdrawRequest);
+router.delete('/request', connectionsSanitizer, connectionsController.withdrawRequest);
 
-router.get('/statistics', connectionsController.getNetworkStats);
+router.get('/statistics', getNetStatSanitizer, connectionsController.getNetworkStats);
 
 module.exports = router;
 

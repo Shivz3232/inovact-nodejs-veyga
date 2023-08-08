@@ -1,9 +1,17 @@
 const { markNotificationAsRead } = require('./queries/mutations');
-
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
-const markAsRead = catchAsync(async (req,res)=>{
+const markAsRead = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   res.json({
     success: true,
     errorCode: '',
@@ -20,16 +28,7 @@ const markAsRead = catchAsync(async (req,res)=>{
 
   const response = await Hasura(markNotificationAsRead, variables);
 
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-  }
-
   return;
 });
 
-module.exports = markAsRead
+module.exports = markAsRead;

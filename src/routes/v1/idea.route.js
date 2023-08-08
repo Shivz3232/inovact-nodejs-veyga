@@ -1,13 +1,14 @@
 const express = require('express');
 const ideaController = require('../../controllers/idea.controller');
+const { getIdeaSanitizer, addIdeaSanitizer, updateIdeaSanitizer, deleteIdeaSanitizer, likeIdeaSanitizer } = require('../../controllers/idea.controller/sanitizer');
 
 const router = express.Router();
 
-router.route('/').get(ideaController.getIdeas);
-router.post('/', ideaController.addIdea);
-router.put('/', ideaController.updateIdea);
-router.delete('/', ideaController.deleteIdea);
-router.post('/like', ideaController.likeIdea);
+router.get('/', getIdeaSanitizer, ideaController.getIdeas);
+router.post('/', addIdeaSanitizer, ideaController.addIdea);
+router.put('/', updateIdeaSanitizer, ideaController.updateIdea);
+router.delete('/', deleteIdeaSanitizer, ideaController.deleteIdea);
+router.post('/like', likeIdeaSanitizer, ideaController.likeIdea);
 
 module.exports = router;
 

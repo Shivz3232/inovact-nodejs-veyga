@@ -13,6 +13,7 @@ const morgan = require('./config/morgan');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
+const useragent = require('express-useragent');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(helmet());
 
 // parse json request body
 app.use(express.json());
+app.use(useragent.express());
 
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));

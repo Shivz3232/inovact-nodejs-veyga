@@ -1,35 +1,25 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { delete_idea } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const deleteIdea = catchAsync(async (req, res) => {
-  const id = await req.body.id;
-
-  if (!id) {
-    return res.json({
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
       success: false,
-      errorCode: 'InvalidInput',
-      errorMessage: 'Invalid or id not found',
-      data: null,
+      ...sanitizerErrors,
     });
   }
 
-  const variables = await {
+  const { id } = req.body;
+
+  const variables = {
     id,
   };
   const response = await Hasura(delete_idea, variables);
 
-  if (!response.success) {
-    console.log(response.errors);
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: 'Failed to delete thought',
-      data: null,
-    });
-  }
-
-  return res.json({
+  return res.status(204).json({
     success: true,
     errorCode: '',
     errorMessage: '',

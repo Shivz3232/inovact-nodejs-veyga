@@ -1,11 +1,21 @@
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updatePost_query } = require('./queries/queries');
+const { validationResult } = require('express-validator');
 
 const updateProject = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+  const { id } = req.body;
+
   let variables = {
     id: {
-      _eq: req.body.id,
+      _eq: id,
     },
     changes: {},
   };
@@ -15,14 +25,6 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.link) variables['changes']['link'] = req.body.link;
 
   const response = await Hasura(updatePost_query, variables);
-
-  if (!response.success) {
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: '',
-    });
-  }
 
   return res.json({
     success: true,

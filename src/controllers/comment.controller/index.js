@@ -6,7 +6,6 @@ const { getUserId } = require('./queries/queries');
 const notify = require('../../utils/notify');
 const { query: Hasura } = require('../../utils/hasura');
 const catchAsync = require('../../utils/catchAsync');
-const logger = require('../../config/logger');
 
 const addComment = catchAsync(async (req, res) => {
   const { text, cognito_sub, article_id } = req.body;
@@ -40,7 +39,7 @@ const addComment = catchAsync(async (req, res) => {
     doc = response.result.data.insert_thought_comments.returning[0];
     notifier_id = doc.thought.user_id;
   } else {
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'INVALID_ARTICLE_TYPE',
       errorMessage: 'Invalid article type provided',
@@ -48,19 +47,11 @@ const addComment = catchAsync(async (req, res) => {
     });
   }
 
-  if (!response.success)
-    return res.json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(response.errors),
-      data: null,
-    });
-
   // Notify the user
   await notify(entity_type_id, article_id, response1.result.data.user[0].id, [notifier_id]).catch(logger.error);
 
   if (article_type === 'project') {
-    return res.json({
+    return res.status(201).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -74,7 +65,7 @@ const addComment = catchAsync(async (req, res) => {
     });
   }
   if (article_type === 'idea') {
-    return res.json({
+    return res.status(201).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -87,7 +78,7 @@ const addComment = catchAsync(async (req, res) => {
       },
     });
   }
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',

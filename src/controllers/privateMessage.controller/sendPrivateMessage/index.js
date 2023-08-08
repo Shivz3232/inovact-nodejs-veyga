@@ -4,8 +4,17 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { KMSEncrypter: encrypt } = require('../../../utils/encrypt');
 const { notify } = require('../../../utils/oneSignal');
 const catchAsync = require('../../../utils/catchAsync');
+const { validationResult } = require('express-validator');
 
-const sendPrivateMessage = catchAsync(async(req,res)=>{
+const sendPrivateMessage = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { cognito_sub, user_id, message } = req.body;
 
   // Check if logged in user is connected to the recipient
@@ -16,16 +25,8 @@ const sendPrivateMessage = catchAsync(async(req,res)=>{
 
   const response1 = await Hasura(getConnectionDetails, variables);
 
-  if (!response1.success)
-    return res.json({
-      success: false,
-      errorCode: 'IntenalServerError',
-      errorMessage: 'Failed to get connection details',
-      data: null,
-    });
-
   if (response1.result.data.connections.length === 0)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errorCode: 'UserNotConnected',
       errorMessage: 'User is not connected to the recipient',
@@ -48,24 +49,13 @@ const sendPrivateMessage = catchAsync(async(req,res)=>{
 
   const response3 = await Hasura(sendMessage, variables2);
 
-  if (!response3.success)
-    return res.json({
-      success: false,
-      errorCode: 'IntenalServerError',
-      errorMessage: 'Failed to send message',
-      data: null,
-    });
-
   // Notify the user
-  const actorName =
-    response1.result.data.user[0].first_name +
-    ' ' +
-    response1.result.data.user[0].last_name;
+  const actorName = response1.result.data.user[0].first_name + ' ' + response1.result.data.user[0].last_name;
 
   const notificationMessage = `${actorName} sent you a message`;
   notify(notificationMessage, [String(user_id)]);
 
-  return res.json({
+  return res.status(201).json({
     success: true,
     errorCode: '',
     errorMessage: '',
@@ -73,4 +63,4 @@ const sendPrivateMessage = catchAsync(async(req,res)=>{
   });
 });
 
-module.exports  =sendPrivateMessage
+module.exports = sendPrivateMessage;
