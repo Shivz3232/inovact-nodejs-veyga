@@ -112,6 +112,19 @@ const getIdea = `query getIdea($id: Int, $cognito_sub: String) {
       id
       looking_for_members
       looking_for_mentors
+      name
+      avatar
+      team_members {
+        user {
+          id
+          first_name
+          last_name
+          user_name
+          role
+          admin
+          avatar
+        }
+      }
     }
     created_at
     updated_at
