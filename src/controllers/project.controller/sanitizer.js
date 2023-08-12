@@ -1,6 +1,4 @@
 const { query, body } = require('express-validator');
-const { optional } = require('joi');
-const { default: isURL } = require('validator/lib/isurl');
 
 const cognito_sub = body('cognito_sub', 'User Not Authorized').exists().isString();
 
