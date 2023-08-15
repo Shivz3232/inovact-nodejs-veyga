@@ -4,10 +4,10 @@ const { getUserId, checkTeamAdmin } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const deleteTeam = catchAsync(async (req, res) => {
-  const team_id = req.query.team_id;
+  const { team_id } = req.query;
 
   // Find user id
-  const cognito_sub = req.body.cognito_sub;
+  const { cognito_sub } = req.body;
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });

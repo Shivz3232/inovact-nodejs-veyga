@@ -27,7 +27,7 @@ const deleteConnection = `mutation rejectConnection($user1: Int, $user2: Int) {
   `;
 
 module.exports = {
-    getPendingConnection,
-    deleteConnection,
-    getUserId,
+  getPendingConnection,
+  deleteConnection,
+  getUserId,
 };

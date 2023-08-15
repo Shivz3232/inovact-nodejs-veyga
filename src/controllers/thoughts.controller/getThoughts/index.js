@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getThought, getThoughts: getThoughtsQuery, getConnections } = require('./queries/queries');
-const { validationResult } = require('express-validator');
 
 const getThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -14,7 +14,7 @@ const getThoughts = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-  const id = req.query.id;
+  const { id } = req.query;
 
   const response = await Hasura(getConnections, { cognito_sub });
 
@@ -29,7 +29,8 @@ const getThoughts = catchAsync(async (req, res) => {
     }
   });
 
-  let variables, queries;
+  let variables;
+  let queries;
 
   if (id) {
     variables = {

@@ -1,7 +1,7 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updateIdea_query } = require('./queries/queries');
-const { validationResult } = require('express-validator');
 
 const updateIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,7 +13,7 @@ const updateIdeas = catchAsync(async (req, res) => {
   }
 
   const { id } = req.body;
-  let variables = {
+  const variables = {
     id: {
       _eq: id,
     },
@@ -22,11 +22,11 @@ const updateIdeas = catchAsync(async (req, res) => {
 
   const allowed_statuses = ['ideation', 'mvp/prototype', 'traction'];
 
-  if (req.body.caption) variables['changes']['caption'] = req.body.caption;
-  if (req.body.description) variables['changes']['description'] = req.body.description;
-  if (req.body.title) variables['changes']['title'] = req.body.title;
-  if (req.body.status && allowed_statuses.indexOf(req.body.status) > -1) variables['changes']['status'] = req.body.status;
-  if (req.body.link) variables['changes']['link'] = req.body.link;
+  if (req.body.caption) variables.changes.caption = req.body.caption;
+  if (req.body.description) variables.changes.description = req.body.description;
+  if (req.body.title) variables.changes.title = req.body.title;
+  if (req.body.status && allowed_statuses.indexOf(req.body.status) > -1) variables.changes.status = req.body.status;
+  if (req.body.link) variables.changes.link = req.body.link;
 
   const response = await Hasura(updateIdea_query, variables);
 

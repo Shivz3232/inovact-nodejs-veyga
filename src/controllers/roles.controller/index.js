@@ -3,12 +3,12 @@ const { getRoles: getRolesQueries, getRolesWithPrefix } = require('./queries/que
 const catchAsync = require('../../utils/catchAsync');
 
 const getRoles = catchAsync(async (req, res) => {
-  const prefix = req.query.prefix;
+  const { prefix } = req.query;
 
   let response;
   if (prefix) {
     response = await Hasura(getRolesWithPrefix, {
-      _role: prefix + '%',
+      _role: `${prefix}%`,
     });
   } else {
     response = await Hasura(getRolesQueries);

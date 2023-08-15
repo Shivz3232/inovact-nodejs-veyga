@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addThought } = require('./queries/mutations');
 const { getUser, getThought } = require('./queries/queries');
-const { validationResult } = require('express-validator');
 
 const addThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,7 +13,7 @@ const addThoughts = catchAsync(async (req, res) => {
     });
   }
   // Find user id
-  const cognito_sub = req.body.cognito_sub;
+  const { cognito_sub } = req.body;
 
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },

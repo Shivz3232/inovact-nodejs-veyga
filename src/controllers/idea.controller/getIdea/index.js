@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getIdea, getIdeas: getIdeasQuery, getConnections } = require('./queries/queries');
-const { validationResult } = require('express-validator');
 
 const getIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -29,7 +29,8 @@ const getIdeas = catchAsync(async (req, res) => {
     }
   });
 
-  let queries, variables;
+  let queries;
+  let variables;
 
   if (id) {
     variables = {

@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const { createSchedule, deleteSchedule } = require('../../../utils/scheduler');
 const { query: Hasura } = require('../../../utils/hasura');
 const { toggleStatus, addUserCause } = require('./queries/mutations');
 const { getUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const deactivateUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

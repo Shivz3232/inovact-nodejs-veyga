@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const { add_likePost, delete_like } = require('./queries/mutations');
 const { getUserId, getPostId } = require('./queries/queries');
 const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const likeProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,7 +16,7 @@ const likeProject = catchAsync(async (req, res) => {
 
   // Find user id
   const { cognito_sub } = req.body;
-  const project_id = req.query.project_id;
+  const { project_id } = req.query;
 
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
@@ -41,16 +41,15 @@ const likeProject = catchAsync(async (req, res) => {
       errorMessage: '',
       data: 'Added a like',
     });
-  } else {
-    const response3 = await Hasura(delete_like, variable);
-
-    return res.status(204).json({
-      success: true,
-      errorCode: '',
-      errorMessage: '',
-      data: 'Removed a like',
-    });
   }
+  const response3 = await Hasura(delete_like, variable);
+
+  return res.status(204).json({
+    success: true,
+    errorCode: '',
+    errorMessage: '',
+    data: 'Removed a like',
+  });
 });
 
 module.exports = likeProject;

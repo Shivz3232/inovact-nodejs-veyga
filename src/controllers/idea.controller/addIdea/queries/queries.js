@@ -25,8 +25,8 @@ const getUser = `query getUser($cognito_sub: String_comparison_exp) {
     }
   }
   `;
-  
-  const getIdea = `query getIdea($id: Int) {
+
+const getIdea = `query getIdea($id: Int) {
     idea(where: {id: {_eq: $id}}) {
       id
       title
@@ -58,9 +58,8 @@ const getUser = `query getUser($cognito_sub: String_comparison_exp) {
     }
   }
   `;
-  
-  module.exports = {
-    getUser,
-    getIdea,
-  };
-  
+
+module.exports = {
+  getUser,
+  getIdea,
+};

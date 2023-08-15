@@ -12,7 +12,8 @@ const catchAsync = (fn) => (req, res, next) => {
         errorMessage: JSON.stringify(err.message[0]),
         data: null,
       });
-    } else if (err.name === 'RequestError') {
+    }
+    if (err.name === 'RequestError') {
       logger.error(JSON.stringify(err));
 
       return res.status(400).json({
@@ -21,9 +22,8 @@ const catchAsync = (fn) => (req, res, next) => {
         errorMessage: err.message,
         data: null,
       });
-    } else {
-      next(err);
     }
+    next(err);
   });
 };
 

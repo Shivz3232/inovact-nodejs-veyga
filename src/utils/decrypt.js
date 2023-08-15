@@ -1,12 +1,6 @@
-const {
-  KmsKeyringNode,
-  buildClient,
-  CommitmentPolicy,
-} = require('@aws-crypto/client-node');
+const { KmsKeyringNode, buildClient, CommitmentPolicy } = require('@aws-crypto/client-node');
 
-const { decrypt } = buildClient(
-  CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT
-);
+const { decrypt } = buildClient(CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT);
 
 async function KMSDecrypter(data) {
   const generatorKeyId = process.env.KMS_GENERATOR_KEY_ID;
@@ -26,8 +20,7 @@ async function KMSDecrypter(data) {
   const { encryptionContext } = messageHeader;
 
   Object.entries(context).forEach(([key, value]) => {
-    if (encryptionContext[key] !== value)
-      throw new Error('Encryption Context does not match expected values');
+    if (encryptionContext[key] !== value) throw new Error('Encryption Context does not match expected values');
   });
 
   return plaintext.toString();

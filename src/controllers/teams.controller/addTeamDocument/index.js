@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { add_TeamDocument } = require('./queries/mutations');
 const { checkIfAdmin } = require('./queries/queries');
 const notify = require('../../../utils/notify');
-const { validationResult } = require('express-validator');
 
 const addTeamDocument = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -38,7 +38,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
     mime_type,
   });
 
-  const user_id = response1.result.data.current_user[0].user_id;
+  const { user_id } = response1.result.data.current_user[0];
 
   // Notify the user
   await notify(

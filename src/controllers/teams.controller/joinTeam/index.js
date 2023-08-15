@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { possibleToJoinTeam } = require('./queries/queries.js');
 const { addTeamRequestByStudent, addTeamRequestByMentor, addTeamRequestByEntrepreneurAsMember, addTeamRequestByEntrepreneurAsMentor } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const joinTeam = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -18,7 +18,7 @@ const joinTeam = catchAsync(async (req, res) => {
 
   const variables = {
     team_id,
-    role_requirement_id: typeof roleRequirementId == 'number' ? roleRequirementId : 0,
+    role_requirement_id: typeof roleRequirementId === 'number' ? roleRequirementId : 0,
     cognito_sub,
   };
 

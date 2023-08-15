@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserThoughtsWithCognitoSub, getUserThoughts: getUserThoughtsQuery } = require('./queries/queries');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const getUserThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,7 +16,7 @@ const getUserThoughts = catchAsync(async (req, res) => {
   const { user_id } = req.query;
   const { cognito_sub } = req.body;
 
-  let variables = {
+  const variables = {
     cognito_sub,
   };
 
@@ -25,7 +25,7 @@ const getUserThoughts = catchAsync(async (req, res) => {
   if (!user_id) {
     query = getUserThoughtsWithCognitoSub;
   } else {
-    variables['user_id'] = user_id;
+    variables.user_id = user_id;
     query = getUserThoughtsQuery;
   }
 

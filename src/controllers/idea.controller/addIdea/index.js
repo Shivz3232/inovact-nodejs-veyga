@@ -2,12 +2,12 @@
 /* eslint-disable no-labels */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addIdea, addTags, addSkillsRequired, addRolesRequired } = require('./queries/mutations');
 const { getUser } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const addIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -45,7 +45,7 @@ const addIdeas = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(addIdea, ideaData);
 
-  role_if: if (ideaData.team_id && roles_required.length > 0) {
+  if (ideaData.team_id && roles_required.length > 0) {
     const roles_data = roles_required.map((ele) => {
       return {
         team_id: ideaData.team_id,
