@@ -1,6 +1,4 @@
 
-## Manual Installation
-
 If you would still prefer to do the installation manually, follow these steps:
 
 Clone the repo:
@@ -155,24 +153,24 @@ src\
 To view the list of available APIs and their specifications, run the server and go to `http://localhost:3000/v1/docs` in your browser. This documentation page is automatically generated using the [swagger](https://swagger.io/) definitions written as comments in the route files.
 
 ### API Endpoints
-
+Base URL : `https://cg2nx999xa.execute-api.ap-south-1.amazonaws.com`
 List of available routes:
 
 **Auth routes**:\
-`POST /v1/auth/register` - register\
-`POST /v1/auth/login` - login\
-`POST /v1/auth/refresh-tokens` - refresh auth tokens\
-`POST /v1/auth/forgot-password` - send reset password email\
-`POST /v1/auth/reset-password` - reset password\
-`POST /v1/auth/send-verification-email` - send verification email\
-`POST /v1/auth/verify-email` - verify email
+`POST /dev/mobile/register` - register\
+`POST /dev/mobile/login` - login\
+`POST /prod/mobile/refresh` - refresh auth tokens\
+`POST /dev/mobile/password/sendcode` - send reset password email\
+`POST /dev/mobile/password/usecode` - reset password\
 
 **User routes**:\
 `POST /v1/users` - create a user\
-`GET /v1/users` - get all users\
-`GET /v1/users/:userId` - get user\
-`PATCH /v1/users/:userId` - update user\
-`DELETE /v1/users/:userId` - delete user
+`GET /dev/users` - get all users\
+`GET /dev/user/idea` - Fetch user ideas\
+`GET /dev/user/post` - Fetch user posts\
+`GET /dev/user/team` - Fetch user teams\
+`DELETE /dev/user/interest` - Delete Area of interest\
+`PATCH /dev/user` - update user\
 
 ## Error Handling
 
