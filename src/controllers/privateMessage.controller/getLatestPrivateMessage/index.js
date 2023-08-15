@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const { getPrivateMessages } = require('./queries/queries');
 const { decryptMessages } = require('../../../utils/decryptMessages');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const getLatestPrivateMessage = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

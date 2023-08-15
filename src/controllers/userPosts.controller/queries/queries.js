@@ -59,6 +59,6 @@ const getUserId = `query getUser($cognito_sub: String_comparison_exp) {
   `;
 
 module.exports = {
-    getUserPosts,
-    getUserId,
+  getUserPosts,
+  getUserId,
 };

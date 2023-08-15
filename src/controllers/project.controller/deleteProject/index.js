@@ -1,7 +1,7 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { deletequery } = require('./queries/queries');
-const { validationResult } = require('express-validator');
 
 const deleteProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

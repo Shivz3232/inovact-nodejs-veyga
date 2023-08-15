@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { deleteUser: deleteUserQuery, addUserCause } = require('./queries/mutations');
 const { getUserId } = require('./queries/queries');
 const { deleteUserFunc } = require('../../../utils/deleteFirebaseUser');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const deleteUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

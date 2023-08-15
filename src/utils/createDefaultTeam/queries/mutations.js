@@ -99,5 +99,5 @@ const addMembers = `mutation addMembers($objects: [team_members_insert_input!]!)
 
 module.exports = {
   addTeam,
-  addMembers
+  addMembers,
 };

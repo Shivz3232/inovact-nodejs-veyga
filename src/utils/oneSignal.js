@@ -15,11 +15,11 @@ async function notify(message, users) {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          Authorization: 'Basic ' + process.env.ONESIGNAL_API_KEY,
+          Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
         },
       }
     )
-    .then(response => {
+    .then((response) => {
       const responseData = response.data;
 
       if (responseData.id) {
@@ -27,14 +27,13 @@ async function notify(message, users) {
           success: true,
           result: responseData,
         };
-      } else {
-        return {
-          success: false,
-          errors: responseData.errors,
-        };
       }
+      return {
+        success: false,
+        errors: responseData.errors,
+      };
     })
-    .catch(error => {
+    .catch((error) => {
       console.log(error.response.data.errors);
 
       return {

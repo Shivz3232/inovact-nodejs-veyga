@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const { updateUser, addUserSkills, updateUserInterests } = require('./queries/mutations');
 const { getUser } = require('./queries/queries');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { query: Hasura, checkUniquenessOfPhoneNumber } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const updateanUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,18 +16,18 @@ const updateanUser = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
 
-  let variables = {
+  const variables = {
     cognito_sub: {
       _eq: cognito_sub,
     },
     changes: {},
   };
 
-  if (req.body.first_name) variables['changes']['first_name'] = req.body.first_name;
-  if (req.body.last_name) variables['changes']['last_name'] = req.body.last_name;
-  if (req.body.bio) variables['changes']['bio'] = req.body.bio;
+  if (req.body.first_name) variables.changes.first_name = req.body.first_name;
+  if (req.body.last_name) variables.changes.last_name = req.body.last_name;
+  if (req.body.bio) variables.changes.bio = req.body.bio;
   console.log(req.body.bio);
-  if (req.body.avatar) variables['changes']['avatar'] = req.body.avatar;
+  if (req.body.avatar) variables.changes.avatar = req.body.avatar;
   if (req.body.phone_number) {
     const unique = await checkUniquenessOfPhoneNumber(req.body.phone_number);
 
@@ -39,21 +39,21 @@ const updateanUser = catchAsync(async (req, res) => {
       });
     }
 
-    variables['changes']['phone_number'] = req.body.phone_number;
+    variables.changes.phone_number = req.body.phone_number;
   }
-  if (req.body.role) variables['changes']['role'] = req.body.role;
-  if (req.body.designation) variables['changes']['designation'] = req.body.designation;
-  if (req.body.organization) variables['changes']['organization'] = req.body.organization;
-  if (req.body.organizational_role) variables['changes']['organizational_role'] = req.body.organizational_role;
-  if (req.body.university) variables['changes']['university'] = req.body.university;
-  if (req.body.graduation_year) variables['changes']['graduation_year'] = req.body.graduation_year;
-  if (req.body.journey_start_date) variables['changes']['journey_start_date'] = req.body.journey_start_date;
-  if (req.body.years_of_professional_experience) variables['changes']['years_of_professional_experience'] = req.body.years_of_professional_experience;
-  if (req.body.degree) variables['changes']['degree'] = req.body.degree;
-  if (req.body.profile_complete) variables['changes']['profile_complete'] = req.body.profile_complete;
+  if (req.body.role) variables.changes.role = req.body.role;
+  if (req.body.designation) variables.changes.designation = req.body.designation;
+  if (req.body.organization) variables.changes.organization = req.body.organization;
+  if (req.body.organizational_role) variables.changes.organizational_role = req.body.organizational_role;
+  if (req.body.university) variables.changes.university = req.body.university;
+  if (req.body.graduation_year) variables.changes.graduation_year = req.body.graduation_year;
+  if (req.body.journey_start_date) variables.changes.journey_start_date = req.body.journey_start_date;
+  if (req.body.years_of_professional_experience) variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
+  if (req.body.degree) variables.changes.degree = req.body.degree;
+  if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
 
-  if (req.body.website) variables['changes']['website'] = req.body.website;
-  else variables['changes']['website'] = '';
+  if (req.body.website) variables.changes.website = req.body.website;
+  else variables.changes.website = '';
 
   const response1 = await Hasura(updateUser, variables);
 

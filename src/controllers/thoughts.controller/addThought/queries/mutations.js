@@ -21,9 +21,6 @@ const addThought = `mutation add_thought($thought: String!, $user_id:Int , ) {
   }
 }`;
 
-
-
 module.exports = {
- addThought
-  
+  addThought,
 };

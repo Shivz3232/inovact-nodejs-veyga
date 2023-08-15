@@ -4,14 +4,14 @@ const { addTeam, addInvitations, addRoles, addMembers, addTeamTags, addSkills } 
 const { getUsersFromEmailId, getUserId } = require('./queries/queries');
 
 const createTeam = catchAsync(async (req, res) => {
-  const name = typeof req.body.name == 'string' && req.body.name.length != 0 ? req.body.name : false;
-  const avatar = typeof req.body.avatar == 'string' && req.body.avatar.length != 0 ? req.body.avatar : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
-  const description = typeof req.body.description == 'string' && req.body.description.length != 0 ? req.body.description : '';
+  const name = typeof req.body.name === 'string' && req.body.name.length != 0 ? req.body.name : false;
+  const avatar = typeof req.body.avatar === 'string' && req.body.avatar.length != 0 ? req.body.avatar : 'https://static.vecteezy.com/system/resources/thumbnails/000/550/535/small/user_icon_007.jpg';
+  const description = typeof req.body.description === 'string' && req.body.description.length != 0 ? req.body.description : '';
   const tags = req.body.tags instanceof Array ? req.body.tags : false;
   const members = req.body.members instanceof Array ? req.body.members : false;
 
   // Find user id
-  const cognito_sub = req.body.cognito_sub;
+  const { cognito_sub } = req.body;
   const response5 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -29,7 +29,7 @@ const createTeam = catchAsync(async (req, res) => {
   const team = response1.result.data.insert_team.returning[0];
 
   // Add current user as a member with admin: true
-  let memberObjects = {
+  const memberObjects = {
     objects: [
       {
         user_id: response5.result.data.user[0].id,

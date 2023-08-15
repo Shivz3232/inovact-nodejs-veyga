@@ -20,7 +20,7 @@ const acceptInvitation = catchAsync(async (req, res) => {
   const variables = {
     user_id: response2.result.data.team_invitations[0].user_id,
     team_id: response2.result.data.team_invitations[0].team_id,
-    invitation_id: invitation_id,
+    invitation_id,
   };
 
   const response3 = await Hasura(acceptInvite, variables);

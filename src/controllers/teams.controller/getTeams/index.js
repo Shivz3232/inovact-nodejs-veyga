@@ -7,18 +7,18 @@ const getTeams = catchAsync(async (req, res) => {
   const { team_id } = req.query;
 
   let query;
-  let variables = {};
+  const variables = {};
 
   // Choose the varialbes and query based on the team_id
   if (team_id) {
-    variables['team_id'] = team_id;
+    variables.team_id = team_id;
 
     query = getTeam;
   } else {
-    if (req.body.admin) variables['admin'] = true;
-    else variables['admin'] = false;
+    if (req.body.admin) variables.admin = true;
+    else variables.admin = false;
 
-    variables['cognito_sub'] = req.body.cognito_sub;
+    variables.cognito_sub = req.body.cognito_sub;
 
     query = getUserTeams;
   }
@@ -34,16 +34,14 @@ const getTeams = catchAsync(async (req, res) => {
         errorMessage: 'Team not found',
         data: null,
       });
-    } else {
-      const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
-
-      return res.json(cleanedTeamDoc);
     }
-  } else {
-    const cleanedTeamDocs = response.result.data.team.map(cleanTeamDocs);
+    const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
 
-    return res.json(cleanedTeamDocs);
+    return res.json(cleanedTeamDoc);
   }
+  const cleanedTeamDocs = response.result.data.team.map(cleanTeamDocs);
+
+  return res.json(cleanedTeamDocs);
 });
 
 module.exports = getTeams;

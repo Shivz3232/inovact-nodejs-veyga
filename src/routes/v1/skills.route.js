@@ -1,8 +1,6 @@
-const router = require('express').Router()
-const skillController = require('../../controllers/skills.controller')
+const router = require('express').Router();
+const skillController = require('../../controllers/skills.controller');
 
-router.get('/' ,skillController)
+router.get('/', skillController);
 
-
-
-module.exports = router
+module.exports = router;

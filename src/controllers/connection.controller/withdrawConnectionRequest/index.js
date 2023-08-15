@@ -5,7 +5,7 @@ const catchAsync = require('../../../utils/catchAsync');
 
 const withdrawRequest = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
-  const user_id = req.query.user_id;
+  const { user_id } = req.query;
 
   const variables = {
     user_id,

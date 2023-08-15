@@ -20,13 +20,12 @@ async function query(queryString, variables = {}) {
           success: true,
           result: data,
         };
-      } else {
-        const errors = {
-          name: 'QueryError',
-          message: data.errors,
-        };
-        throw errors;
       }
+      const errors = {
+        name: 'QueryError',
+        message: data.errors,
+      };
+      throw errors;
     })
     .catch((err) => {
       if (err.name === 'QueryError') {

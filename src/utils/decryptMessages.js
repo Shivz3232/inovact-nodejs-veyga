@@ -1,7 +1,7 @@
 const { KMSDecrypter: decrypt } = require('./decrypt');
 
 async function decryptMessages(messageDocs) {
-  let decryptedMessages = [];
+  const decryptedMessages = [];
 
   for (let i = 0; i < messageDocs.length; i++) {
     const encryptedMessage = messageDocs[i].encrypted_message;
