@@ -7,7 +7,7 @@ const addProjectSanitizer = [cognito_sub];
 
 const deleteProjectSanitizer = [body('id', 'Invalid Project ID').exists().toInt()];
 
-const getProjectSanitizer = [cognito_sub];
+const getProjectSanitizer = [cognito_sub, query('id', 'Invalid Project ID').optional().toInt()];
 
 const updateProjectSanitizer = [cognito_sub, body('id', 'Invalid Project ID').exists().toInt()];
 

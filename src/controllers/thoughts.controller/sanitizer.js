@@ -8,7 +8,7 @@ const deleteThoughtSanitizer = [cognito_sub, body('thought_id', 'Invalid Thought
 
 const updateThoughtSanitizer = [cognito_sub, body('thought_id', 'Invalid Thought ID').exists().toInt()];
 
-const getThoughtsSanitizer = [cognito_sub];
+const getThoughtsSanitizer = [cognito_sub, query('id', 'Invalid Thought ID').optional().toInt()];
 
 const likeThoughtSanitizer = [cognito_sub, query('thought_id', 'Invalid Thought ID').exists().toInt()];
 
