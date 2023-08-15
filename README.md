@@ -40,11 +40,11 @@ Set the environment variables:
 - [Project Structure](#project-structure)
 - [API Documentation](#api-documentation)
 - [Error Handling](#error-handling)
+- [Logging](#logging)
+- [Linting](#linting)
 <!-- - [Validation](#validation) -->
 <!-- - [Authentication](#authentication) -->
 <!-- - [Authorization](#authorization) -->
-- [Logging](#logging)
-- [Linting](#linting)
 
 
 ## Commands
