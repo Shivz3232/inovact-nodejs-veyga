@@ -1,9 +1,10 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId, getPendingConnection } = require('./queries/queries');
 const { acceptConnection: acceptConnectionQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 const notify = require('../../../utils/notify');
-const { validationResult } = require('express-validator');
+const logger = require('../../../config/logger');
 
 const acceptConnection = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
