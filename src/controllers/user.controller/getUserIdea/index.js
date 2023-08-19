@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const { getUserIdeasById, getUserIdeasByCognitoSub } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const getUserIdea = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,11 +13,11 @@ const getUserIdea = catchAsync(async (req, res) => {
     });
   }
 
-  let { user_id } = req.query;
+  const { user_id } = req.query;
   const { cognito_sub } = req.body;
 
   let query;
-  let variables = {
+  const variables = {
     cognito_sub,
   };
 

@@ -1,12 +1,9 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
 
+const router = express.Router();
 
+const tagsController = require('../../controllers/getTags.controller');
 
-const tagsController = require('../../controllers/getTags.controller')
+router.get('/', tagsController);
 
-
-router.get('/' ,tagsController)
-
-
-module.exports = router
+module.exports = router;

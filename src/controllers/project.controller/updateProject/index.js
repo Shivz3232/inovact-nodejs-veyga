@@ -1,7 +1,7 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updatePost_query } = require('./queries/queries');
-const { validationResult } = require('express-validator');
 
 const updateProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,16 +13,16 @@ const updateProject = catchAsync(async (req, res) => {
   }
   const { id } = req.body;
 
-  let variables = {
+  const variables = {
     id: {
       _eq: id,
     },
     changes: {},
   };
   // if (req.body.caption) variables['changes']['caption'] = req.body.caption;
-  if (req.body.description) variables['changes']['description'] = req.body.description;
-  if (req.body.title) variables['changes']['title'] = req.body.title;
-  if (req.body.link) variables['changes']['link'] = req.body.link;
+  if (req.body.description) variables.changes.description = req.body.description;
+  if (req.body.title) variables.changes.title = req.body.title;
+  if (req.body.link) variables.changes.link = req.body.link;
 
   const response = await Hasura(updatePost_query, variables);
 

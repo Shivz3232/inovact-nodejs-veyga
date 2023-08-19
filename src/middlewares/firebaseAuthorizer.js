@@ -8,9 +8,7 @@ const firebaseAuthorizer = async (req, res, next) => {
   const authorizationToken = await req.headers.authorization;
 
   if (!authorizationToken) {
-    return res
-      .status(401)
-      .json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'User Authorization token not found' });
+    return res.status(401).json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'User Authorization token not found' });
   }
 
   const result = await admin
@@ -25,9 +23,7 @@ const firebaseAuthorizer = async (req, res, next) => {
     });
 
   if (!result) {
-    return res
-      .status(401)
-      .json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'Invalid or expired auth token' });
+    return res.status(401).json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'Invalid or expired auth token' });
   }
 
   req.body.cognito_sub = result.uid;

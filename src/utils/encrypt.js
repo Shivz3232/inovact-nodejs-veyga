@@ -1,12 +1,6 @@
-const {
-  KmsKeyringNode,
-  buildClient,
-  CommitmentPolicy,
-} = require('@aws-crypto/client-node');
+const { KmsKeyringNode, buildClient, CommitmentPolicy } = require('@aws-crypto/client-node');
 
-const { encrypt } = buildClient(
-  CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT
-);
+const { encrypt } = buildClient(CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT);
 
 async function KMSEncrypter(data) {
   const generatorKeyId = process.env.KMS_GENERATOR_KEY_ID;

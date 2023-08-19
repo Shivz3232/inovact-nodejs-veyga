@@ -27,14 +27,14 @@ const addIdea = `mutation add_idea($description: String!, $title:String!, $user_
       }
     }
   }`;
-  
-  const addTags = `mutation addIdea($objects: [idea_tag_insert_input!]!) {
+
+const addTags = `mutation addIdea($objects: [idea_tag_insert_input!]!) {
     insert_idea_tag(objects: $objects) {
       affected_rows
     }
   }`;
-  
-  const addTeam = `mutation addTeam($name: String, $looking_for_members: Boolean, $looking_for_mentors: Boolean, $creator_id: Int) {
+
+const addTeam = `mutation addTeam($name: String, $looking_for_members: Boolean, $looking_for_mentors: Boolean, $creator_id: Int) {
     insert_team(objects: [{
       name: $name,
       looking_for_members: $looking_for_members,
@@ -47,8 +47,8 @@ const addIdea = `mutation add_idea($description: String!, $title:String!, $user_
     }
   }
   `;
-  
-  const addMembers = `mutation addMembers($objects: [team_members_insert_input!]!) {
+
+const addMembers = `mutation addMembers($objects: [team_members_insert_input!]!) {
     insert_team_members(objects: $objects) {
       returning {
         user_id
@@ -58,25 +58,24 @@ const addIdea = `mutation add_idea($description: String!, $title:String!, $user_
       }
     }
   }`;
-  
-  const addRolesRequired = `mutation addRolesRequired($objects: [team_role_requirements_insert_input!]!) {
+
+const addRolesRequired = `mutation addRolesRequired($objects: [team_role_requirements_insert_input!]!) {
     insert_team_role_requirements(objects: $objects) {
       returning {
         id
       }
     }
   }`;
-  
-  const addSkillsRequired = `mutation addSkillRequired($objects: [team_skill_requirements_insert_input!]!) {
+
+const addSkillsRequired = `mutation addSkillRequired($objects: [team_skill_requirements_insert_input!]!) {
     insert_team_skill_requirements(objects: $objects) {
       affected_rows
     }
   }`;
-  
-  module.exports = {
-    addIdea,
-    addTags,
-    addSkillsRequired,
-    addRolesRequired,
-  };
-  
+
+module.exports = {
+  addIdea,
+  addTags,
+  addSkillsRequired,
+  addRolesRequired,
+};

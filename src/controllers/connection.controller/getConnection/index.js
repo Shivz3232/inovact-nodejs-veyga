@@ -1,7 +1,7 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserConnections, getPrivateChats } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const getConnection = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,7 +16,7 @@ const getConnection = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(getUserConnections, { cognito_sub });
 
-  const connections = response1.result.data.connections;
+  const { connections } = response1.result.data;
 
   // Restore the below logic later
   // const connections = response1.result.data.connections.map((doc) => {

@@ -10,11 +10,11 @@ const deleteAOISanitizer = [cognito_sub, body('interests', 'Invalid Area of Inte
 
 const deleteUserSanitizer = [cognito_sub, body('cause').isString().trim().isLength({ min: 1 })];
 
-const fetchUserSanitizer = [cognito_sub, query('id').exists().toInt()];
+const fetchUserSanitizer = [cognito_sub, query('id').optional().toInt()];
 
-const getUserPostsSanitizer = [cognito_sub, query('user_id').exists().toInt()];
+const getUserPostsSanitizer = [cognito_sub, query('user_id').optional().toInt()];
 
-const getUserTeamsSanitizer = [cognito_sub, query('user_id').exists().toInt()];
+const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()];
 
 const updateUserSanitizer = [cognito_sub];
 

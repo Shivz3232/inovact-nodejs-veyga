@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { makeAdmin } = require('./queries/mutations');
 const { checkIfCanMakeAdmin } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
-const { validationResult } = require('express-validator');
 
 const toggleAdmin = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

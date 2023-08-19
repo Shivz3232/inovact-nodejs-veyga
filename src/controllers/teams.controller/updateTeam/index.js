@@ -21,7 +21,7 @@ const updateTeams = catchAsync(async (req, res) => {
       data: null,
     });
 
-  let updates = {
+  const updates = {
     avatar,
   };
 

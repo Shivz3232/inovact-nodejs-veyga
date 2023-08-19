@@ -16,9 +16,6 @@ const add_TeamDocument = `mutation add_TeamDocument($name: String!, $team_id:Int
   }
 }`;
 
-
-
 module.exports = {
- add_TeamDocument
-  
+  add_TeamDocument,
 };

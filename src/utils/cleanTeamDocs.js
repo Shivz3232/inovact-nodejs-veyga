@@ -29,7 +29,7 @@ function cleanTeamDocs(teamDoc) {
   teamDoc.admin_id = teamDoc.team_members.filter((doc) => doc.admin)[0].user.id;
 
   teamDoc.team_requests = teamDoc.team_requests.map((team_request) => {
-    let temp = {};
+    const temp = {};
     temp.id = team_request.id;
     temp.user = team_request.user;
     temp.requested_on = team_request.requested_on;

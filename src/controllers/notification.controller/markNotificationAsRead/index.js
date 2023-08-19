@@ -1,5 +1,5 @@
-const { markNotificationAsRead } = require('./queries/mutations');
 const { validationResult } = require('express-validator');
+const { markNotificationAsRead } = require('./queries/mutations');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -27,8 +27,6 @@ const markAsRead = catchAsync(async (req, res) => {
   };
 
   const response = await Hasura(markNotificationAsRead, variables);
-
-  return;
 });
 
 module.exports = markAsRead;

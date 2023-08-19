@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { checkIfPossibleToAccept } = require('./queries/queries');
 const { rejectJoinRequest: rejectJoinRequestQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const rejectJoinRequest = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

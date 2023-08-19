@@ -1,7 +1,7 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updateThought_query, getUserId, getThoughtUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const updateThought = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -12,7 +12,7 @@ const updateThought = catchAsync(async (req, res) => {
     });
   }
   // Find user id
-  const cognito_sub = req.body.cognito_sub;
+  const { cognito_sub } = req.body;
   const response1 = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -24,7 +24,7 @@ const updateThought = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(getThoughtUserId, variable);
 
-  //check current user
+  // check current user
   if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
     return res.status(401).json({
       success: false,
@@ -33,12 +33,12 @@ const updateThought = catchAsync(async (req, res) => {
       data: null,
     });
   }
-  let variables = {
+  const variables = {
     id: req.body.thought_id,
     changes: {},
   };
 
-  if (req.body.thought) variables['changes']['thought'] = req.body.thought;
+  if (req.body.thought) variables.changes.thought = req.body.thought;
 
   const response = await Hasura(updateThought_query, variables);
 

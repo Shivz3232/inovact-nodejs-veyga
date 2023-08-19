@@ -1,9 +1,9 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { checkIfPossibleToAccept, getRoleRequirement } = require('./queries/queries');
 const { acceptJoinRequest1, acceptJoinRequest2 } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const acceptJoinRequest = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -40,7 +40,7 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
     });
 
   let query;
-  let variables2 = {
+  const variables2 = {
     team_id: response1.result.data.team_requests[0].team_id,
     user_id: response1.result.data.team_requests[0].user_id,
     request_id,
@@ -51,12 +51,12 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
       roleRequirementId: response1.result.data.team_requests[0].role_requirement_id,
     });
 
-    variables2['role'] = response2.result.data.team_role_requirements[0].role_name;
-    variables2['role_requirement_id'] = response1.result.data.team_requests[0].role_requirement_id;
+    variables2.role = response2.result.data.team_role_requirements[0].role_name;
+    variables2.role_requirement_id = response1.result.data.team_requests[0].role_requirement_id;
 
     query = acceptJoinRequest1;
   } else {
-    variables2['role'] = 'mentor';
+    variables2.role = 'mentor';
 
     query = acceptJoinRequest2;
   }

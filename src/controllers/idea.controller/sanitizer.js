@@ -7,7 +7,7 @@ const addIdeaSanitizer = [cognito_sub];
 
 const deleteIdeaSanitizer = [body('id', 'Invalid Idea ID').exists().toInt()];
 
-const getIdeaSanitizer = [cognito_sub];
+const getIdeaSanitizer = [cognito_sub, query('id', 'Invalid Idea ID').optional().toInt()];
 
 const updateIdeaSanitizer = [cognito_sub, body('id', 'Invalid Idea ID').exists().toInt()];
 

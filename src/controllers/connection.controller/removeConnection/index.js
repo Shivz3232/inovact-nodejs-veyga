@@ -1,8 +1,8 @@
+const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserId } = require('./queries/queries');
 const { removeConnection: removeConnectionQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
-const { validationResult } = require('express-validator');
 
 const removeConnection = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);

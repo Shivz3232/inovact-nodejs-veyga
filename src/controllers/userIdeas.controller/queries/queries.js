@@ -104,6 +104,6 @@ const getUserIdeasByCognitoSub = `query getUserIdeasByCognitoSub($cognito_sub: S
   }`;
 
 module.exports = {
-    getUserIdeasById,
-    getUserIdeasByCognitoSub,
+  getUserIdeasById,
+  getUserIdeasByCognitoSub,
 };

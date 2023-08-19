@@ -52,12 +52,11 @@ const createSchedule = async (cognito_sub) => {
           success: true,
           errors: '',
         };
-      } else {
-        return {
-          success: false,
-          errors: JSON.stringify(responseData.$metadata),
-        };
       }
+      return {
+        success: false,
+        errors: JSON.stringify(responseData.$metadata),
+      };
     })
     .catch((err) => {
       return {
@@ -86,12 +85,11 @@ const deleteSchedule = async (cognito_sub) => {
           success: true,
           errors: '',
         };
-      } else {
-        return {
-          success: false,
-          errors: JSON.stringify(responseData.$metadata),
-        };
       }
+      return {
+        success: false,
+        errors: JSON.stringify(responseData.$metadata),
+      };
     })
     .catch((err) => {
       return {

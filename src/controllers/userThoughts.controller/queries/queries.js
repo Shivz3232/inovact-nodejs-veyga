@@ -75,6 +75,6 @@ const getUserThoughtsWithCognitoSub = `query getUserThoughts($cognito_sub: Strin
   }`;
 
 module.exports = {
-    getUserThoughts,
-    getUserThoughtsWithCognitoSub,
+  getUserThoughts,
+  getUserThoughtsWithCognitoSub,
 };
