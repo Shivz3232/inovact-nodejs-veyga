@@ -191,6 +191,7 @@ The error handling middleware sends an error response, which has the following f
 
 When running in development mode, the error response also contains the error stack.
 The app has a utility ApiError class to which you can attach a response code and a message, and then throw it from anywhere (catchAsync will catch it).
+
 For example, if you are trying to get a user from the DB who is not found, and you want to send a 404 error, the code should look something like:
 
 ```javascript
