@@ -231,7 +231,19 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID",
 };
+```
+Copy the Firebase configuration and paste it into a .env file or set it as environment variables in your Node.js project.
 
+Update your project code to initialize Firebase with the configuration:
+```javascript
+const firebase = require("@firebase/app");
+require("@firebase/auth");
+
+const firebaseConfig = {
+  // Your Firebase configuration here
+};
+
+firebase.initializeApp(firebaseConfig);
 ```
 
 ## Logging
