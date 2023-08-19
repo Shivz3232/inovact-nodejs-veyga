@@ -28,7 +28,7 @@ Set the environment variables:
 6. FIREBASE_ADMIN_CONFIG
 7. FIREBASE_PRIVATE_KEY
 8. KMS_KEY_ID
-9. KMS_REGION = ap-south-1
+9. KMS_REGION
 10. KMS_CONTEXT_PURPOSE
 11. KMS_GENERATOR_KEY_ID
 
@@ -153,15 +153,8 @@ src\
 To view the list of available APIs and their specifications, run the server and go to `http://localhost:3000/v1/docs` in your browser. This documentation page is automatically generated using the [swagger](https://swagger.io/) definitions written as comments in the route files.
 
 ### API Endpoints
-Base URL : `https://cg2nx999xa.execute-api.ap-south-1.amazonaws.com`
+Base URL : [`http://api.inovact.in`]
 List of available routes:
-
-**Auth routes**:\
-`POST /dev/mobile/register` - register\
-`POST /dev/mobile/login` - login\
-`POST /prod/mobile/refresh` - refresh auth tokens\
-`POST /dev/mobile/password/sendcode` - send reset password email\
-`POST /dev/mobile/password/usecode` - reset password\
 
 **User routes**:\
 `POST /v1/users` - create a user\
@@ -215,6 +208,30 @@ const userController = require('../../controllers/user.controller');
 const router = express.Router();
 
 router.post('/users', validate(userValidation.createUser), userController.createUser);
+```
+## Authentication
+Firebase Configuration
+Before using Firebase for authorization, you need to set up a Firebase project and obtain the necessary configuration credentials. Here's how to do it:
+
+Go to the Firebase Console at https://console.firebase.google.com/ and create a new project.
+
+In your Firebase project, navigate to "Project settings" and then the "General" tab.
+
+Scroll down to the "Your apps" section and click on the web app icon (</>) to add a web app to your project.
+
+Register your app by providing a nickname (e.g., "My Node.js App").
+
+Firebase will provide you with a Firebase SDK snippet that contains your Firebase configuration. It should look something like this:
+```javascript
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
+
 ```
 
 ## Logging
