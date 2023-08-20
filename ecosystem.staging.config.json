@@ -1,0 +1,12 @@
+{
+  "apps": [
+    {
+      "name": "inovact-nodejs-veyga",
+      "script": "src/index.js",
+      "instances": 1,
+      "autorestart": true,
+      "watch": false,
+      "time": true
+    }
+  ]
+}
