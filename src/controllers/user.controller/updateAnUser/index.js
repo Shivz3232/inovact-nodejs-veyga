@@ -26,7 +26,7 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.first_name) variables.changes.first_name = req.body.first_name;
   if (req.body.last_name) variables.changes.last_name = req.body.last_name;
   if (req.body.bio) variables.changes.bio = req.body.bio;
-  console.log(req.body.bio);
+
   if (req.body.avatar) variables.changes.avatar = req.body.avatar;
   if (req.body.phone_number) {
     const unique = await checkUniquenessOfPhoneNumber(req.body.phone_number);
