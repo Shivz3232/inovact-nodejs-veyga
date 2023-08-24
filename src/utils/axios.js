@@ -33,23 +33,23 @@ async function chooseHasuraInstance() {
 }
 
 const createInstance = async () => {
-  let hasuraInstance;
-
-  if (config.NODE_ENV === 'production') {
-    hasuraInstance = await chooseHasuraInstance();
-  }
-
   let baseURL = config.hasuraApi;
   const headers = {
     'content-type': 'application/json',
     'x-hasura-admin-secret': config.hasuraAdminSecret,
   };
 
-  if (hasuraInstance) {
-    const instanceAttributes = hasuraInstance.Attributes;
+  if (config.NODE_ENV !== 'development') {
+    const hasuraInstance = await chooseHasuraInstance();
 
-    baseURL = `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}/v1/graphql`;
-    headers['x-hasura-admin-secret'] = null;
+    if (hasuraInstance) {
+      const instanceAttributes = hasuraInstance.Attributes;
+
+      baseURL = `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}/v1/graphql`;
+      headers['x-hasura-admin-secret'] = null;
+    } else {
+      logger.debug('No hasura instances found, continuing with default instance');
+    }
   }
 
   return axios.create({

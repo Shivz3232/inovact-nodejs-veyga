@@ -8,7 +8,7 @@ const addTeamDocSanitizer = [cognito_sub, body('team_id', 'Invalid Team ID provi
 
 const deleteMemberSanitizer = [cognito_sub, body('team_id', 'Invalid Team ID').exists().toInt(), body('user_id', 'Invalid User ID provided').exists().toInt()];
 
-const joinTeamSanitizer = [cognito_sub, body('team_id', 'Invalid Team ID').exists().toInt(), body('role_requirement_id', 'Invalid Role requirement ID').exists().toInt()];
+const joinTeamSanitizer = [cognito_sub, body('team_id', 'Invalid Team ID').exists().toInt(), body('role_requirement_id', 'Invalid Role requirement ID').optional().toInt()];
 
 const rejectJoinRequestSanitizer = [cognito_sub, body('request_id', 'Invalid Request ID').exists().toInt()];
 

@@ -6,7 +6,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const envVarsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string().valid('production', 'development', 'test'),
+    NODE_ENV: Joi.string().valid('production', 'development', 'staging', 'test').default('development'),
     PORT: Joi.number().default(3000),
     HASURA_ADMIN_SECRET: Joi.string().required(),
     HASURA_API: Joi.string().required(),

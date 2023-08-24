@@ -1,9 +1,12 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-labels */
+/* eslint-disable no-restricted-syntax */
+const { validationResult } = require('express-validator');
 const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired } = require('./queries/mutations');
-const { getUser, getProject } = require('./queries/queries');
+const { getUser } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
-const { validationResult } = require('express-validator');
 
 const addProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -15,6 +18,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub, description, title, status, completed, link, looking_for_members, looking_for_mentors, roles_required, mentions, project_tags, documents } = req.body;
+
   // Find user id
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
@@ -22,12 +26,12 @@ const addProject = catchAsync(async (req, res) => {
 
   // Insert project
   const projectData = {
-    description: description,
-    title: title,
+    description,
+    title,
     user_id: response1.result.data.user[0].id,
-    status: status,
-    completed: completed,
-    link: link,
+    status,
+    completed,
+    link,
   };
 
   let teamCreated;
@@ -35,7 +39,7 @@ const addProject = catchAsync(async (req, res) => {
   // Create a default team
 
   if (looking_for_members || looking_for_mentors) {
-    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : req.body.title + ' team', req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
+    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
     projectData.team_id = teamCreated.team_id;
   } else {
     projectData.team_id = null;
@@ -56,18 +60,21 @@ const addProject = catchAsync(async (req, res) => {
 
     if (!response1.success) break role_if;
 
-    let skills_data = [];
+    const skills_data = [];
 
     for (const i in roles_required) {
-      for (const skill of roles_required[i].skills_required) {
-        skills_data.push({
-          role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
-          skill_name: skill,
-        });
+      // eslint-disable-next-line no-prototype-builtins
+      if (roles_required.hasOwnProperty(i)) {
+        for (const skill of roles_required[i].skills_required) {
+          skills_data.push({
+            role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
+            skill_name: skill,
+          });
+        }
       }
     }
 
-    const response2 = await Hasura(addSkillsRequired, { objects: skills_data });
+    await Hasura(addSkillsRequired, { objects: skills_data });
   }
 
   // Insert mentions
@@ -84,7 +91,7 @@ const addProject = catchAsync(async (req, res) => {
     };
 
     // @TODO Fallback if mentions fail to be inserted
-    const response3 = await Hasura(addMentions, mentionsData);
+    await Hasura(addMentions, mentionsData);
   }
 
   // Insert tags
@@ -109,17 +116,17 @@ const addProject = catchAsync(async (req, res) => {
     };
 
     // @TODO Fallback if tags fail to be inserted
-    const response4 = await Hasura(addTags, tagsData);
+    await Hasura(addTags, tagsData);
   }
 
   // Insert Documents
-  if (documents?.length) {
+  if (documents && req.body.documents.length) {
     const documents = req.body.documents.map((document) => {
-      return res.json({
+      return {
         name: document.name,
         url: document.url,
         project_id: response2.result.data.insert_project.returning[0].id,
-      });
+      };
     });
 
     const documentsData = {
@@ -127,7 +134,7 @@ const addProject = catchAsync(async (req, res) => {
     };
 
     // @TODO Fallback if documents fail to be inserted
-    const response6 = await Hasura(addDocuments, documentsData);
+    await Hasura(addDocuments, documentsData);
   }
 
   return res.status(201).json({
