@@ -1,8 +1,9 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { possibleToJoinTeam } = require('./queries/queries.js');
+const { possibleToJoinTeam } = require('./queries/queries');
 const { addTeamRequestByStudent, addTeamRequestByMentor, addTeamRequestByEntrepreneurAsMember, addTeamRequestByEntrepreneurAsMentor } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
+const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 
 const joinTeam = catchAsync(async (req, res) => {
@@ -24,7 +25,7 @@ const joinTeam = catchAsync(async (req, res) => {
 
   const response = await Hasura(possibleToJoinTeam, variables);
 
-  if (response.result.data.team.length == 0)
+  if (response.result.data.team.length === 0)
     return res.status(400).json({
       success: false,
       errorCode: 'NotFoundError',
@@ -61,7 +62,7 @@ const joinTeam = catchAsync(async (req, res) => {
   let query;
   let variables1;
 
-  if (response.result.data.user[0].role == 'student') {
+  if (response.result.data.user[0].role === 'student') {
     if (!response.result.data.team[0].looking_for_members)
       return res.status(400).json({
         success: false,
@@ -77,8 +78,8 @@ const joinTeam = catchAsync(async (req, res) => {
       roleRequirementId,
       user_id,
     };
-  } else if (response.result.data.user[0].role == 'entrepreneur') {
-    if (response.result.data.team[0].creator.role == 'student') {
+  } else if (response.result.data.user[0].role === 'entrepreneur') {
+    if (response.result.data.team[0].creator.role === 'student') {
       if (!response.result.data.team[0].looking_for_mentors)
         return res.status(400).json({
           success: false,
@@ -129,7 +130,7 @@ const joinTeam = catchAsync(async (req, res) => {
     };
   }
 
-  const response1 = await Hasura(query, variables1);
+  await Hasura(query, variables1);
 
   // Notify the user
   await notify(
@@ -137,7 +138,7 @@ const joinTeam = catchAsync(async (req, res) => {
     team_id,
     user_id,
     response.result.data.notifier_ids.map((x) => x.user_id)
-  ).catch(console.log);
+  ).catch(logger.error);
 
   return res.json({
     success: true,
