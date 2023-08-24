@@ -55,19 +55,24 @@ app.options('*', cors());
 app.use(prober);
 
 // API to check server status
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.send('PONG');
 });
 
-app.get('/status', (req, res) => {
+app.get('/status', (_, res) => {
   res.send('OK');
+});
+
+// For verifying android app
+app.get('/.well-known/assetlinks.json', (_, res) => {
+  res.sendFile(`${__dirname}/public/assetlinks.json`);
 });
 
 // v1 api routes
 app.use('/v1', routes);
 
 // send back a 404 error for any unknown api request
-app.use((req, res, next) => {
+app.use((_, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 
