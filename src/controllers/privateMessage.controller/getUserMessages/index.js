@@ -17,8 +17,6 @@ const getUserMessages = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(getUserConnections, { cognito_sub });
 
-  const user_id = parseInt(response1.result.data.user[0].id, 10);
-
   const variables = {
     connection_ids: response1.result.data.connections.map((connection) => connection.id),
   };

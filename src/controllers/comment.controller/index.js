@@ -1,4 +1,5 @@
 /* eslint-disable prefer-destructuring */
+const logger = require('../../config/logger.js');
 const addPostComment = require('./helpers/addPostComment');
 const addIdeaComment = require('./helpers/addIdeaComment');
 const addThoughtComment = require('./helpers/addThoughtComment');
