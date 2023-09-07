@@ -41,7 +41,7 @@ const likeThought = catchAsync(async (req, res) => {
   }
   const response3 = await Hasura(delete_like, variable);
 
-  return res.status(204).json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',
