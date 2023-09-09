@@ -1,23 +1,25 @@
-const admin = require('firebase-admin');
 const catchAsync = require('../../utils/catchAsync');
+const { getUserId, UpdateUserFCMToken } = require('./queries/queries');
+const { query: Hasura } = require('../../utils/hasura');
 
 const sendNotification = catchAsync(async (req, res) => {
-  const message = {
-    token: 'dURtxOPjTDCu99GXLLXHz4:APA91bH7skBurMKmoJdclQlMlvB9svc2cOpYgatxeKXYi91qvbj4ag-s1ePaN-pbLFPfqeVI4puk5d09O5BjQkYTwcSwQ-DTcu0KihaQoOQDae7zkItZ_GZZtponvgR8YIxliI7mvcAk',
-    notification: {
-      // 
-      title: 'Hey Apoorv, How ya doing?',
-      body: 'This is the body of the notification',
-    },
-    data: {
-      customKey: 'customValue',
-    },
-  };
+  const { fcm_token, cognito_sub } = req.body;
 
-  const response = await admin.messaging().send(message);
-  return res.status(200).json({ success: true, response });
+  // Find user id
+  const response = await Hasura(getUserId, {
+    cognito_sub: { _eq: cognito_sub },
+  });
+
+  console.log(response);
+
+  await Hasura(UpdateUserFCMToken, {
+    userId: response.result.data.user[0].id,
+    fcmToken: fcm_token,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
 });
 
-module.exports = {
-  sendNotification,
-};
+module.exports = { sendNotification };

@@ -25,66 +25,82 @@ const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+    needAuthentication: true,
   },
   {
     path: '/users',
     route: allUsersRoute,
+    needAuthentication: true,
   },
   {
     path: '/post',
     route: projectRoute,
+    needAuthentication: true,
   },
   {
     path: '/idea',
     route: ideaRoute,
+    needAuthentication: true,
   },
   {
     path: '/thoughts',
     route: thoughtRoute,
+    needAuthentication: true,
   },
   {
     path: '/connections',
     route: connectionRoute,
+    needAuthentication: true,
   },
   {
     path: '/user',
     route: userRoute,
+    needAuthentication: true,
   },
   {
     path: '/team',
     route: teamRoute,
+    needAuthentication: true,
   },
   {
     path: '/interests',
     route: interestRoute,
+    needAuthentication: true,
   },
   {
     path: '/skills',
     route: skillRoute,
+    needAuthentication: true,
   },
   {
     path: '/roles',
     route: roleRoute,
+    needAuthentication: true,
   },
   {
     path: '/comment',
     route: commentRoute,
+    needAuthentication: true,
   },
   {
     path: '/notifications',
     route: notificationRoute,
+    needAuthentication: true,
   },
   {
     path: '/messaging',
     route: privateMessageRoute,
+    needAuthentication: true,
   },
   {
     path: '/tags',
     route: tagRoute,
+    needAuthentication: true,
   },
   {
     path: '/fcm',
     route: fcmRoute,
+    needAuthentication: true,
   },
 ];
 
@@ -97,7 +113,11 @@ const devRoutes = [
 ];
 
 defaultRoutes.forEach((route) => {
-  router.use(route.path, firebaseAuthorizer, route.route);
+  if (route.needAuthentication) {
+    router.use(route.path, firebaseAuthorizer, route.route);
+  } else {
+    router.use(route.path, route.route);
+  }
 });
 
 /* istanbul ignore next */
