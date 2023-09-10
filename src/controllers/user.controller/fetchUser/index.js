@@ -3,6 +3,8 @@ const { query: Hasura } = require('../../../utils/hasura');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { getUser, getUserById } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_INTERVAL_MS = 5000;
 
 const fetchUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -34,21 +36,33 @@ const fetchUser = catchAsync(async (req, res) => {
     };
   }
 
-  const response = await Hasura(query, variables);
+  let retryCount = 0;
+  let userFound = false;
+  let userData = null;
 
-  const responseData = response.result.data;
+  while (retryCount < MAX_RETRY_ATTEMPTS && !userFound) {
+    const response = await Hasura(query, variables);
 
-  if (!responseData || responseData.user.length === 0) {
+    const responseData = response.result.data;
+
+    if (responseData && responseData.user.length > 0) {
+      userData = cleanUserdoc(responseData.user[0], responseData.connections[0]);
+      userFound = true;
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, RETRY_INTERVAL_MS));
+      retryCount++;
+    }
+  }
+
+  if (!userFound) {
     return res.status(400).json({
       success: false,
       errorCode: 'UserNotFound',
-      errorMessage: 'No user found with this cognito sub',
+      errorMessage: 'User data not available after retrying.',
     });
   }
 
-  const cleanedUserDoc = cleanUserdoc(responseData.user[0], responseData.connections[0]);
-
-  return res.json(cleanedUserDoc);
+  return res.json(userData);
 });
 
 module.exports = fetchUser;
