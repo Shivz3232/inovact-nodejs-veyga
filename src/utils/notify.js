@@ -1,29 +1,33 @@
-const AWS = require('aws-sdk');
-const config = require('../config/config');
+const admin = require('firebase-admin');
+const { query: Hasura } = require('./hasura');
+const { getFcmToken } = require('./queries/queries');
 
-const sqs = new AWS.SQS({
-  region: config.region,
-});
+const notify = (entityTypeId, entityId, actorId, userId) => {
+  const fcmToken = Hasura(getFcmToken, {
+    id: { _eq: userId },
+  }).then((res) => res.json().data);
 
-const notify = (entityTypeId, entityId, actorId, notifierIds) =>
-  new Promise((resolve, reject) => {
-    const params = {
-      MessageBody: JSON.stringify({
-        entityTypeId,
-        entityId,
-        actorId,
-        notifierIds,
-      }),
-      QueueUrl: config.notifyQueueUrl,
+  new Promise(async (resolve, reject) => {
+    const message = {
+      fcmToken,
+      notification: {
+        title,
+        body: JSON.stringify({
+          entityTypeId,
+          entityId,
+          actorId,
+          notifierIds,
+        }),
+      },
+      data,
     };
-
-    sqs.sendMessage(params, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
+    try {
+      const response = await admin.messaging().send(message);
+      resolve(response);
+    } catch (error) {
+      reject(error);
+    }
   });
+};
 
 module.exports = notify;
