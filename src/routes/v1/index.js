@@ -15,6 +15,7 @@ const notificationRoute = require('./notification.route');
 const projectRoute = require('./project.route');
 const tagRoute = require('./getTags.route');
 const docsRoute = require('./docs.route');
+const fcmRoute = require('./fcm.route');
 const config = require('../../config/config');
 const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 const propellRoute = require('./propell.route');
@@ -95,6 +96,11 @@ const defaultRoutes = [
   {
     path: '/tags',
     route: tagRoute,
+    needAuthentication: true,
+  },
+  {
+    path: '/fcm',
+    route: fcmRoute,
     needAuthentication: true,
   },
   {
