@@ -18,6 +18,7 @@ const docsRoute = require('./docs.route');
 const fcmRoute = require('./fcm.route');
 const config = require('../../config/config');
 const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
+const propellRoute = require('./propell.route');
 
 const router = express.Router();
 
@@ -101,6 +102,11 @@ const defaultRoutes = [
     path: '/fcm',
     route: fcmRoute,
     needAuthentication: true,
+  },
+  {
+    path: '/propell',
+    route: propellRoute,
+    needAuthentication: false,
   },
 ];
 

@@ -42,7 +42,7 @@ const deleteThought = catchAsync(async (req, res) => {
   };
   const response = await Hasura(delete_thought, variables);
 
-  return res.status(204).json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',

@@ -4,6 +4,7 @@ const { getUserId, getideaId } = require('./queries/queries');
 const notify = require('../../../utils/notify.deprecated');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const likeIdea = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -45,7 +46,7 @@ const likeIdea = catchAsync(async (req, res) => {
     // Notify the user
     await notify(6, idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(logger.error);
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       errorCode: '',
       errorMessage: '',
@@ -54,7 +55,7 @@ const likeIdea = catchAsync(async (req, res) => {
   }
   const response3 = await Hasura(delete_like, variable);
 
-  return res.status(204).json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',

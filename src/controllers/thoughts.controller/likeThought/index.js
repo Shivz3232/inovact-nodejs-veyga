@@ -4,6 +4,7 @@ const { getUserId, getThoughtId } = require('./queries/queries');
 const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const likeThought = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -26,11 +27,11 @@ const likeThought = catchAsync(async (req, res) => {
   };
   const response = await Hasura(getThoughtId, variable);
 
-  if (response.result.data.thought_likes.length == 0) {
+  if (response.result.data.thought_likes.length === 0) {
     const response2 = await Hasura(add_likeThought, variable);
 
     // Notify the user
-    await notify(11, thought_id, response1.result.data.user[0].id, [response.result.data.thoughts[0].user_id]).catch(console.log);
+    await notify(11, thought_id, response1.result.data.user[0].id, [response.result.data.thoughts[0].user_id]).catch(logger.error);
 
     return res.status(201).json({
       success: true,
@@ -41,7 +42,7 @@ const likeThought = catchAsync(async (req, res) => {
   }
   const response3 = await Hasura(delete_like, variable);
 
-  return res.status(204).json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',

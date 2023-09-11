@@ -57,7 +57,7 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
 
   const response2 = await Hasura(deleteTeamMember, variables2);
 
-  return res.status(204).json({
+  return res.status(200).json({
     success: true,
     errorCode: '',
     errorMessage: '',
