@@ -1,10 +1,10 @@
 const admin = require('firebase-admin');
-const { query: Hasura } = require('./hasura');
-const { getFcmToken } = require('./queries/queries');
+const { query: Hasura } = require('../hasura');
+const { getFcmToken } = require('./queries');
 
-const notify = (entityTypeId, entityId, actorId, userId) => {
+const notify = (entityTypeId, entityId, actorId, notifierIds) => {
   const fcmToken = Hasura(getFcmToken, {
-    id: { _eq: userId },
+    id: { _eq: notifierIds },
   }).then((res) => res.json().data);
 
   new Promise(async (resolve, reject) => {
@@ -19,7 +19,9 @@ const notify = (entityTypeId, entityId, actorId, userId) => {
           notifierIds,
         }),
       },
-      data,
+      data: {
+        customKey: 'customValue',
+      },
     };
     try {
       const response = await admin.messaging().send(message);
