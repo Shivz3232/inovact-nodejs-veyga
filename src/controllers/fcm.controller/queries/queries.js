@@ -1,19 +1,9 @@
-const getUserId = `query getUser($cognito_sub: String_comparison_exp) {
-  user(where: { cognito_sub: $cognito_sub }) {
-    id
-  }
-}
-`;
-
-const UpdateUserFCMToken = `mutation UpdateUserFCMToken($userId: Int!, $fcmToken: String!) {
-  update_user_by_pk(pk_columns: {id: $userId}, _set: {fcm_token: $fcmToken}) {
-    id
-    fcm_token
-  }
+const UpdateUserFCMToken = `mutation UpdateUserFCMToken($cognito_sub: String!, $fcm_token: String!) 
+{ update_user(where: {cognito_sub: {_eq: $cognito_sub}}, _set: {fcm_token: $fcm_token}) 
+{ affected_rows }
 }
 `;
 
 module.exports = {
-  getUserId,
   UpdateUserFCMToken,
 };
