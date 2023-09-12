@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const { add_likeIdea, delete_like } = require('./queries/mutations');
 const { getUserId, getideaId } = require('./queries/queries');
-const notify = require('../../../utils/notify.deprecated');
+const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 const logger = require('../../../config/logger');

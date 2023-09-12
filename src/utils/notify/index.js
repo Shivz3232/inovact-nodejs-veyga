@@ -1,17 +1,24 @@
+/* eslint-disable */
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
 const { getFcmToken } = require('./queries');
 
-const notify = (entityTypeId, entityId, actorId, notifierIds) => {
-  const fcmToken = Hasura(getFcmToken, {
-    id: { _eq: notifierIds },
-  }).then((res) => res.json().data);
+const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
+  try {
+    const response = await Hasura(getFcmToken, {
+      id: { _in: notifierIds },
+    });
 
-  new Promise(async (resolve, reject) => {
+    const {
+      result: { data },
+    } = response;
+
+    const fcmTokens = data.map((item) => item.fcmToken);
+
     const message = {
-      fcmToken,
+      tokens: fcmTokens,
       notification: {
-        title,
+        title: 'Your Notification Title',
         body: JSON.stringify({
           entityTypeId,
           entityId,
@@ -23,13 +30,11 @@ const notify = (entityTypeId, entityId, actorId, notifierIds) => {
         customKey: 'customValue',
       },
     };
-    try {
-      const response = await admin.messaging().send(message);
-      resolve(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
+
+    const response1 = await admin.messaging().sendEachForMulticast(message);
+  } catch (error) {
+    throw error;
+  }
 };
 
 module.exports = notify;
