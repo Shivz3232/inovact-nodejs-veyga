@@ -1,13 +1,21 @@
 /* eslint-disable */
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
-const { getFcmToken } = require('./queries');
+const getUser = require('./queries/queries');
+const { getFcmToken } = require('./queries/mutations');
+const constructNotificationMessage = require('./constructNotificationMessage');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
   try {
     const response = await Hasura(getFcmToken, {
       id: { _in: notifierIds },
     });
+
+    const response1 = await Hasura(getUser, {
+      id: { _eq: actorId },
+    });
+
+    const name = response1.result.data.user[0].first_name;
 
     const {
       result: { data },
@@ -18,7 +26,7 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
     const message = {
       tokens: fcmTokens,
       notification: {
-        title: 'Your Notification Title',
+        title: constructNotificationMessage(entityId, name),
         body: JSON.stringify({
           entityTypeId,
           entityId,
@@ -31,7 +39,7 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
       },
     };
 
-    const response1 = await admin.messaging().sendEachForMulticast(message);
+    const response2 = await admin.messaging().sendEachForMulticast(message);
   } catch (error) {
     throw error;
   }
