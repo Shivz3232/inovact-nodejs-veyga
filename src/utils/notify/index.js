@@ -1,8 +1,7 @@
 /* eslint-disable */
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
-const { getUser } = require('./queries/queries');
-const { getFcmToken } = require('./queries/mutations');
+const { getUser, getFcmToken } = require('./queries/queries');
 const constructNotificationMessage = require('./constructNotificationMessage');
 const constructNotificationBody = require('./constructNotificationBody');
 
