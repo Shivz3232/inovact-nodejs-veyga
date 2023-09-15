@@ -4,9 +4,11 @@ const { query: Hasura } = require('../hasura');
 const { getUser, getFcmToken } = require('./queries/queries');
 const constructNotificationMessage = require('./constructNotificationMessage');
 const constructNotificationBody = require('./constructNotificationBody');
+const notify_deprecated = require('../notify.deprecated');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
   try {
+    await notify_deprecated(entityTypeId, entityId, actorId, notifierIds);
     const response = await Hasura(getFcmToken, {
       userId: notifierIds,
     });
