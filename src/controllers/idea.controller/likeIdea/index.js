@@ -4,6 +4,7 @@ const { getUserId, getideaId } = require('./queries/queries');
 const notify = require('../../../utils/notify');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const logger = require('../../../config/logger');
 
 const likeIdea = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
