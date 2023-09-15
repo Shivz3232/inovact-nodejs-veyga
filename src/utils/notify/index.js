@@ -1,44 +1,41 @@
 /* eslint-disable */
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
-const getUser = require('./queries/queries');
+const { getUser } = require('./queries/queries');
 const { getFcmToken } = require('./queries/mutations');
 const constructNotificationMessage = require('./constructNotificationMessage');
+const constructNotificationBody = require('./constructNotificationBody');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
   try {
     const response = await Hasura(getFcmToken, {
-      id: { _in: notifierIds },
+      userId: notifierIds,
     });
 
     const response1 = await Hasura(getUser, {
-      id: { _eq: actorId },
+      userId: actorId,
     });
 
     const name = response1.result.data.user[0].first_name;
 
     const {
-      result: { data },
+      result: {
+        data: { user },
+      },
     } = response;
 
-    const fcmTokens = data.map((item) => item.fcmToken);
+    const fcmTokens = user.map((item) => item.fcm_token);
 
     const message = {
       tokens: fcmTokens,
       notification: {
-        title: constructNotificationMessage(entityId, name),
-        body: JSON.stringify({
-          entityTypeId,
-          entityId,
-          actorId,
-          notifierIds,
-        }),
+        title: constructNotificationMessage(entityTypeId, name),
+        body: constructNotificationBody(entityTypeId),
       },
       data: {
         customKey: 'customValue',
       },
     };
-
     const response2 = await admin.messaging().sendEachForMulticast(message);
   } catch (error) {
     throw error;
