@@ -1,5 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
-const { UpdateUserFCMToken } = require('./queries/queries');
+const { UpdateUserFCMToken } = require('./queries/mutation');
 const { query: Hasura } = require('../../utils/hasura');
 
 const saveToken = catchAsync(async (req, res) => {
@@ -10,7 +10,7 @@ const saveToken = catchAsync(async (req, res) => {
     fcm_token,
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
   });
 });
