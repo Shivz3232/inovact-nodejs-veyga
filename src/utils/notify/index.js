@@ -2,8 +2,9 @@
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
 const { getUser, getFcmToken } = require('./queries/queries');
-const constructNotificationMessage = require('./constructNotificationMessage');
-const constructNotificationBody = require('./constructNotificationBody');
+const constructNotificationMessage = require('./helper/constructNotificationMessage');
+const constructNotificationBody = require('./helper/constructNotificationBody');
+const constructData = require('./helper/constructData');
 const notify_deprecated = require('../notify.deprecated');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
@@ -29,13 +30,12 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
 
     const message = {
       tokens: fcmTokens,
+      android_channel_id:'default_channel_id',
       notification: {
         title: constructNotificationMessage(entityTypeId, name),
         body: constructNotificationBody(entityTypeId),
       },
-      data: {
-        customKey: 'customValue',
-      },
+      ...constructData(entityTypeId, entityId, actorId );
     };
     const response2 = await admin.messaging().sendEachForMulticast(message);
   } catch (error) {
