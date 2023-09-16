@@ -36,5 +36,4 @@ function constructData(entityTypeId, entityId, actorId) {
   return null;
 }
 
-console.log(constructData(6, 1, 1));
 module.exports = constructData;
