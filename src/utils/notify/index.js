@@ -39,6 +39,7 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
     };
 
     console.log(message);
+    
     const response2 = await admin.messaging().sendEachForMulticast(message);
   } catch (error) {
     throw error;
