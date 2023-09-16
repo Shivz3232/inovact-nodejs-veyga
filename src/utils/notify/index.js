@@ -30,13 +30,15 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
 
     const message = {
       tokens: fcmTokens,
-      android_channel_id:'default_channel_id',
+      android_channel_id: 'default_channel_id',
       notification: {
         title: constructNotificationMessage(entityTypeId, name),
         body: constructNotificationBody(entityTypeId),
       },
-      ...constructData(entityTypeId, entityId, actorId );
+      ...constructData(entityTypeId, entityId, actorId),
     };
+
+    console.log(message);
     const response2 = await admin.messaging().sendEachForMulticast(message);
   } catch (error) {
     throw error;
