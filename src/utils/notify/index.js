@@ -1,4 +1,3 @@
-/* eslint-disable */
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
 const { getUser, getFcmToken } = require('./queries/queries');
@@ -26,20 +25,23 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
       },
     } = response;
 
-    const fcmTokens = user.map((item) => item.fcm_token);
+    const { click_action, data } = constructData(entityTypeId, entityId, actorId);
 
-    const message = {
-      tokens: fcmTokens,
-      android_channel_id: 'default_channel_id',
-      notification: {
-        title: constructNotificationMessage(entityTypeId, name),
-        body: constructNotificationBody(entityTypeId),
-      },
-      ...constructData(entityTypeId, entityId, actorId),
-    };
+    const messages = user.map((user) => {
+      return {
+        token: user.fcm_token,
+        android: {
+          notification: {
+            title: constructNotificationMessage(entityTypeId, name),
+            body: constructNotificationBody(entityTypeId),
+            clickAction: click_action,
+          },
+        },
+        data,
+      };
+    });
 
-    console.log(message);
-    const response2 = await admin.messaging().sendEachForMulticast(message);
+    await admin.messaging().sendEach(messages);
   } catch (error) {
     throw error;
   }
