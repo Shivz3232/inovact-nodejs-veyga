@@ -1,4 +1,7 @@
 function constructData(entityTypeId, entityId, actorId) {
+  entityId = String(entityId);
+  actorId = String(actorId);
+
   if (entityTypeId >= 1 && entityTypeId <= 5)
     return {
       click_action: 'OPEN_PROJECT_ACTIVITY',

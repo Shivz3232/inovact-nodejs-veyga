@@ -26,18 +26,22 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
       },
     } = response;
 
-    const fcmTokens = user.map((item) => item.fcm_token);
     const { click_action, data } = constructData(entityTypeId, entityId, actorId);
 
-    const message = {
-      tokens: fcmTokens,
-      notification: {
-        title: constructNotificationMessage(entityTypeId, name),
-        body: constructNotificationBody(entityTypeId),
-      },
-      data,
-    };
-    const response2 = await admin.messaging().sendEachForMulticast(message);
+    const messages = user.map((user) => {
+      return {
+        token: user.fcm_token,
+        android: {
+          notification: {
+            title: constructNotificationMessage(entityTypeId, name),
+            body: constructNotificationBody(entityTypeId),
+            clickAction: click_action,
+          },
+        },
+        data,
+      };
+    });
+    await admin.messaging().sendEach(messages);
   } catch (error) {
     logger.error(error);
   }
