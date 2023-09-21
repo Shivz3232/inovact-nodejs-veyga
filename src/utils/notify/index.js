@@ -1,10 +1,10 @@
-/* eslint-disable */
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
 const { getUser, getFcmToken } = require('./queries/queries');
 const constructNotificationMessage = require('./helper/constructNotificationMessage');
 const constructNotificationBody = require('./helper/constructNotificationBody');
 const constructData = require('./helper/constructData');
+const logger = require('../../config/logger');
 const notify_deprecated = require('../notify.deprecated');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
@@ -27,23 +27,19 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
     } = response;
 
     const fcmTokens = user.map((item) => item.fcm_token);
+    const { click_action, data } = constructData(entityTypeId, entityId, actorId);
 
     const message = {
       tokens: fcmTokens,
-      android_channel_id: 'default_channel_id',
       notification: {
         title: constructNotificationMessage(entityTypeId, name),
         body: constructNotificationBody(entityTypeId),
       },
-      ...constructData(entityTypeId, entityId, actorId),
+      data,
     };
-
-    console.log(message);
-    
     const response2 = await admin.messaging().sendEachForMulticast(message);
   } catch (error) {
-    throw error;
+    logger.error(error);
   }
 };
-
 module.exports = notify;
