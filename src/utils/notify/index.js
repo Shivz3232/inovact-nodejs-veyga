@@ -4,6 +4,7 @@ const { getUser, getFcmToken } = require('./queries/queries');
 const constructNotificationMessage = require('./helper/constructNotificationMessage');
 const constructNotificationBody = require('./helper/constructNotificationBody');
 const constructData = require('./helper/constructData');
+const logger = require('../../config/logger');
 const notify_deprecated = require('../notify.deprecated');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
@@ -40,11 +41,9 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
         data,
       };
     });
-
     await admin.messaging().sendEach(messages);
   } catch (error) {
-    throw error;
+    logger.error(error);
   }
 };
-
 module.exports = notify;
