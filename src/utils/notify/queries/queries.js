@@ -1,17 +1,12 @@
-const getUser = `query GetUserById($userId: Int!) {
-  user(where: { id: { _eq: $userId } }) {
-    first_name
-  }
-}
-`;
-
-const getFcmToken = `query getFcmToken($userId: [Int!]) {
-  user(where: { id: { _in: $userId } }) {
+const getDetails = `query getDetails($notifierId: [Int!], $actorId: Int!) {
+  user(where: { id: { _in: $notifierId } }) {
   fcm_token
+  }
+  actor: user(where: { id: { _eq: $actorId } }) {
+    first_name
   }
 }`;
 
 module.exports = {
-  getUser,
-  getFcmToken,
+  getDetails,
 };

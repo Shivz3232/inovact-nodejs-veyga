@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 const { query: Hasura } = require('../hasura');
-const { getUser, getFcmToken } = require('./queries/queries');
+const { getDetails } = require('./queries/queries');
 const constructNotificationMessage = require('./helper/constructNotificationMessage');
 const constructNotificationBody = require('./helper/constructNotificationBody');
 const constructData = require('./helper/constructData');
@@ -10,21 +10,13 @@ const notify_deprecated = require('../notify.deprecated');
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
   try {
     await notify_deprecated(entityTypeId, entityId, actorId, notifierIds);
-    const response = await Hasura(getFcmToken, {
-      userId: notifierIds,
+    const response = await Hasura(getDetails, {
+      notifierId: notifierIds,
+      actorId: actorId,
     });
 
-    const response1 = await Hasura(getUser, {
-      userId: actorId,
-    });
-
-    const name = response1.result.data.user[0].first_name;
-
-    const {
-      result: {
-        data: { user },
-      },
-    } = response;
+    const user = response.result.data.user;
+    const name = response.result.data.actor;
 
     const { click_action, data } = constructData(entityTypeId, entityId, actorId);
 
