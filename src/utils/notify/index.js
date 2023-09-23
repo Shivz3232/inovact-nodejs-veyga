@@ -14,9 +14,10 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
       notifierId: notifierIds,
       actorId: actorId,
     });
+    console.log(response.result.data);
 
     const user = response.result.data.user;
-    const name = response.result.data.actor;
+    const name = response.result.data.actor[0].first_name;
 
     const constructDataResult = constructData(entityTypeId, entityId, actorId);
     const click_action = constructDataResult.click_action;
