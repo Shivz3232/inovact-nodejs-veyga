@@ -23,7 +23,7 @@ function constructData(entityTypeId, entityId, actorId) {
         thought_id: `${entityId}`,
       },
     };
-  if (entityTypeId === 17)
+  if (entityTypeId >= 16 && entityTypeId <= 20)
     return {
       click_action: 'OPEN_CHAT_LIST_ACTIVITY',
     };
