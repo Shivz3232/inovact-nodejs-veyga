@@ -8,7 +8,8 @@ const logger = require('../../config/logger');
 const notify_deprecated = require('../notify.deprecated');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
-  const { click_action, data } = constructData(entityTypeId, entityId, actorId);
+  const constructDataResult = constructData(entityTypeId, entityId, actorId);
+  const { click_action, data } = constructDataResult && { data: {} };
   try {
     await notify_deprecated(entityTypeId, entityId, actorId, notifierIds);
     const response = await Hasura(getDetails, {
