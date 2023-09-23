@@ -10,6 +10,13 @@ const notify_deprecated = require('../notify.deprecated');
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
   try {
     await notify_deprecated(entityTypeId, entityId, actorId, notifierIds);
+    const response = await Hasura(getDetails, {
+      notifierId: notifierIds,
+      actorId: actorId,
+    });
+
+    const user = response.result.data.user;
+    const name = response.result.data.actor;
 
     const constructDataResult = constructData(entityTypeId, entityId, actorId);
     const click_action = constructDataResult.click_action;
@@ -18,14 +25,6 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
     if (constructDataResult.data) {
       data = constructDataResult.data || {};
     }
-
-    const response = await Hasura(getDetails, {
-      notifierId: notifierIds,
-      actorId: actorId,
-    });
-
-    const user = response.result.data.user;
-    const name = response.result.data.actor;
 
     const messages = user.map((user) => {
       return {
