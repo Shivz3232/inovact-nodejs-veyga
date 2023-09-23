@@ -8,6 +8,7 @@ const logger = require('../../config/logger');
 const notify_deprecated = require('../notify.deprecated');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
+  const { click_action, data } = constructData(entityTypeId, entityId, actorId);
   try {
     await notify_deprecated(entityTypeId, entityId, actorId, notifierIds);
     const response = await Hasura(getDetails, {
@@ -17,8 +18,6 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
 
     const user = response.result.data.user;
     const name = response.result.data.actor;
-
-    const { click_action, data } = constructData(entityTypeId, entityId, actorId);
 
     const messages = user.map((user) => {
       return {
