@@ -38,6 +38,10 @@ const createUser = catchAsync(async (req, res) => {
           data: {
             interest: ele.interest.toLowerCase(),
           },
+          on_conflict: {
+            constraint: 'area_of_interests_interest_key',
+            update_columns: 'interest',
+          },
         },
         user_id: userId,
       };
