@@ -49,6 +49,13 @@ const updateMentions = `mutation updateMentions($projectId: Int, $mentions: [pro
   }
 }`;
 
+const deleteTeam = `mutation deleteTeam($projectId: Int) {
+  delete_team(where: { id: { _eq: $projectId } }) {
+    affected_rows
+  }
+}
+`;
+
 module.exports = {
   updatePost_query,
   updateRolesRequired,
@@ -56,4 +63,5 @@ module.exports = {
   updateDocuments,
   updateProjectTags,
   updateMentions,
+  deleteTeam,
 };

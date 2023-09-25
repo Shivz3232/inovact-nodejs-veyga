@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { updatePost_query, updateRolesRequired, updateProjectFlags, updateDocuments, updateProjectTags, updateMentions } = require('./queries/mutations');
+const { updatePost_query, updateRolesRequired, updateProjectFlags, updateDocuments, updateProjectTags, updateMentions, deleteTeam } = require('./queries/mutations');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
 const updateProject = catchAsync(async (req, res) => {
@@ -28,7 +28,7 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
   if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
 
-  const response = await Hasura(updatePost_query, variables);
+  await Hasura(updatePost_query, variables);
 
   if (req.body.roles_required) {
     const rolesUpdateVariables = {
@@ -50,16 +50,13 @@ const updateProject = catchAsync(async (req, res) => {
     await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
   }
 
-  if (req.body.mentions) variables.changes.mentions = req.body.mentions;
-  if (req.body.project_tags) variables.changes.project_tags = req.body.project_tags;
-  if (req.body.documents) variables.changes.documents = req.body.documents;
-
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
     const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
     const teamOnInovact = req.body.team_on_inovact;
     const teamCreated = await createDefaultTeam(id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
     variables.changes.team_id = teamCreated.team_id;
   } else if (req.body.looking_for_members === false && req.body.looking_for_mentors === false) {
+    await Hasura(deleteTeam, { projectId: id });
     variables.changes.team_id = null;
   }
 
