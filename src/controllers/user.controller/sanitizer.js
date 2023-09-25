@@ -18,6 +18,6 @@ const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const updateUserSanitizer = [cognito_sub];
 
-const createUserSanitizer = [body('email_id', 'Invalid email').isEmail().normalizeEmail(), body('university', 'University is required').isString().trim().notEmpty(), body('degree', 'Degree is required').isString().trim().notEmpty(), body('graduation_year', 'Invalid graduation year').isInt({ min: 1900, max: new Date().getFullYear() }), body('user_interests', 'User interests must be an array').isArray(), body('first_name', 'First name is required').isString().trim().notEmpty(), body('last_name', 'Last name is required').isString().trim().notEmpty(), body('bio', 'Bio must be a string').optional().isString().trim(), body('avatar', 'Avatar must be a string').optional().isString().trim()];
+const createUserSanitizer = [body('email_id', 'Invalid email').isEmail().normalizeEmail()];
 
-module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer };
+module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer };

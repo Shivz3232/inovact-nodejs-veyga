@@ -1,7 +1,14 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { createUserQuery, createUserIntrestQuery } = require('./queries/mutations');
+const { createUserQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+
+function generateRandomUsername() {
+  const min = 1000000000;
+  const max = 9999999999;
+  const randomUsername = Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomUsername.toString();
+}
 
 const createUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -12,47 +19,17 @@ const createUser = catchAsync(async (req, res) => {
     });
   }
 
-  const { email_id, user_name, university, degree, graduation_year, cognito_sub, first_name, last_name, bio, avatar } = req.body;
+  const { email_id, cognito_sub } = req.body;
+
+  const user_name = generateRandomUsername();
 
   const userData = {
     email_id,
-    university,
-    degree,
-    graduation_year,
-    first_name,
-    last_name,
-    cognito_sub,
     user_name,
-    bio,
-    avatar,
+    cognito_sub,
   };
 
-  const response = await Hasura(createUserQuery, userData);
-
-  const userId = response.result.data.insert_user_one.id;
-
-  if (req.body.user_interests instanceof Array) {
-    const interests = req.body.user_interests.map((ele) => {
-      return {
-        area_of_interest: {
-          data: {
-            interest: ele.interest.toLowerCase(),
-          },
-          on_conflict: {
-            constraint: 'area_of_interests_interest_key',
-            update_columns: 'interest',
-          },
-        },
-        user_id: userId,
-      };
-    });
-
-    const variables = {
-      objects: interests,
-    };
-
-    await Hasura(createUserIntrestQuery, variables);
-  }
+  await Hasura(createUserQuery, userData);
 
   return res.status(201).json({
     success: true,
