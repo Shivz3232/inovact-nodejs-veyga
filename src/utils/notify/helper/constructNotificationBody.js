@@ -5,7 +5,7 @@ function constructNotificationBody(id) {
 
   if (id === 16) return 'Approve or Reject the request';
   if (id === 17) return 'Send them a Hi!';
-  else return 'Check it out';
+  return 'Check it out';
 }
 
 module.exports = constructNotificationBody;

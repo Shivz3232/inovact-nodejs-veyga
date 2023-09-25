@@ -14,7 +14,14 @@ const getHasuraInstancesFromCloudMap = async () => {
     ServiceId: config.cloudMapHasuraServiceId,
   };
 
-  const data = await serviceDiscovery.listInstances(params).promise().catch(logger.error);
+  const data = await serviceDiscovery
+    .listInstances(params)
+    .promise()
+    .catch(() => {});
+
+  if (!data || !data.Instances) {
+    return;
+  }
 
   return data.Instances;
 };
