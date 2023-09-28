@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { updatePost_query, updateRolesRequired, updateProjectFlags, updateDocuments, updateProjectTags, updateMentions, deleteTeam } = require('./queries/mutations');
+const { updatePost, updateRolesRequired, updateProjectFlags, updateDocuments, updateProjectTags, updateMentions, deleteTeam } = require('./queries/mutations');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
 const updateProject = catchAsync(async (req, res) => {
@@ -28,7 +28,7 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
   if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
 
-  await Hasura(updatePost_query, variables);
+  await Hasura(updatePost, variables);
 
   if (req.body.roles_required) {
     const rolesUpdateVariables = {
