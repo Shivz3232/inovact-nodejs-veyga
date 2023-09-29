@@ -40,6 +40,8 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
         data,
       };
     });
+    console.log(messages);
+
     await admin.messaging().sendEach(messages);
   } catch (error) {
     logger.error(error);
