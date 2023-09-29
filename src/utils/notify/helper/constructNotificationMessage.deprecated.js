@@ -26,7 +26,7 @@ const handleConnection = (id, name) => {
 };
 
 const handleTeamNotification = (id, name) => {
-  const message = id === 23 ? `You have a new joining request for your team` : `Your request for joining the team for ProjectName is accepted`;
+  const message = id === 23 ? `You have a new joining request for your team` : `Your request for joining the team is accepted`;
   return message;
 };
 

@@ -28,6 +28,11 @@ function constructData(entityTypeId, entityId, actorId) {
       click_action: 'OPEN_CHAT_LIST_ACTIVITY',
     };
 
+  if (entityTypeId >= 21 && entityTypeId <= 25)
+    return {
+      click_action: 'OPEN_PROJECT_ACTIVITY',
+    };
+
   if (entityTypeId === 26)
     return {
       click_action: 'OPEN_CHAT_ACTIVITY',
