@@ -41,6 +41,9 @@ async function constructData(entityTypeId, entityId, actorId) {
   if (entityTypeId >= 21 && entityTypeId <= 25)
     return {
       click_action: 'OPEN_PROJECT_ACTIVITY',
+      data: {
+        project_id: `${await getProjectId(entityId)}`,
+      },
     };
 
   if (entityTypeId === 26)
