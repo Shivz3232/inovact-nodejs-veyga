@@ -12,22 +12,21 @@ const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
     await notify_deprecated(entityTypeId, entityId, actorId, notifierIds);
     const response = await Hasura(getDetails, {
       notifierId: notifierIds,
-      actorId: actorId,
+      actorId,
     });
-    console.log(response.result.data);
 
-    const user = response.result.data.user;
+    const users = response.result.data.user;
     const name = response.result.data.actor[0].first_name;
 
-    const constructDataResult = constructData(entityTypeId, entityId, actorId);
-    const click_action = constructDataResult.click_action;
+    const constructDataResult = await constructData(entityTypeId, entityId, actorId);
+    const { click_action } = constructDataResult;
     let data = {};
 
     if (constructDataResult.data) {
       data = constructDataResult.data || {};
     }
 
-    const messages = user.map((user) => {
+    const messages = users.map((user) => {
       return {
         token: user.fcm_token,
         android: {

@@ -1,4 +1,14 @@
-function constructData(entityTypeId, entityId, actorId) {
+const { query: Hasura } = require('../../hasura');
+const { getProjectByTeamId } = require('../queries/queries');
+
+async function getProjectId(entityId) {
+  const response = await Hasura(getProjectByTeamId, {
+    id: entityId,
+  });
+  return response.result.data.project[0].id;
+}
+
+async function constructData(entityTypeId, entityId, actorId) {
   entityId = String(entityId);
   actorId = String(actorId);
 
@@ -26,6 +36,11 @@ function constructData(entityTypeId, entityId, actorId) {
   if (entityTypeId >= 16 && entityTypeId <= 20)
     return {
       click_action: 'OPEN_CHAT_LIST_ACTIVITY',
+    };
+
+  if (entityTypeId >= 21 && entityTypeId <= 25)
+    return {
+      click_action: 'OPEN_PROJECT_ACTIVITY',
     };
 
   if (entityTypeId === 26)

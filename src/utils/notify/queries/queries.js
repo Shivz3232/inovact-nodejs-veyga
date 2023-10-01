@@ -7,6 +7,12 @@ const getDetails = `query getDetails($notifierId: [Int!], $actorId: Int!) {
   }
 }`;
 
+const getProjectByTeamId = `query getProject($id: Int) {
+  project(where: { team_id: { _eq: $id } }) {
+    id,
+  }}`;
+
 module.exports = {
   getDetails,
+  getProjectByTeamId,
 };
