@@ -1,4 +1,14 @@
-function constructData(entityTypeId, entityId, actorId) {
+const { query: Hasura } = require('../../hasura');
+const { getProjectByTeamId } = require('../queries/queries');
+
+async function getProjectId(entityId) {
+  const response = await Hasura(getProjectByTeamId, {
+    id: entityId,
+  });
+  return response.result.data.project[0].id;
+}
+
+async function constructData(entityTypeId, entityId, actorId) {
   entityId = String(entityId);
   actorId = String(actorId);
 
