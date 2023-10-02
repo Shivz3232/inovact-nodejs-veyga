@@ -28,13 +28,16 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
   if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
 
-  await Hasura(updatePost, variables);
+  const response = await Hasura(updatePost, variables);
+  const { team_id, user_id } = response.result.data.update_project.returning[0];
+
+  console.log(team_id);
 
   if (req.body.roles_required) {
     const rolesUpdateVariables = {
-      projectId: id,
+      teamId: team_id,
       newRoles: req.body.roles_required.map((role) => ({
-        project_id: id,
+        team_id,
         role_name: role.role_name,
       })),
     };
@@ -43,7 +46,7 @@ const updateProject = catchAsync(async (req, res) => {
 
   if (req.body.looking_for_mentors !== undefined || req.body.looking_for_members !== undefined) {
     const projectFlagsUpdateVariables = {
-      projectId: id,
+      team_id,
       lookingForMentors: req.body.looking_for_mentors,
       lookingForMembers: req.body.looking_for_members,
     };
@@ -53,10 +56,10 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
     const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
     const teamOnInovact = req.body.team_on_inovact;
-    const teamCreated = await createDefaultTeam(id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
+    const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
     variables.changes.team_id = teamCreated.team_id;
   } else if (req.body.looking_for_members === false && req.body.looking_for_mentors === false) {
-    await Hasura(deleteTeam, { projectId: id });
+    await Hasura(deleteTeam, { team_id });
     variables.changes.team_id = null;
   }
 
@@ -66,7 +69,7 @@ const updateProject = catchAsync(async (req, res) => {
       url: document.url,
       project_id: id,
     }));
-    await Hasura(updateDocuments, { objects: documents });
+    await Hasura(updateDocuments, { project_id: id, documents });
   }
 
   if (req.body.project_tags && req.body.project_tags.length > 0) {
@@ -85,13 +88,13 @@ const updateProject = catchAsync(async (req, res) => {
     await Hasura(updateProjectTags, { objects: tags });
   }
 
-  if (req.body.mentions && req.body.mentions.length > 0) {
-    const mentions = req.body.mentions.map((user_id) => ({
-      user_id,
-      project_id: id,
-    }));
-    await Hasura(updateMentions, { objects: mentions });
-  }
+  // if (req.body.mentions && req.body.mentions.length > 0) {
+  //   const mentions = req.body.mentions.map((user_id) => ({
+  //     user_id,
+  //     project_id: id,
+  //   }));
+  //   await Hasura(updateMentions, { objects: mentions });
+  // }
 
   return res.json({
     success: true,
