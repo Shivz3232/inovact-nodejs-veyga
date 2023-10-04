@@ -55,6 +55,12 @@ const getUserPosts = `query getProjects($user_id: Int, $cognito_sub: String) {
           avatar
         }
       }
+      team_role_requirements{
+        role_name
+        team_skill_requirements{
+          skill_name
+        }
+      }
     }
     completed
     created_at
