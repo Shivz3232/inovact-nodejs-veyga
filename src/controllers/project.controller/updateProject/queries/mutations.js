@@ -10,6 +10,16 @@ mutation updateProject($id: Int_comparison_exp, $changes: project_set_input) {
 }
 `;
 
+const UpdateProjectTeam = `mutation UpdateProjectTeam($projectId: Int!, $newTeamId: Int!) {
+  update_project_by_pk(
+    pk_columns: { id: $projectId }
+    _set: { team_id: $newTeamId }
+  ) {
+    id
+    team_id
+  }
+}`;
+
 const updateRolesRequired = `mutation updateRolesRequired($teamId: Int, $newRoles: [team_role_requirements_insert_input!]!) {
   delete_team_role_requirements(where: { team_id: { _eq: $teamId } }) {    returning {
       id
@@ -46,7 +56,9 @@ const updateDocuments = `mutation updateDocuments($project_id: Int, $documents: 
 `;
 
 const updateProjectTags = `mutation updateProjectTags($projectId: Int, $tags: [project_tag_insert_input!]!) {
-  delete_project_tag(where: { project_id: { _eq: $projectId } })
+  delete_project_tag(where: { project_id: { _eq: $projectId } }){
+        affected_rows
+  }
   insert_project_tag(objects: $tags) {
     affected_rows
   }
@@ -70,6 +82,7 @@ module.exports = {
   updatePost,
   updateRolesRequired,
   updateProjectFlags,
+  UpdateProjectTeam,
   updateDocuments,
   updateProjectTags,
   updateMentions,
