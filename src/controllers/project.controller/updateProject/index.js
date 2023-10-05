@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { updatePost, updateRolesRequired, updateProjectFlags, updateDocuments, updateProjectTags, updateMentions, deleteTeam } = require('./queries/mutations');
+const { updatePost, updateRolesRequired, updateProjectFlags, updateDocuments, UpdateProjectTeam, updateProjectTags, deleteTeam } = require('./queries/mutations');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
 const updateProject = catchAsync(async (req, res) => {
@@ -28,21 +28,27 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
   if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
 
+  req.body.looking_for_members = req.body.looking_for_members || false;
+  req.body.looking_for_mentors = req.body.looking_for_mentors || false;
+
   const response = await Hasura(updatePost, variables);
-  const { team_id, user_id } = response.result.data.update_project.returning[0];
+  const { user_id } = response.result.data.update_project.returning[0];
+  let team_id;
 
-  console.log(team_id);
-
-  if (req.body.roles_required) {
-    const rolesUpdateVariables = {
-      teamId: team_id,
-      newRoles: req.body.roles_required.map((role) => ({
-        team_id,
-        role_name: role.role_name,
-      })),
-    };
-    await Hasura(updateRolesRequired, rolesUpdateVariables);
+  if (response.result.data.update_project.returning[0].team_id === null) {
+    const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
+    const teamOnInovact = req.body.team_on_inovact;
+    const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
+    team_id = teamCreated.team_id;
+    await Hasura(UpdateProjectTeam, {
+      projectId: id,
+      newTeamId: team_id,
+    });
+  } else {
+    team_id = response.result.data.update_project.returning[0].team_id;
   }
+
+  console.log('team id ', team_id);
 
   if (req.body.looking_for_mentors !== undefined || req.body.looking_for_members !== undefined) {
     const projectFlagsUpdateVariables = {
@@ -85,16 +91,15 @@ const updateProject = catchAsync(async (req, res) => {
       },
       project_id: id,
     }));
-    await Hasura(updateProjectTags, { objects: tags });
-  }
+    // Define variables object with projectId and tags
+    const variables = {
+      projectId: id,
+      tags: tags,
+    };
 
-  // if (req.body.mentions && req.body.mentions.length > 0) {
-  //   const mentions = req.body.mentions.map((user_id) => ({
-  //     user_id,
-  //     project_id: id,
-  //   }));
-  //   await Hasura(updateMentions, { objects: mentions });
-  // }
+    // Execute the GraphQL mutation
+    await Hasura(updateProjectTags, variables);
+  }
 
   return res.json({
     success: true,
