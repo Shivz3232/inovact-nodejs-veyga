@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { updatePost, updateRolesRequired, updateProjectFlags, updateDocuments, UpdateProjectTeam, updateProjectTags, deleteTeam } = require('./queries/mutations');
+const { updatePost, updateRolesRequired, addRolesRequired, addSkillsRequired, updateProjectFlags, updateDocuments, UpdateProjectTeam, updateProjectTags, deleteTeam } = require('./queries/mutations');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
 const updateProject = catchAsync(async (req, res) => {
@@ -35,6 +35,23 @@ const updateProject = catchAsync(async (req, res) => {
   const { user_id } = response.result.data.update_project.returning[0];
   let team_id;
 
+  if (req.body.completed) {
+    const projectFlagsUpdateVariables = {
+      team_id: response.result.data.update_project.returning[0].team_id,
+      lookingForMentors: false,
+      lookingForMembers: false,
+    };
+    await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
+
+    await Hasura(deleteTeam, { team_id: response.result.data.update_project.returning[0].team_id });
+
+    return res.json({
+      success: true,
+      errorCode: '',
+      errorMessage: '',
+    });
+  }
+
   if (response.result.data.update_project.returning[0].team_id === null) {
     const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
     const teamOnInovact = req.body.team_on_inovact;
@@ -60,11 +77,57 @@ const updateProject = catchAsync(async (req, res) => {
   }
 
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
-    const teamOnInovact = req.body.team_on_inovact;
-    const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
-    variables.changes.team_id = teamCreated.team_id;
-  } else if (req.body.looking_for_members === false && req.body.looking_for_mentors === false) {
+    console.log('In here');
+    if (req.body.roles_required && req.body.roles_required.length > 0) {
+      if (team_id) {
+        await Hasura(deleteTeam, { team_id });
+        team_id = null;
+      }
+      const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
+      const teamOnInovact = req.body.team_on_inovact;
+      const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
+      team_id = teamCreated.team_id;
+      console.log(team_id);
+    }
+
+    await Hasura(UpdateProjectTeam, {
+      projectId: id,
+      newTeamId: team_id,
+    });
+
+    if (req.body.roles_required.length > 0 && team_id) {
+      // Insert roles required and skills required
+      role_if: if (req.body.roles_required && req.body.roles_required.length > 0 && team_id) {
+        const { roles_required } = req.body;
+        const roles_data = roles_required.map((ele) => {
+          return {
+            team_id,
+            role_name: ele.role_name,
+          };
+        });
+
+        const response1 = await Hasura(addRolesRequired, { objects: roles_data });
+
+        if (!response1.success) break role_if;
+
+        const skills_data = [];
+
+        for (const i in roles_required) {
+          // eslint-disable-next-line no-prototype-builtins
+          if (roles_required.hasOwnProperty(i)) {
+            for (const skill of roles_required[i].skills_required) {
+              skills_data.push({
+                role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
+                skill_name: skill,
+              });
+            }
+          }
+        }
+
+        await Hasura(addSkillsRequired, { objects: skills_data });
+      }
+    }
+  } else if (req.body.looking_for_members === false && req.body.looking_for_mentors === false && team_id) {
     await Hasura(deleteTeam, { team_id });
     variables.changes.team_id = null;
   }

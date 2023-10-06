@@ -78,6 +78,20 @@ const deleteTeam = `mutation deleteTeam($team_id: Int) {
 }
 `;
 
+const addRolesRequired = `mutation addRolesRequired($objects: [team_role_requirements_insert_input!]!) {
+  insert_team_role_requirements(objects: $objects) {
+    returning {
+      id
+    }
+  }
+}`;
+
+const addSkillsRequired = `mutation addSkillRequired($objects: [team_skill_requirements_insert_input!]!) {
+  insert_team_skill_requirements(objects: $objects) {
+    affected_rows
+  }
+}`;
+
 module.exports = {
   updatePost,
   updateRolesRequired,
@@ -86,5 +100,7 @@ module.exports = {
   updateDocuments,
   updateProjectTags,
   updateMentions,
+  addRolesRequired,
+  addSkillsRequired,
   deleteTeam,
 };
