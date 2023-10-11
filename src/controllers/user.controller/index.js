@@ -1,6 +1,7 @@
 module.exports.addAreaOfInterest = require('./addAreaOfInterest');
 module.exports.deleteAreaOfInterest = require('./deleteAreaOfInterest');
 
+module.exports.createUser = require('./createUser');
 module.exports.fetchUser = require('./fetchUser');
 module.exports.fetchAllUsers = require('./fetchAllUsers');
 module.exports.getUsername = require('./getUsername');

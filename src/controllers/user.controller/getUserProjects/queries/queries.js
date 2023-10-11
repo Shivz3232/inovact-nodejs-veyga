@@ -38,6 +38,30 @@ const getUserPosts = `query getProjects($user_id: Int, $cognito_sub: String) {
     }
     status
     team_id
+    team {
+      id
+      name
+      avatar
+      looking_for_mentors
+      looking_for_members
+      team_members {
+        user {
+          id
+          first_name
+          last_name
+          user_name
+          role
+          admin
+          avatar
+        }
+      }
+      team_role_requirements{
+        role_name
+        team_skill_requirements{
+          skill_name
+        }
+      }
+    }
     completed
     created_at
     updated_at

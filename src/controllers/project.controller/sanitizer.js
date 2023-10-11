@@ -1,4 +1,4 @@
-const { query, body } = require('express-validator');
+const { query, body, oneOf } = require('express-validator');
 
 const cognito_sub = body('cognito_sub', 'User Not Authorized').exists().isString();
 
@@ -9,7 +9,7 @@ const deleteProjectSanitizer = [body('id', 'Invalid Project ID').exists().toInt(
 
 const getProjectSanitizer = [cognito_sub, query('id', 'Invalid Project ID').optional().toInt()];
 
-const updateProjectSanitizer = [cognito_sub, body('id', 'Invalid Project ID').exists().toInt()];
+const updateProjectSanitizer = [body('id', 'Invalid Project ID').exists().isInt(), oneOf([body('description').optional().isString().isLength({ max: 255 }).withMessage('Description must be a string with a maximum length of 255 characters'), body('title').optional().isString().isLength({ max: 100 }).withMessage('Title must be a string with a maximum length of 100 characters'), body('link').optional().isURL().withMessage('Invalid URL format'), body('status').optional().isString().isIn(['active', 'inactive', 'completed']).withMessage('Invalid status'), body('completed').optional().isBoolean().withMessage('Completed must be a boolean')])];
 
 const likeProjectSanitizer = [cognito_sub, query('project_id', 'Invalid Project ID').exists().toInt()];
 

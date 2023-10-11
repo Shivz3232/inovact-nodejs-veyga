@@ -39,7 +39,7 @@ const fetchUser = catchAsync(async (req, res) => {
   const responseData = response.result.data;
 
   if (!responseData || responseData.user.length === 0) {
-    return res.status(400).json({
+    return res.status(404).json({
       success: false,
       errorCode: 'UserNotFound',
       errorMessage: 'No user found with this cognito sub',

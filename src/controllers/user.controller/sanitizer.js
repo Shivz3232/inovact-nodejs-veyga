@@ -18,4 +18,6 @@ const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const updateUserSanitizer = [cognito_sub];
 
-module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer };
+const createUserSanitizer = [body('email_id', 'Invalid email').isEmail().normalizeEmail()];
+
+module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer };
