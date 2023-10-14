@@ -19,9 +19,9 @@ async function KMSDecrypter(data) {
 
   const { encryptionContext } = messageHeader;
 
-  Object.entries(context).forEach(([key, value]) => {
-    if (encryptionContext[key] !== value) throw new Error('Encryption Context does not match expected values');
-  });
+  // Object.entries(context).forEach(([key, value]) => {
+  //   if (encryptionContext[key] !== value) throw new Error('Encryption Context does not match expected values');
+  // });
 
   return plaintext.toString();
 }
