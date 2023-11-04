@@ -1,10 +1,12 @@
 const express = require('express');
 const userController = require('../../controllers/user.controller');
-const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer } = require('../../controllers/user.controller/sanitizer');
+const { addGithubProfileSanitizer, createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer } = require('../../controllers/user.controller/sanitizer');
 
 const router = express.Router();
 
 router.post('/', createUserSanitizer, userController.createUser);
+
+router.put('/github-profile', addGithubProfileSanitizer, userController.updateGithubProfile);
 
 router.post('/interest', addAOISanitizer, userController.addAreaOfInterest);
 router.delete('/interest', deleteAOISanitizer, userController.deleteAreaOfInterest);
