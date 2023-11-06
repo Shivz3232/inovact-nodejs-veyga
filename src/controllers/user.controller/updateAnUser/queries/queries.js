@@ -22,6 +22,7 @@ const getUser = `query getUser($cognito_sub: String_comparison_exp) {
     cognito_sub,
     admin,
     website
+    github_profile
     profile_complete
     user_skills {
       id
