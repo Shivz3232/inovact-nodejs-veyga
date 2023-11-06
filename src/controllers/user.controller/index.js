@@ -13,5 +13,3 @@ module.exports.getUserIdea = require('./getUserIdea');
 module.exports.getUserProject = require('./getUserProjects');
 module.exports.getUserTeams = require('./getUserTeams');
 module.exports.getUserThoughts = require('./getUserThoughts');
-
-module.exports.updateGithubProfile = require('./updateGithubProfile');

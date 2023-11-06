@@ -11,8 +11,6 @@ const githubProfile = body('github_profile', 'Invalid GitHub Profile URL')
     throw new Error('GitHub Profile URL must point to GitHub');
   });
 
-const addGithubProfileSanitizer = [cognito_sub, githubProfile];
-
 const addAOISanitizer = [cognito_sub, body('interests', 'Invalid Area of Interests provided').isArray().isLength({ min: 1 }), body('interests.*', 'Invalid Area of Interests Provided').exists().isString().trim().isLength({ min: 1 })];
 
 const deactivateUserSanitizer = [cognito_sub, body('status').exists().toInt(), body('cause').isString().trim().isLength({ min: 1 })];
@@ -27,8 +25,8 @@ const getUserPostsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()];
 
-const updateUserSanitizer = [cognito_sub];
+const updateUserSanitizer = [cognito_sub, githubProfile];
 
 const createUserSanitizer = [body('email_id', 'Invalid email').isEmail().normalizeEmail()];
 
-module.exports = { addGithubProfileSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer };
+module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer };
