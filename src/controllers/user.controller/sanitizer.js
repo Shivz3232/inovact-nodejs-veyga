@@ -2,6 +2,15 @@ const { body, query } = require('express-validator');
 
 const cognito_sub = body('cognito_sub', 'User Not Authorized').exists().isString();
 
+const githubProfile = body('github_profile', 'Invalid GitHub Profile URL')
+  .isURL({ protocols: ['http', 'https'], require_tld: true, require_protocol: true })
+  .custom((value, { req }) => {
+    if (!value || value.startsWith('https://github.com/')) {
+      return true;
+    }
+    throw new Error('GitHub Profile URL must point to GitHub');
+  });
+
 const addAOISanitizer = [cognito_sub, body('interests', 'Invalid Area of Interests provided').isArray().isLength({ min: 1 }), body('interests.*', 'Invalid Area of Interests Provided').exists().isString().trim().isLength({ min: 1 })];
 
 const deactivateUserSanitizer = [cognito_sub, body('status').exists().toInt(), body('cause').isString().trim().isLength({ min: 1 })];
@@ -16,7 +25,7 @@ const getUserPostsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()];
 
-const updateUserSanitizer = [cognito_sub];
+const updateUserSanitizer = [cognito_sub, githubProfile];
 
 const createUserSanitizer = [body('email_id', 'Invalid email').isEmail().normalizeEmail()];
 

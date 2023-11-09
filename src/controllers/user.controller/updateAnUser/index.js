@@ -50,6 +50,8 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.journey_start_date) variables.changes.journey_start_date = req.body.journey_start_date;
   if (req.body.years_of_professional_experience) variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
   if (req.body.degree) variables.changes.degree = req.body.degree;
+  if (req.body.github_profile) variables.changes.github_profile = req.body.github_profile;
+  if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
   if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
 
   if (req.body.website) variables.changes.website = req.body.website;

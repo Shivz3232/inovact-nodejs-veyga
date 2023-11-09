@@ -20,6 +20,7 @@ const getUser = `query getUser($cognito_sub: String) {
     role
     cognito_sub
     admin
+    github_profile
     website
     profile_complete,
     status,
@@ -64,6 +65,7 @@ query getUser($id: Int, $cognito_sub: String) {
     cognito_sub
     admin
     website
+    github_profile
     profile_complete,
     status,
     user_skills {
