@@ -21,4 +21,6 @@ router.post('/request/accept', acceptJoinRequestSanitizer, teamsController.accep
 router.post('/request/reject', rejectJoinRequestSanitizer, teamsController.rejectJoinRequest);
 router.delete('/request', teamsController.withdrawRequest);
 
+router.get('/messages', teamMessageController);
+
 module.exports = router;
