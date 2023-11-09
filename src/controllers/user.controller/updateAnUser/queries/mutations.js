@@ -22,6 +22,7 @@ const updateUser = `mutation updateUser($cognito_sub: String_comparison_exp, $ch
       cognito_sub,
       admin,
       github_profile,
+      cover_photo,
       website,
       profile_complete
     }
