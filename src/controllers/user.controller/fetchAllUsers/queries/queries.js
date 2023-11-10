@@ -23,6 +23,8 @@ query getUsers {
     last_name
     role
     cognito_sub
+    github_profile,
+    cover_photo,
     admin
     profile_complete
   }

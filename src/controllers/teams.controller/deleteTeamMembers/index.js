@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { checkIfCanDelete, getUserIdFromCognitoSub } = require('./queries/queries.js');
+const { checkIfCanDelete } = require('./queries/queries.js');
 const { deleteTeamMember } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -33,9 +33,7 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(checkIfCanDelete, variables);
   const creatorId = response1.result.data.members[0].team.creator_id;
-
-  const response2 = await Hasura(getUserIdFromCognitoSub, { cognito_sub });
-  const currentUserId = response2.result.data.user[0].id;
+  const currentUserId = response1.result.data.members[0].team.user.id;
 
   const variables2 = { user_id, team_id };
 
