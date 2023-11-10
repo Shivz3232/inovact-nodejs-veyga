@@ -32,7 +32,7 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   const variables = { team_id, user_id, cognito_sub };
 
   const response1 = await Hasura(checkIfCanDelete, variables);
-  const createrId = response1.result.data.members[0].team.creator_id;
+  const creatorId = response1.result.data.members[0].team.creator_id;
 
   const response2 = await Hasura(getUserIdFromCognitoSub, { cognito_sub });
   const currentUserId = response2.result.data.user[0].id;
@@ -48,7 +48,7 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   }
 
   if (response1.result.data.members[0].admin) {
-    if (currentUserId === createrId) {
+    if (currentUserId === creatorId) {
       await Hasura(deleteTeamMember, variables2);
       return res.status(200).json(successResponse);
     } else {
