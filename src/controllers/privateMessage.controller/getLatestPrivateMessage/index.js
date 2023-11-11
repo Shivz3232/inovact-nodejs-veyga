@@ -25,7 +25,7 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
   const response1 = await Hasura(getPrivateMessages, variables);
   const messageDocs = response1.result.data.private_messages;
 
-  const decryptedMessages = [];
+  let decryptedMessages = [];
 
   for (let i = 0; i < messageDocs.length; i++) {
     const encryptedMessage = messageDocs[i].encrypted_message;
