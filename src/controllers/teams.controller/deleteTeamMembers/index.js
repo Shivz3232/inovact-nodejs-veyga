@@ -28,34 +28,27 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   }
 
   const { user_id, cognito_sub, team_id } = req.body;
-
   const variables = { team_id, user_id, cognito_sub };
 
   const response1 = await Hasura(checkIfCanDelete, variables);
-  const creatorId = response1.result.data.members[0].team.creator_id;
-  const currentUserId = response1.result.data.members[0].team.user.id;
+  const isAdmin = response1.result.data.admins.length > 0;
+  const isMember = response1.result.data.members.length > 0;
+  const isRemovingAdmin = response1.result.data.members[0] && response1.result.data.members[0].admin && response1.result.data.members[0].team.creator_id !== response1.result.data.members[0].team.user.id;
 
-  const variables2 = { user_id, team_id };
-
-  if (response1.result.data.admins.length === 0) {
+  if (!isAdmin) {
     return res.status(401).json(errorResponse('Forbidden', 'You are not an admin of this team.'));
   }
 
-  if (response1.result.data.members.length === 0) {
+  if (!isMember) {
     return res.status(400).json(errorResponse('Forbidden', 'Given user is not a member of this team.'));
   }
 
-  if (response1.result.data.members[0].admin) {
-    if (currentUserId === creatorId) {
-      await Hasura(deleteTeamMember, variables2);
-      return res.status(200).json(successResponse);
-    } else {
-      return res.status(400).json(errorResponse('Forbidden', 'You cannot remove an admin of this team.'));
-    }
+  if (isRemovingAdmin) {
+    await Hasura(deleteTeamMember, { user_id, team_id });
+    return res.status(200).json(successResponse);
   }
 
-  await Hasura(deleteTeamMember, variables2);
-  return res.status(200).json(successResponse);
+  return res.status(400).json(errorResponse('Forbidden', 'You cannot remove an admin of this team.'));
 });
 
 module.exports = deleteTeamMembers;
