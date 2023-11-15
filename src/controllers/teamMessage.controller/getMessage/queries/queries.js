@@ -24,9 +24,6 @@ const checkIfUserInTeam = `query checkIfUserInTeam($team_id: Int, $cognito_sub: 
       creator_id
     }
   }
-  admins: team_members(where: {team_id: {_eq: $team_id}, user: {cognito_sub: {_eq: $cognito_sub}}, admin: {_eq: true}}) {
-    user_id
-  }
 }`;
 
 module.exports = {

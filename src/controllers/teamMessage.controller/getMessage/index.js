@@ -1,8 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { checkIfUserInTeam, getTeamMessages } = require('./queries/queries.js');
-const { decryptMessage } = require('../../../utils/decryptMessages');
-
+const { decryptMessage } = require('../../../utils/decryptMessage');
 const { query: Hasura } = require('../../../utils/hasura');
 
 const getMessage = catchAsync(async (req, res) => {
@@ -13,12 +12,10 @@ const getMessage = catchAsync(async (req, res) => {
       ...sanitizerErrors,
     });
   }
+
   const { cognito_sub } = req.body;
   const { team_id, timeStamp } = req.query;
   const limit = req.query.limit || 10;
-
-  // const response1 = await Hasura(getUserIdFromCognitoSub, { cognito_sub });
-  // const user_id = response1.result.data.user[0].id;
 
   const variables = { team_id, cognito_sub };
 
@@ -37,21 +34,20 @@ const getMessage = catchAsync(async (req, res) => {
   const response2 = await Hasura(getTeamMessages, variables2);
   const messageDocs = response2.result.data.team_messages;
 
-  const decryptedMessages = [];
+  const decryptedMessages = await Promise.all(
+    messageDocs.map(async (messageDoc) => {
+      const encryptedMessage = messageDoc.message;
+      const decryptedMessage = await decryptMessage(encryptedMessage);
 
-  for (let i = 0; i < messageDocs.length; i++) {
-    const encryptedMessage = messageDocs[i].message;
-
-    const decryptedMessage = await decryptMessage(encryptedMessage);
-
-    decryptedMessages.push({
-      id: messageDocs[i].id,
-      sender: messageDocs[i].user_id,
-      team_id: messageDocs[i].team_id,
-      message: decryptedMessage,
-      created_at: messageDocs[i].created_at,
-    });
-  }
+      return {
+        id: messageDoc.id,
+        sender: messageDoc.user_id,
+        team_id: messageDoc.team_id,
+        message: decryptedMessage,
+        created_at: messageDoc.created_at,
+      };
+    })
+  );
 
   return res.json({
     success: true,
@@ -62,3 +58,12 @@ const getMessage = catchAsync(async (req, res) => {
 });
 
 module.exports = getMessage;
+
+function errorResponse(errorCode, errorMessage) {
+  return {
+    success: false,
+    errorCode,
+    errorMessage,
+    data: null,
+  };
+}
