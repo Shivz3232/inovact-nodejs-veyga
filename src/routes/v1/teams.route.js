@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const teamsController = require('../../controllers/teams.controller');
+const teamMessageController = require('../../controllers/teamMessage.controller');
+
 const { acceptJoinRequestSanitizer, addTeamDocSanitizer, deleteMemberSanitizer, joinTeamSanitizer, rejectJoinRequestSanitizer, toggleAdminSanitizer } = require('../../controllers/teams.controller/sanitizer');
 
 router.get('/', teamsController.getTeams);
@@ -20,5 +22,7 @@ router.post('/request', joinTeamSanitizer, teamsController.joinTeam);
 router.post('/request/accept', acceptJoinRequestSanitizer, teamsController.accepetJoinRequest);
 router.post('/request/reject', rejectJoinRequestSanitizer, teamsController.rejectJoinRequest);
 router.delete('/request', teamsController.withdrawRequest);
+
+router.get('/messages', teamMessageController.getMessage);
 
 module.exports = router;

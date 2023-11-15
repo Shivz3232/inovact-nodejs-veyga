@@ -60,6 +60,7 @@ const updateanUser = catchAsync(async (req, res) => {
   const response1 = await Hasura(updateUser, variables);
 
   // Insert skills
+  // 
   if (req.body.user_skills instanceof Array) {
     const user_skills_with_user_id = req.body.user_skills.map((ele) => {
       return {
