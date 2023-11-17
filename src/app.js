@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 // const mongoSanitize = require('express-mongo-sanitize');
@@ -21,6 +23,9 @@ if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
+
+// Serve static files from the 'public' folder
+app.use(express.static('public'));
 
 // set security HTTP headers
 app.use(helmet());
@@ -64,8 +69,20 @@ app.get('/status', (_, res) => {
 });
 
 // For verifying android app
-app.get('/.well-known/assetlinks.json', (_, res) => {
-  res.sendFile(`${__dirname}/public/assetlinks.json`);
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'assetlinks.json');
+
+  // Read the JSON file
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading JSON file:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    // Parse the JSON and send it as the response
+    const jsonData = JSON.parse(data);
+    res.json(jsonData);
+  });
 });
 
 // v1 api routes

@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const { getPrivateMessages } = require('./queries/queries');
-const { decryptMessages } = require('../../../utils/decryptMessages');
+const { decryptMessage } = require('../../../utils/decryptMessage');
 const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -23,8 +23,22 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
   };
 
   const response1 = await Hasura(getPrivateMessages, variables);
+  const messageDocs = response1.result.data.private_messages;
 
-  const decryptedMessages = await decryptMessages(response1.result.data.private_messages);
+  const decryptedMessages = await Promise.all(
+    messageDocs.map(async (messageDoc) => {
+      const encryptedMessage = messageDoc.encrypted_message;
+      const decryptedMessage = await decryptMessage(encryptedMessage);
+
+      return {
+        id: messageDoc.id,
+        sender: messageDoc.sender,
+        receiver: messageDoc.receiver,
+        message: decryptedMessage,
+        created_at: messageDoc.created_at,
+      };
+    })
+  );
 
   return res.json({
     success: true,

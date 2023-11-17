@@ -5,7 +5,7 @@ const constructNotificationMessage = require('./helper/constructNotificationMess
 const constructNotificationBody = require('./helper/constructNotificationBody');
 const constructData = require('./helper/constructData');
 const logger = require('../../config/logger');
-const notify_deprecated = require('../notify.deprecated');
+const notify_deprecated = require('../notify');
 
 const notify = async (entityTypeId, entityId, actorId, notifierIds) => {
   try {

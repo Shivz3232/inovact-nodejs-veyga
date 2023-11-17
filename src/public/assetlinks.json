@@ -1,3 +1,14 @@
-{
-  "a": 1
-}
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.pranaydas.inovact",
+      "sha256_cert_fingerprints": [
+        "01:DE:6E:21:28:D1:4C:06:C3:F1:05:74:A8:A8:C8:C1:2D:73:7E:AF:9C:27:20:92:E4:02:2A:CA:B4:4D:71:E4"
+      ]
+    }
+  }
+]

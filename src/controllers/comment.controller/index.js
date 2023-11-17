@@ -49,7 +49,7 @@ const addComment = catchAsync(async (req, res) => {
   }
 
   // Notify the user
-  await notify(entity_type_id, article_id, response1.result.data.user[0].id, [notifier_id]).catch(logger.error);
+  await notify(entity_type_id, doc.id, response1.result.data.user[0].id, [notifier_id]).catch(logger.error);
 
   if (article_type === 'project') {
     return res.status(200).json({
