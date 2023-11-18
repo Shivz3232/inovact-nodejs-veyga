@@ -17,8 +17,6 @@ const getMessage = catchAsync(async (req, res) => {
   const { team_id, timeStamp } = req.query;
   const limit = req.query.limit || 10;
 
-  console.log(team_id, timeStamp, limit);
-
   const variables = { team_id, cognito_sub };
 
   const response1 = await Hasura(checkIfUserInTeam, variables);
