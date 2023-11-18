@@ -1,8 +1,8 @@
-const getTeamMessages = `query getTeamMessages($teamId: Int!, $timestamp: timestamptz, $limit: Int) {
+const getTeamMessages = `query getTeamMessages($team_id: Int!, $timeStamp: timestamptz, $limit: Int) {
   team_messages(
     where: {
-      team_id: { _eq: $teamId }
-      created_at: { _lte: $timestamp }
+      team_id: { _eq: $team_id }
+      created_at: { _lte: $timeStamp }
     }
     limit: $limit
   ) {
