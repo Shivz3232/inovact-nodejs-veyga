@@ -71,6 +71,7 @@ const updateanUser = catchAsync(async (req, res) => {
 
     const variables = {
       objects: user_skills_with_user_id,
+      user_id: response1.result.data.update_user.returning[0].id,
     };
 
     await Hasura(addUserSkills, variables);
