@@ -1,4 +1,4 @@
-const getPrivateMessages = `query getPrivateMessages($cognito_sub: String, $user_id: Int, $timeStamp: timestamptz) {
+const getPrivateMessages = `query getPrivateMessages($cognito_sub: String, $user_id: Int) {
   private_messages(where: {
     _or: [
       {
@@ -12,7 +12,7 @@ const getPrivateMessages = `query getPrivateMessages($cognito_sub: String, $user
         ]
       }
     ],
-    created_at: { _lte: $timeStamp}}, limit: 50, order_by: { created_at: asc }) {
+  }, order_by: { created_at: asc }) {
     created_at
     id
     encrypted_message

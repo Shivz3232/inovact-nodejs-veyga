@@ -14,12 +14,11 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-  const { user_id, timeStamp } = req.query;
+  const { user_id } = req.query;
 
   const variables = {
     cognito_sub,
     user_id,
-    timeStamp: timeStamp || new Date().toISOString(),
   };
 
   const response1 = await Hasura(getPrivateMessages, variables);
