@@ -18,7 +18,7 @@ const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const updateUserSanitizer = [cognito_sub];
 
-const createUserSanitizer = [body('email_id', 'Invalid email').isEmail().normalizeEmail()];
+const createUserSanitizer = [body('email_id', 'Invalid email').isEmail()];
 
 const editUserSkillsSanitizer = [cognito_sub, body('skillId', 'Invalid skillId').exists().toInt(), body('skillLevel').optional().isString().trim(), body('skillName').optional().isString().trim()];
 
