@@ -30,13 +30,25 @@ const updateUser = `mutation updateUser($cognito_sub: String_comparison_exp, $ch
 }
 `;
 
-const addUserSkills = `mutation addUserSkills($objects: [user_skills_insert_input!]!) {
+const addUserSkills = `mutation editUserSkillQuery($user_id: Int!, $objects: [user_skills_insert_input!]!) {
+  delete_user_skills(where: { user_id: { _eq: $user_id } }) {
+    returning {
+      id
+      skill
+      level
+      user_id
+    }
+  }
   insert_user_skills(objects: $objects, on_conflict: {constraint:  user_skills_skill_user_id_key, update_columns: level}) {
     returning {
       id
+      skill
+      level
+      user_id
     }
   }
-}`;
+}
+`;
 
 const updateUserInterests = `mutation updateUserInterests($objects: [user_interests_insert_input!]!, $cognito_sub: String) {
   delete_user_interests(where: {user: {cognito_sub: {_eq: $cognito_sub}}}) {
