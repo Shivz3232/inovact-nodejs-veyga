@@ -33,7 +33,9 @@ const deleteTeamMembers = catchAsync(async (req, res) => {
   const response1 = await Hasura(checkIfCanDelete, variables);
   const isAdmin = response1.result.data.admins.length > 0;
   const isMember = response1.result.data.members.length > 0;
-  const isRemovingAdmin = response1.result.data.members[0] && response1.result.data.members[0].admin && response1.result.data.members[0].team.creator_id !== response1.result.data.members[0].team.user.id;
+  const isCreator = response1.result.data.members[0] && response1.result.data.members[0].team.user.cognito_sub === cognito_sub;
+
+  const isRemovingAdmin = isCreator || (response1.result.data.members[0] && response1.result.data.members[0].admin && response1.result.data.members[0].team.creator_id !== response1.result.data.members[0].team.user.id);
 
   if (!isAdmin) {
     return res.status(401).json(errorResponse('Forbidden', 'You are not an admin of this team.'));
