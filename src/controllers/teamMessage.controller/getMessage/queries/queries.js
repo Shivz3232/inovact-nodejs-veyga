@@ -4,6 +4,7 @@ const getTeamMessages = `query getTeamMessages($team_id: Int!, $timeStamp: times
       team_id: { _eq: $team_id }
       created_at: { _lte: $timeStamp }
     }
+    order_by: {created_at: desc } 
     limit: $limit
   ) {
     id
