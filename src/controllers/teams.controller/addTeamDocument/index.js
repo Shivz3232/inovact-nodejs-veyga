@@ -14,9 +14,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, team_id, name } = req.body;
-  const url = req.file.location;
-  const mime_type = req.file.mimetype;
+  const { cognito_sub, team_id, name, url, mime_type } = req.body;
 
   // Check if current user is team admin
   const response1 = await Hasura(checkIfAdmin, {
