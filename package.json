@@ -49,7 +49,7 @@
   "dependencies": {
     "@aws-crypto/client-node": "^3.2.0",
     "@aws-sdk/client-scheduler": "^3.332.0",
-    "aws-sdk": "^2.1377.0",
+    "aws-sdk": "^2.1506.0",
     "axios": "^0.27.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
@@ -67,6 +67,8 @@
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "morgan": "^1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
     "nodemailer": "^6.3.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
