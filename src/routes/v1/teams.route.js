@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const teamsController = require('../../controllers/teams.controller');
 const teamMessageController = require('../../controllers/teamMessage.controller');
+const multerUpload = require('../../utils/multerUpload');
 
 const { acceptJoinRequestSanitizer, addTeamDocSanitizer, deleteMemberSanitizer, joinTeamSanitizer, rejectJoinRequestSanitizer, toggleAdminSanitizer } = require('../../controllers/teams.controller/sanitizer');
 
@@ -9,7 +10,7 @@ router.post('/', teamsController.addTeam);
 router.put('/', teamsController.updateTeam);
 router.delete('/', teamsController.deleteTeam);
 
-router.post('/documents', addTeamDocSanitizer, teamsController.addTeamDocument);
+router.post('/documents', multerUpload, addTeamDocSanitizer, teamsController.addTeamDocument);
 
 router.delete('/member', deleteMemberSanitizer, teamsController.deleteTeamMember);
 router.post('/member/toggleAdmin', toggleAdminSanitizer, teamsController.toggleAdmin);
