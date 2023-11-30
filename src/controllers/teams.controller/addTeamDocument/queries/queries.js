@@ -1,9 +1,16 @@
-const getUserId = `query getUserId($cognito_sub: String!) {
-  user(where: {cognito_sub: {_eq: $cognito_sub}}) {
-    id
+const checkIfMember = `query checkIfMember($cognitoSub: String, $teamId: Int) {
+  team_members(where: {user: {cognito_sub: {_eq: $cognitoSub}}, team: {id: {_eq: $teamId}}}) {
+    user_id
+  }
+}`;
+
+const getTeamMembers = `query getTeamMembers($teamId: Int, $userId: Int) {
+  team_members(where: { _and: { team_id: { _eq: $teamId }, user_id: { _neq: $userId }}}) {
+    user_id
   }
 }`;
 
 module.exports = {
-  getUserId,
+  checkIfMember,
+  getTeamMembers,
 };

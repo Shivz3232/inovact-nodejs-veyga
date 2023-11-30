@@ -1,75 +1,71 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { addTeamDocumentQuery } = require('./queries/mutations');
-const { getUserId } = require('./queries/queries');
-const upload = require('../../../utils/uploadDocument');
+const { addTeamDocument: addTeamDocumentQuery } = require('./queries/mutations');
+const { checkIfMember, getTeamMembers } = require('./queries/queries');
+const uploadToS3 = require('../../../utils/uploadToS3');
 const notify = require('../../../utils/notify');
 const logger = require('../../../config/logger');
 
 const addTeamDocument = catchAsync(async (req, res) => {
-  try {
-    const sanitizerErrors = validationResult(req);
-    if (!sanitizerErrors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: sanitizerErrors.array(),
-      });
-    }
-
-    const { cognito_sub, team_id, name } = req.body;
-
-    // Upload the document
-    const uploadMiddleware = upload('team-documents', team_id);
-    await uploadMiddleware.single('file')(req, res);
-
-    // Check if a file was uploaded
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        errorMessage: 'No file uploaded',
-      });
-    }
-
-    const url = req.file.location;
-    const mime_type = req.file.mimetype;
-
-    const response1 = await Hasura(getUserId, {
-      cognito_sub,
-    });
-    const user_id = response1.result.data.user[0].id;
-
-    // Upload the document info to Hasura
-    const response2 = await Hasura(addTeamDocumentQuery, {
-      team_id,
-      name,
-      url,
-      mime_type,
-    });
-
-    // Notify the user
-    notify(
-      22,
-      req.body.team_id,
-      user_id,
-      response1.result.data.team_members.map((team_member) => team_member.user_id).filter((id) => id !== user_id)
-    );
-
-    return res.status(201).json({
-      success: true,
-      errorCode: null,
-      errorMessage: null,
-      data: response2.result.data.insert_team_documents.returning[0],
-    });
-  } catch (error) {
-    logger.error('Error:', error);
-    return res.status(500).json({
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
       success: false,
-      errorCode: 500,
-      errorMessage: 'Internal server error',
-      data: null,
+      errors: sanitizerErrors.array(),
     });
   }
+
+  const { cognito_sub: cognitoSub, team_id: teamId } = req.body;
+
+  // Check if the user is a member of the team
+  const response1 = await Hasura(checkIfMember, {
+    cognitoSub,
+    teamId,
+  });
+
+  if (response1.result.data.team_members.length === 0) {
+    return res.status(403).json({
+      success: false,
+      errorCode: 'FORBIDDEN',
+      errorMessage: 'You are not authorized to perform this action',
+    });
+  }
+
+  // Upload file to S3
+  const key = `team-documents/${teamId}/${req.file.originalname}`;
+  const data = req.file.buffer;
+
+  await uploadToS3(key, data);
+
+  // Upload the document info to Hasura
+  await Hasura(addTeamDocumentQuery, {
+    teamId,
+    fileName: req.file.originalname,
+    mimeType: req.file.mimetype,
+    url: key,
+  });
+
+  const { user_id: userId } = response1.result.data.team_members[0];
+
+  const response3 = await Hasura(getTeamMembers, {
+    teamId,
+    userId,
+  });
+
+  // Notify the team members
+  notify(
+    22,
+    req.body.team_id,
+    userId,
+    response3.result.data.team_members.map((team_member) => team_member.user_id)
+  );
+
+  return res.status(201).json({
+    success: true,
+    errorCode: null,
+    errorMessage: null,
+  });
 });
 
-module.exports = { addTeamDocument };
+module.exports = addTeamDocument;
