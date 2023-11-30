@@ -1,4 +1,4 @@
-const add_TeamDocument = `mutation add_TeamDocument($name: String!, $team_id:Int ,$mime_type: String!,$url: String! ) {
+const addTeamDocumentQuery = `mutation add_TeamDocument($name: String!, $team_id:Int ,$mime_type: String!,$url: String! ) {
   insert_team_documents(objects: [{
     team_id: $team_id,
     mime_type: $mime_type,
@@ -17,5 +17,5 @@ const add_TeamDocument = `mutation add_TeamDocument($name: String!, $team_id:Int
 }`;
 
 module.exports = {
-  add_TeamDocument,
+  addTeamDocumentQuery,
 };
