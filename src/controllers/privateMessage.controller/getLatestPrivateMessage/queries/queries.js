@@ -12,7 +12,7 @@ const getPrivateMessages = `query getPrivateMessages($cognito_sub: String, $user
         ]
       }
     ],
-  }, order_by: { created_at: desc }) {
+  }, order_by: { created_at: asc }) {
     created_at
     id
     encrypted_message
