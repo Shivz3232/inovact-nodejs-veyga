@@ -1,13 +1,9 @@
-const checkIfAdmin = `query checkIfAdmin($cognito_sub: String, $team_id: Int) {
-  current_user: team_members(where: {user: {cognito_sub: {_eq: $cognito_sub}}, team: {id: {_eq: $team_id}}}) {
-    user_id
-    admin
-  }
-  team_members(where: {team_id: {_eq: $team_id}}) {
-    user_id
+const getUserId = `query getUserId($cognito_sub: String!) {
+  user(where: {cognito_sub: {_eq: $cognito_sub}}) {
+    id
   }
 }`;
 
 module.exports = {
-  checkIfAdmin,
+  getUserId,
 };

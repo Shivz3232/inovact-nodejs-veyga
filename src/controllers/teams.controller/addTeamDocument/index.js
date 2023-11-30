@@ -1,10 +1,11 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { add_TeamDocument } = require('./queries/mutations');
-const { checkIfAdmin } = require('./queries/queries');
+const { addTeamDocumentQuery } = require('./queries/mutations');
+const { getUserId } = require('./queries/queries');
 const upload = require('../../../utils/uploadDocument');
 const notify = require('../../../utils/notify');
+const logger = require('../../../config/logger');
 
 const addTeamDocument = catchAsync(async (req, res) => {
   try {
@@ -33,24 +34,21 @@ const addTeamDocument = catchAsync(async (req, res) => {
     const url = req.file.location;
     const mime_type = req.file.mimetype;
 
-    // Check if current user is team admin
-    const response1 = await Hasura(checkIfAdmin, {
+    const response1 = await Hasura(getUserId, {
       cognito_sub,
-      team_id,
     });
+    const user_id = response1.result.data.user[0].id;
 
     // Upload the document info to Hasura
-    const response2 = await Hasura(add_TeamDocument, {
+    const response2 = await Hasura(addTeamDocumentQuery, {
       team_id,
       name,
       url,
       mime_type,
     });
 
-    const { user_id } = response1.result.data.current_user[0];
-
     // Notify the user
-    await notify(
+    notify(
       22,
       req.body.team_id,
       user_id,
@@ -61,12 +59,15 @@ const addTeamDocument = catchAsync(async (req, res) => {
       success: true,
       errorCode: null,
       errorMessage: null,
+      data: response2.result.data.insert_team_documents.returning[0],
     });
   } catch (error) {
-    console.error('Error:', error);
+    logger.error('Error:', error);
     return res.status(500).json({
       success: false,
+      errorCode: 500,
       errorMessage: 'Internal server error',
+      data: null,
     });
   }
 });
