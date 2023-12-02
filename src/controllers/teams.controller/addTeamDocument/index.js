@@ -1,11 +1,11 @@
 const { validationResult } = require('express-validator');
+const config = require('../../../config/config');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addTeamDocument: addTeamDocumentQuery } = require('./queries/mutations');
 const { checkIfMember, getTeamMembers } = require('./queries/queries');
 const uploadToS3 = require('../../../utils/uploadToS3');
 const notify = require('../../../utils/notify');
-const logger = require('../../../config/logger');
 
 const addTeamDocument = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -17,6 +17,14 @@ const addTeamDocument = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub: cognitoSub, team_id: teamId } = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'BAD_REQUEST',
+      errorMessage: 'No file was uploaded',
+    });
+  }
 
   // Check if the user is a member of the team
   const response1 = await Hasura(checkIfMember, {
@@ -33,7 +41,7 @@ const addTeamDocument = catchAsync(async (req, res) => {
   }
 
   // Upload file to S3
-  const key = `team-documents/${teamId}/${req.file.originalname}`;
+  const key = `${config.env}/team-documents/${teamId}/${req.file.originalname}`;
   const data = req.file.buffer;
 
   await uploadToS3(key, data);
