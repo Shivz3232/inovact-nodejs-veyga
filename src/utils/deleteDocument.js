@@ -14,3 +14,5 @@ const deleteDocument = async (key) => {
 
   return result;
 };
+
+module.exports = deleteDocument;
