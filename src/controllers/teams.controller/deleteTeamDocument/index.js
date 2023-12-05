@@ -13,7 +13,7 @@ const deleteTeamDocument = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub: cognitoSub, team_id: teamId, documentId } = req.body;
+  const { cognito_sub: cognitoSub, teamId, documentId } = req.body;
 
   // Check if the user is a member of the team
   const memberCheckResult = await Hasura(checkIfMemberQuery, {
@@ -29,11 +29,11 @@ const deleteTeamDocument = catchAsync(async (req, res) => {
     });
   }
 
-  const documentQueryResult = await Hasura(getTeamDocumentQuery, {
+  const getTeamDocumentResult = await Hasura(getTeamDocumentQuery, {
     id: documentId,
   });
 
-  if (documentQueryResult.result.data.team_documents_by_pk === null) {
+  if (getTeamDocumentResult.result.data.team_documents_by_pk === null) {
     return res.status(404).json({
       success: false,
       errorCode: 'NOT_FOUND',
@@ -41,7 +41,7 @@ const deleteTeamDocument = catchAsync(async (req, res) => {
     });
   }
 
-  const { url: documentUrl } = documentQueryResult.result.data.team_documents_by_pk;
+  const { url: documentUrl } = getTeamDocumentResult.result.data.team_documents_by_pk;
 
   await deleteDocument(documentUrl);
 

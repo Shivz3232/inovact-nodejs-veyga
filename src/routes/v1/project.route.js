@@ -3,7 +3,7 @@ const projectController = require('../../controllers/project.controller');
 const multerUpload = require('../../utils/multerUpload');
 const { addProjectSanitizer, deleteProjectSanitizer, getProjectSanitizer, updateProjectSanitizer, likeProjectSanitizer } = require('../../controllers/project.controller/sanitizer');
 
-router.post('/', multerUpload, addProjectSanitizer, projectController.addProject);
+router.post('/', addProjectSanitizer, projectController.addProject);
 
 router.get('/', getProjectSanitizer, projectController.getProject);
 
