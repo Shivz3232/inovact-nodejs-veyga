@@ -56,6 +56,4 @@ const deleteTeamDocument = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = {
-  deleteTeamDocument,
-};
+module.exports = deleteTeamDocument;
