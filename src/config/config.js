@@ -13,6 +13,7 @@ const envVarsSchema = Joi.object()
     REGION: Joi.string().default('ap-south-1'),
     NOTIFY_QUEUE_URL: Joi.string(),
     CLOUD_MAP_HASURA_SERVICE_ID: Joi.string(),
+    S3_BUCKET: Joi.string().required(),
   })
   .unknown();
 
@@ -30,4 +31,5 @@ module.exports = {
   region: envVars.REGION,
   notifyQueueUrl: envVars.NOTIFY_QUEUE_URL,
   cloudMapHasuraServiceId: envVars.CLOUD_MAP_HASURA_SERVICE_ID,
+  s3Bucket: envVars.S3_BUCKET,
 };

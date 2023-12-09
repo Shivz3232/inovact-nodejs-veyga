@@ -3,7 +3,10 @@ module.exports.addTeam = require('./addTeam');
 module.exports.updateTeam = require('./updateTeam');
 module.exports.deleteTeam = require('./deleteTeam');
 
+// To add team document
 module.exports.addTeamDocument = require('./addTeamDocument');
+module.exports.downloadTeamDocument = require('./downloadTeamDocument');
+module.exports.deleteTeamDocument = require('./deleteTeamDocument');
 
 module.exports.toggleAdmin = require('./toggleAdmin');
 module.exports.deleteTeamMember = require('./deleteTeamMembers');

@@ -2,7 +2,7 @@ const getAllUserQuery = `
 query getUsers {
   user(
     where: { profile_complete: { _eq: true } }
-    order_by: [{ first_name: asc, last_name: asc }]
+    order_by: [{first_name: asc}, {last_name: asc}]
   ) {
     id
     user_name

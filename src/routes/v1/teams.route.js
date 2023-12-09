@@ -1,15 +1,18 @@
 const router = require('express').Router();
 const teamsController = require('../../controllers/teams.controller');
 const teamMessageController = require('../../controllers/teamMessage.controller');
+const multerUpload = require('../../utils/multerUpload');
 
-const { acceptJoinRequestSanitizer, addTeamDocSanitizer, deleteMemberSanitizer, joinTeamSanitizer, rejectJoinRequestSanitizer, toggleAdminSanitizer } = require('../../controllers/teams.controller/sanitizer');
+const { acceptJoinRequestSanitizer, addTeamDocSanitizer, deleteMemberSanitizer, joinTeamSanitizer, rejectJoinRequestSanitizer, toggleAdminSanitizer, downloadTeamDocSanitizer, deleteTeamDocSanitizer } = require('../../controllers/teams.controller/sanitizer');
 
 router.get('/', teamsController.getTeams);
 router.post('/', teamsController.addTeam);
 router.put('/', teamsController.updateTeam);
 router.delete('/', teamsController.deleteTeam);
 
-router.post('/documents', addTeamDocSanitizer, teamsController.addTeamDocument);
+router.delete('/documents', deleteTeamDocSanitizer, teamsController.deleteTeamDocument);
+router.post('/documents', multerUpload, addTeamDocSanitizer, teamsController.addTeamDocument);
+router.post('/documents/download', downloadTeamDocSanitizer, teamsController.downloadTeamDocument);
 
 router.delete('/member', deleteMemberSanitizer, teamsController.deleteTeamMember);
 router.post('/member/toggleAdmin', toggleAdminSanitizer, teamsController.toggleAdmin);

@@ -15,7 +15,7 @@ const getMessage = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
   const { team_id, timeStamp } = req.query;
-  const limit = req.query.limit || 10;
+  const limit = parseInt(req.query.limit) || 10;
 
   const variables = { team_id, cognito_sub };
 
