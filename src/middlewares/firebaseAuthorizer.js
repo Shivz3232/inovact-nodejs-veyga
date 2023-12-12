@@ -15,7 +15,6 @@ const firebaseAuthorizer = async (req, res, next) => {
     .auth()
     .verifyIdToken(authorizationToken)
     .then((data) => {
-      a;
       return data;
     })
     .catch((err) => {
