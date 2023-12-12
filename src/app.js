@@ -8,7 +8,9 @@ const xss = require('xss-clean');
 const cors = require('cors');
 // const passport = require('passport');
 const httpStatus = require('http-status');
+
 const config = require('./config/config');
+const logger = require('./config/logger');
 const morgan = require('./config/morgan');
 // const { jwtStrategy } = require('./config/passport');
 // const { authLimiter } = require('./middlewares/rateLimiter');
@@ -75,13 +77,29 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
   // Read the JSON file
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      console.error('Error reading JSON file:', err);
+      logger.error('Error reading JSON file:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
     // Parse the JSON and send it as the response
     const jsonData = JSON.parse(data);
     res.json(jsonData);
+  });
+});
+
+// For verifying ssl certificate
+app.get('/.well-known/pki-validation/*', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'A71340866D0E0A28BC1EFB917223AD6D.txt');
+
+  // Read the TXT file
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      logger.error('Error reading TXT file:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    res.hasHeader('Content-Type', 'text/plain');
+    res.end(data);
   });
 });
 
