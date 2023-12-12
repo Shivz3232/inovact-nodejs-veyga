@@ -8,13 +8,14 @@ const firebaseAuthorizer = async (req, res, next) => {
   const authorizationToken = await req.headers.authorization;
 
   if (!authorizationToken) {
-    return res.status(401).json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'User Authorization token not found' });
+    return res.redirect('https://play.google.com/store/apps/details?id=in.pranaydas.inovact');
   }
 
   const result = await admin
     .auth()
     .verifyIdToken(authorizationToken)
     .then((data) => {
+      a;
       return data;
     })
     .catch((err) => {
@@ -23,7 +24,7 @@ const firebaseAuthorizer = async (req, res, next) => {
     });
 
   if (!result) {
-    return res.status(401).json({ success: false, errorCode: 'UnAuthorizedUser', errorMessage: 'Invalid or expired auth token' });
+    return res.redirect('https://play.google.com/store/apps/details?id=in.pranaydas.inovact');
   }
 
   req.body.cognito_sub = result.uid;
