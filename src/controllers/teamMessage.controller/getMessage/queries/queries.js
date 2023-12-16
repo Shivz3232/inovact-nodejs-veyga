@@ -13,6 +13,7 @@ const getTeamMessages = `query getTeamMessages($team_id: Int!, $timeStamp: times
     user_id
     user{
       first_name
+      last_name
       avatar
     }
     created_at

@@ -42,8 +42,9 @@ const getMessage = catchAsync(async (req, res) => {
       return {
         id: messageDoc.id,
         sender: messageDoc.user_id,
-        sender_name: messageDoc.user.first_name,
-        profile_photo: messageDoc.user.avatar,
+        first_name: messageDoc.user.first_name,
+        last_name: messageDoc.user.last_name,
+        avatar: messageDoc.user.avatar,
         team_id: messageDoc.team_id,
         message: decryptedMessage,
         created_at: messageDoc.created_at,
