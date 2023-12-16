@@ -11,6 +11,10 @@ const getTeamMessages = `query getTeamMessages($team_id: Int!, $timeStamp: times
     message
     team_id
     user_id
+    user{
+      first_name
+      avatar
+    }
     created_at
     updated_at
   }
