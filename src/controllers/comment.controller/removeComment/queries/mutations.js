@@ -1,5 +1,14 @@
-const removeProjectComment = `mutation removeProjectComment($id: Int!, $userId: Int!) {
-  delete_project_comment(where: { id: { _eq: $id }, user_id: { _eq: $userId } }) {
+const removeProjectComment = `mutation removeProjectComment($id: Int!, $cognitoSub: String!) {
+  delete_project_comment(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }) {
+    returning {
+      id
+    }
+  }
+}
+`;
+
+const removeIdeaComment = `mutation removeIdeaComment($id: Int!, $cognitoSub: String!) {
+  delete_idea_comment(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }) {
     returning{
       id
     }
@@ -7,17 +16,8 @@ const removeProjectComment = `mutation removeProjectComment($id: Int!, $userId: 
 }
 `;
 
-const removeIdeaComment = `mutation removeIdeaComment($id: Int!, $userId: Int!) {
-  delete_idea_comment(where: { id: { _eq: $id }, user_id: { _eq: $userId } }) {
-    returning{
-      id
-    }
-  }
-}
-`;
-
-const removeThoughtComment = `mutation removeThoughtComment($id: Int!, $userId: Int!) {
-  delete_thought_comments(where: { id: { _eq: $id }, user_id: { _eq: $userId } }) {
+const removeThoughtComment = `mutation removeThoughtComment($id: Int!, $cognitoSub: String) {
+  delete_thought_comments(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }) {
     returning{
       id
     }

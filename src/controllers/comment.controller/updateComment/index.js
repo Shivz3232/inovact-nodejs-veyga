@@ -1,12 +1,14 @@
+const { validationResult } = require('express-validator');
 const logger = require('../../../config/logger.js');
-const { getUserId } = require('./queries/queries.js');
 const { updateProjectComment, updateIdeaComment, updateThoughtComment } = require('./queries/mutations.js');
 const { query: Hasura } = require('../../../utils/hasura.js');
 const catchAsync = require('../../../utils/catchAsync.js');
 
-const handleUpdateComment = async (updateFunction, articleType, commentId, userId, comment) => {
-  const updateResponse = await Hasura(updateFunction, { id: commentId, userId, text: comment });
+const handleUpdateComment = async (updateFunction, articleType, commentId, cognitoSub, comment) => {
   const updateFunctionName = `update_${articleType === 'post' ? 'project' : articleType}_${articleType === 'thought' ? 'comments' : 'comment'}`;
+
+  const updateResponse = await Hasura(updateFunction, { id: commentId, cognitoSub, text: comment });
+
   if (!updateResponse.success) {
     return {
       success: false,
@@ -24,24 +26,40 @@ const handleUpdateComment = async (updateFunction, articleType, commentId, userI
   };
 };
 
-const removeComment = catchAsync(async (req, res) => {
+const updateComment = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { commentId } = req.params;
   const { comment, cognito_sub, articleType } = req.body;
 
-  const getUserIdResponse = await Hasura(getUserId, { cognito_sub: { _eq: cognito_sub } });
-  const userId = getUserIdResponse.result.data.user[0].id;
+  logger.info(`Updating comment: commentId=${commentId}, cognito_sub=${cognito_sub}, articleType=${articleType}`);
+
+  if (!commentId || !comment || !cognito_sub || !articleType) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'INVALID_INPUT',
+      errorMessage: 'Invalid input provided',
+      data: null,
+    });
+  }
 
   let updateResponse;
 
   switch (articleType) {
     case 'post':
-      updateResponse = await handleUpdateComment(updateProjectComment, articleType, commentId, userId, comment);
+      updateResponse = await handleUpdateComment(updateProjectComment, articleType, commentId, cognito_sub, comment);
       break;
     case 'idea':
-      updateResponse = await handleUpdateComment(updateIdeaComment, articleType, commentId, userId, comment);
+      updateResponse = await handleUpdateComment(updateIdeaComment, articleType, commentId, cognito_sub, comment);
       break;
     case 'thought':
-      updateResponse = await handleUpdateComment(updateThoughtComment, articleType, commentId, userId, comment);
+      updateResponse = await handleUpdateComment(updateThoughtComment, articleType, commentId, cognito_sub, comment);
       break;
     default:
       return res.status(400).json({
@@ -52,7 +70,21 @@ const removeComment = catchAsync(async (req, res) => {
       });
   }
 
-  return res.status(updateResponse.success ? 200 : 400).json(updateResponse);
+  if (updateResponse.success) {
+    return res.status(200).json({
+      success: true,
+      errorCode: '',
+      errorMessage: '',
+      data: updateResponse.data,
+    });
+  } else {
+    return res.status(400).json({
+      success: false,
+      errorCode: updateResponse.errorCode || 'UPDATE_COMMENT_FAILED',
+      errorMessage: updateResponse.errorMessage || 'Failed to update comment',
+      data: null,
+    });
+  }
 });
 
-module.exports = removeComment;
+module.exports = updateComment;

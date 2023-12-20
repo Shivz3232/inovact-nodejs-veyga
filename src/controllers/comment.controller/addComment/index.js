@@ -1,4 +1,5 @@
 /* eslint-disable prefer-destructuring */
+const { validationResult } = require('express-validator');
 const logger = require('../../../config/logger.js');
 const addPostComment = require('./helpers/addPostComment.js');
 const addIdeaComment = require('./helpers/addIdeaComment.js');
@@ -9,6 +10,14 @@ const { query: Hasura } = require('../../../utils/hasura.js');
 const catchAsync = require('../../../utils/catchAsync.js');
 
 const addComment = catchAsync(async (req, res) => {
+  const sanitizerErrors = validationResult(req);
+  if (!sanitizerErrors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      ...sanitizerErrors,
+    });
+  }
+
   const { text, cognito_sub, article_id } = req.body;
   let { article_type } = req.body;
 

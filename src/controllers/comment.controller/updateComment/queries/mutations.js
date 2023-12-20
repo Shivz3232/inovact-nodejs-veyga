@@ -1,5 +1,5 @@
-const updateProjectComment = `mutation updateProjectComment($id: Int!, $userId: Int!, $text: String!) {
-  update_project_comment(where: { id: { _eq: $id }, user_id: { _eq: $userId } }, _set: { text: $text }) {
+const updateProjectComment = `mutation updateProjectComment($id: Int!, $cognitoSub: String!, $text: String!) {
+  update_project_comment(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }, _set: { text: $text }) {
     returning{
       id
       created_at
@@ -12,8 +12,8 @@ const updateProjectComment = `mutation updateProjectComment($id: Int!, $userId: 
 }
 `;
 
-const updateIdeaComment = `mutation updateIdeaComment($id: Int!, $userId: Int!, $text: String!) {
-  update_idea_comment(where: { id: { _eq: $id }, user_id: { _eq: $userId } }, _set: { text: $text }) {
+const updateIdeaComment = `mutation updateIdeaComment($id: Int!, $cognitoSub: String!, $text: String!) {
+  update_idea_comment(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }, _set: { text: $text }) {
     returning{
       id
       created_at
@@ -25,8 +25,8 @@ const updateIdeaComment = `mutation updateIdeaComment($id: Int!, $userId: Int!, 
   }
 }`;
 
-const updateThoughtComment = `mutation updateThoughtComment($id: Int!, $userId: Int!, $text: String!) {
-  update_thought_comments(where: { id: { _eq: $id }, user_id: { _eq: $userId } }, _set: { text: $text }) {
+const updateThoughtComment = `mutation updateThoughtComment($id: Int!, $cognitoSub: String!, $text: String!) {
+  update_thought_comments(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }, _set: { text: $text }) {
     returning{
       id
       created_at
