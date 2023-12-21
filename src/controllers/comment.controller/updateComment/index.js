@@ -5,7 +5,26 @@ const { query: Hasura } = require('../../../utils/hasura.js');
 const catchAsync = require('../../../utils/catchAsync.js');
 
 const handleUpdateComment = async (updateFunction, articleType, commentId, cognitoSub, comment) => {
-  const updateFunctionName = `update_${articleType === 'post' ? 'project' : articleType}_${articleType === 'thought' ? 'comments' : 'comment'}`;
+  let updateFunctionName;
+
+  switch (articleType) {
+    case 'post':
+      updateFunctionName = 'update_project_comment';
+      break;
+    case 'idea':
+      updateFunctionName = 'update_idea_comment';
+      break;
+    case 'thought':
+      updateFunctionName = 'update_thought_comments';
+      break;
+    default:
+      return {
+        success: false,
+        errorCode: 'INVALID_ARTICLE_TYPE',
+        errorMessage: 'Invalid article type provided',
+        data: null,
+      };
+  }
 
   const updateResponse = await Hasura(updateFunction, { id: commentId, cognitoSub, text: comment });
 
@@ -40,15 +59,6 @@ const updateComment = catchAsync(async (req, res) => {
 
   logger.info(`Updating comment: commentId=${commentId}, cognito_sub=${cognito_sub}, articleType=${articleType}`);
 
-  if (!commentId || !comment || !cognito_sub || !articleType) {
-    return res.status(400).json({
-      success: false,
-      errorCode: 'INVALID_INPUT',
-      errorMessage: 'Invalid input provided',
-      data: null,
-    });
-  }
-
   let updateResponse;
 
   switch (articleType) {
@@ -70,14 +80,7 @@ const updateComment = catchAsync(async (req, res) => {
       });
   }
 
-  if (updateResponse.success) {
-    return res.status(200).json({
-      success: true,
-      errorCode: '',
-      errorMessage: '',
-      data: updateResponse.data,
-    });
-  } else {
+  if (!updateResponse.success) {
     return res.status(400).json({
       success: false,
       errorCode: updateResponse.errorCode || 'UPDATE_COMMENT_FAILED',
@@ -85,6 +88,12 @@ const updateComment = catchAsync(async (req, res) => {
       data: null,
     });
   }
+  return res.status(200).json({
+    success: true,
+    errorCode: '',
+    errorMessage: '',
+    data: updateResponse.data,
+  });
 });
 
 module.exports = updateComment;

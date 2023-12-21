@@ -32,7 +32,7 @@ const removeComment = catchAsync(async (req, res) => {
       ...sanitizerErrors,
     });
   }
-  
+
   const { commentId } = req.params;
   const { cognito_sub, articleType } = req.body;
 
@@ -59,14 +59,7 @@ const removeComment = catchAsync(async (req, res) => {
       });
   }
 
-  if (removeResponse.success) {
-    return res.status(200).json({
-      success: true,
-      errorCode: '',
-      errorMessage: '',
-      data: removeResponse.data,
-    });
-  } else {
+  if (!removeResponse.success) {
     return res.status(400).json({
       success: false,
       errorCode: removeResponse.errorCode || 'REMOVE_COMMENT_FAILED',
@@ -74,6 +67,13 @@ const removeComment = catchAsync(async (req, res) => {
       data: null,
     });
   }
+
+  return res.status(200).json({
+    success: true,
+    errorCode: '',
+    errorMessage: '',
+    data: removeResponse.data,
+  });
 });
 
 module.exports = removeComment;
