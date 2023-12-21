@@ -1,4 +1,4 @@
-const { query: Hasura } = require('../../../utils/hasura');
+const { query: Hasura } = require('../../../../utils/hasura');
 const { commentOnPost } = require('../queries/mutations');
 
 async function addPostComment(text, user_id, post_id) {
