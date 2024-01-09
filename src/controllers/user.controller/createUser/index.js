@@ -33,7 +33,7 @@ const createUser = catchAsync(async (req, res) => {
   const createUserQueryResponse = await Hasura(createUserQuery, userData);
   const userId = createUserQueryResponse.result.data.insert_user_one.id;
 
-  enqueueEmailNotification(13, userId, userId, userId);
+  enqueueEmailNotification(13, userId, userId, [userId]);
 
   return res.status(201).json({
     success: true,
