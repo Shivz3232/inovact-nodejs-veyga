@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { createUserQuery } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
+const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 
 function generateRandomUsername() {
   const min = 1000000000;
@@ -29,7 +30,10 @@ const createUser = catchAsync(async (req, res) => {
     cognito_sub,
   };
 
-  await Hasura(createUserQuery, userData);
+  const createUserQueryResponse = await Hasura(createUserQuery, userData);
+  const userId = createUserQueryResponse.result.data.insert_user_one.id;
+
+  enqueueEmailNotification(13, userId, userId, [userId]);
 
   return res.status(201).json({
     success: true,

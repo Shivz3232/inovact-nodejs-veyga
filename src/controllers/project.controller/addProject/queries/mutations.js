@@ -63,15 +63,13 @@ const addTags = `mutation addProjectTags($objects: [project_tag_insert_input!]!)
 }
 `;
 
-const insertProjectDocument = `mutation insertProjectDocument($name: String!, $url: String!, $projectId: Int!) {
-  insert_project_documents_one(object: { name: $name, url: $url, project_id: $projectId }) {
-    name
-    url
-    project_id
+const addDocuments = `mutation addDocuments($objects: [project_documents_insert_input!]!) {
+  insert_project_documents(objects: $objects) {
+    returning {
+      project_id
+    }
   }
-}
-
-`;
+}`;
 
 const addTeam = `mutation addTeam($name: String, $looking_for_members: Boolean, $looking_for_mentors: Boolean, $team_on_inovact: Boolean, $creator_id: Int) {
   insert_team(objects: [{
@@ -117,7 +115,7 @@ module.exports = {
   addProject,
   addMentions,
   addTags,
-  insertProjectDocument,
+  addDocuments,
   addTeam,
   addMembers,
   addRolesRequired,
