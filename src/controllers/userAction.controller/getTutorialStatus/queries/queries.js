@@ -1,7 +1,9 @@
 const fetchTutorialStatus = `query getUserActionDetails($cognitoSub: String) {
   user_actions(where: { user: { cognito_sub: { _eq: $cognitoSub } } }) {
     user_id
-    tutorial_complete
+    feed_tutorial
+    profile_tutorial
+    team_tutorial
   }
 }
 `;
