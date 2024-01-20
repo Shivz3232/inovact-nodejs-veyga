@@ -9,6 +9,7 @@ const getUserFeedbackQuery = `query getUserFeedback($id: Int!) {
       user_id
       subject
       body
+      email_id
     }
 }`;
 
