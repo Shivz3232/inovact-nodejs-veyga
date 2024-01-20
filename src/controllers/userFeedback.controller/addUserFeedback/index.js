@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addUserFeedbackQuery } = require('./queries/mutations');
+const { fetchUserEmailFromUserId } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const addUserFeedback = catchAsync(async (req, res) => {
@@ -14,11 +15,19 @@ const addUserFeedback = catchAsync(async (req, res) => {
 
   const { userId, subject, body } = req.body;
 
+  const fetchEmailFromUserIdResponse = await Hasura(fetchUserEmailFromUserId, {
+    userId,
+  });
+  const { email_id } = fetchEmailFromUserIdResponse.result.data.user[0];
+  console.log(email_id);
+
   const addUserFeedbackResponse = await Hasura(addUserFeedbackQuery, {
     userId,
     subject,
     body,
+    email_id,
   });
+
 
   const addUserFeedbackResponseData = addUserFeedbackResponse.result.data;
 
