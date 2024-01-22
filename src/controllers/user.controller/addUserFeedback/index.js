@@ -19,7 +19,6 @@ const addUserFeedback = catchAsync(async (req, res) => {
     userId,
   });
   const { email_id } = fetchEmailFromUserIdResponse.result.data.user[0];
-  console.log(email_id);
 
   const addUserFeedbackResponse = await Hasura(addUserFeedbackQuery, {
     userId,
