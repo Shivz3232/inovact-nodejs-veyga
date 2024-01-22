@@ -3,9 +3,9 @@ const updateTutorialStatusQuery = `mutation updateTutorialStatusQuery($cognito_s
     affected_rows
     returning {
       user_id
-      feed_tutorial
-      profile_tutorial
-      team_tutorial
+      feed_tutorial_complete
+      profile_tutorial_complete
+      team_tutorial_complete
     }
   }
 }`;

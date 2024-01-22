@@ -12,20 +12,12 @@ const getTutorialStatus = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, feed_tutorial, profile_tutorial, team_tutorial } = req.body;
+  const { cognito_sub, feed_tutorial_complete, profile_tutorial_complete, team_tutorial_complete } = req.body;
 
   let _set = {};
-  if (feed_tutorial !== undefined) _set.feed_tutorial = feed_tutorial;
-  if (profile_tutorial !== undefined) _set.profile_tutorial = profile_tutorial;
-  if (team_tutorial !== undefined) _set.team_tutorial = team_tutorial;
-
-  if (Object.keys(_set).length === 0) {
-    return res.status(400).json({
-      success: false,
-      errorCode: 'NoUpdateFields',
-      errorMessage: 'No fields provided for update',
-    });
-  }
+  if (feed_tutorial_complete !== undefined) _set.feed_tutorial_complete = feed_tutorial_complete;
+  if (profile_tutorial_complete !== undefined) _set.profile_tutorial_complete = profile_tutorial_complete;
+  if (team_tutorial_complete !== undefined) _set.team_tutorial_complete = team_tutorial_complete;
 
   const response = await Hasura(updateTutorialStatusQuery, { cognito_sub, _set });
 
