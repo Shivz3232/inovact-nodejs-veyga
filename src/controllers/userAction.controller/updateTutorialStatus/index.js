@@ -12,12 +12,14 @@ const getTutorialStatus = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, tutorialComplete } = req.body;
+  const { cognito_sub, feed_tutorial_complete, profile_tutorial_complete, team_tutorial_complete } = req.body;
 
-  const response = await Hasura(updateTutorialStatusQuery, {
-    cognitoSub: cognito_sub,
-    tutorialComplete,
-  });
+  let _set = {};
+  if (feed_tutorial_complete !== undefined) _set.feed_tutorial_complete = feed_tutorial_complete;
+  if (profile_tutorial_complete !== undefined) _set.profile_tutorial_complete = profile_tutorial_complete;
+  if (team_tutorial_complete !== undefined) _set.team_tutorial_complete = team_tutorial_complete;
+
+  const response = await Hasura(updateTutorialStatusQuery, { cognito_sub, _set });
 
   const responseData = response.result.data.update_user_actions.returning;
 
