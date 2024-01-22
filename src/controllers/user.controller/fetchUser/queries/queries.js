@@ -26,9 +26,9 @@ const getUser = `query getUser($cognito_sub: String) {
     profile_complete,
     status,
     user_action{
-      profile_tutorial
-      feed_tutorial
-      team_tutorial
+     profile_tutorial_complete
+      feed_tutorial_complete
+      team_tutorial_complete
     }
     user_skills {
       id
@@ -76,9 +76,9 @@ query getUser($id: Int, $cognito_sub: String) {
     profile_complete,
     status,
     user_action{
-      profile_tutorial
-      feed_tutorial
-      team_tutorial
+      profile_tutorial_complete
+      feed_tutorial_complete
+      team_tutorial_complete
     }
     user_skills {
       id
