@@ -3,8 +3,10 @@
 /* eslint-disable no-restricted-syntax */
 const { validationResult } = require('express-validator');
 const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired } = require('./queries/mutations');
-const { getUser } = require('./queries/queries');
+const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
+const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
+const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
@@ -136,6 +138,28 @@ const addProject = catchAsync(async (req, res) => {
     // @TODO Fallback if documents fail to be inserted
     await Hasura(addDocuments, documentsData);
   }
+
+  // Send email notification
+  const { id: actorId } = response1.result.data.user[0];
+  const { id: projectId } = response2.result.data.insert_project.returning[0];
+  const { team_id: teamId } = projectData;
+
+  // get connection usernids
+  const getConnectionsResponse = await Hasura(getMyConnections, {
+    cognito_sub,
+  });
+
+  const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+
+  if (teamId) {
+    enqueueEmailNotification(15, projectId, actorId, [actorId]);
+  }
+
+  if (userConnectionIds.length > 0) {
+    enqueueEmailNotification(2, projectId, actorId, userConnectionIds);
+  }
+
+  enqueueEmailNotification(1, projectId, actorId, [actorId]);
 
   return res.status(201).json({
     success: true,
