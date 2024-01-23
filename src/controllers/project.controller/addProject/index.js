@@ -150,15 +150,26 @@ const addProject = catchAsync(async (req, res) => {
   });
 
   const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+  let isConnectionNotified = false;
 
   if (teamId) {
-    enqueueEmailNotification(15, projectId, actorId, [actorId]);
+    // notify user what can he do next
+    enqueueEmailNotification(3, projectId, actorId, [actorId]);
+
+    // notify connections that the user is seeking ht ecollaborators
+    if (userConnectionIds.length > 0) {
+      enqueueEmailNotification(15, projectId, actorId, [actorId]);
+      isConnectionNotified = true;
+    }
   }
 
-  if (userConnectionIds.length > 0) {
+  // notifiing the user about the project but only when the connections were not notified before
+  // Dont wanna spam
+  if (userConnectionIds.length > 0 && !isConnectionNotified) {
     enqueueEmailNotification(2, projectId, actorId, userConnectionIds);
   }
 
+  // Congratualting the user for the acheivment
   enqueueEmailNotification(1, projectId, actorId, [actorId]);
 
   return res.status(201).json({
