@@ -116,7 +116,7 @@ module.exports = {
   addMentions,
   addTags,
   addDocuments,
-  addTeam, 
+  addTeam,
   addMembers,
   addRolesRequired,
   addSkillsRequired,

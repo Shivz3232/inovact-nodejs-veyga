@@ -24,4 +24,8 @@ const editUserSkillsSanitizer = [cognito_sub, body('skillId', 'Invalid skillId')
 
 const deleteUserSkillsSanitizer = [cognito_sub, body('skillIds', 'Invalid skillIds provided').isArray().isLength({ min: 1 })];
 
-module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer, editUserSkillsSanitizer, deleteUserSkillsSanitizer };
+const addUserFeedbackSanitizer = [cognito_sub, body('userId', 'User ID Not Provided').exists().isInt(), body('subject', 'Subject Not Provided').exists().isString(), body('body', 'Body Not Provided').exists().isString()];
+
+const getUserFeedbackSanitizer = [cognito_sub, body('id', 'User ID Not Provided').exists().isInt()];
+
+module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer, editUserSkillsSanitizer, deleteUserSkillsSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer };

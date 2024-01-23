@@ -1,6 +1,6 @@
 const express = require('express');
 const userController = require('../../controllers/user.controller');
-const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer } = require('../../controllers/user.controller/sanitizer');
+const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer } = require('../../controllers/user.controller/sanitizer');
 
 const router = express.Router();
 
@@ -20,5 +20,8 @@ router.get('/idea', getUserPostsSanitizer, userController.getUserIdea);
 router.get('/post', getUserPostsSanitizer, userController.getUserProject);
 router.get('/team', getUserTeamsSanitizer, userController.getUserTeams);
 router.get('/thought', getUserPostsSanitizer, userController.getUserThoughts);
+
+router.post('/feedback', addUserFeedbackSanitizer, userController.addUserFeedback);
+router.get('/feedback', getUserFeedbackSanitizer, userController.getUserFeedback);
 
 module.exports = router;
