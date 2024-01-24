@@ -2,7 +2,9 @@ const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addThought } = require('./queries/mutations');
-const { getUser, getThought } = require('./queries/queries');
+const { getUser, getThought, getMyConnections } = require('./queries/queries');
+const cleanConnections = require('../../../utils/cleanConnections');
+const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 
 const addThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -25,6 +27,24 @@ const addThoughts = catchAsync(async (req, res) => {
   };
 
   const response2 = await Hasura(addThought, thoughtData);
+
+  // Send email notification
+  const { id: actorId } = response1.result.data.user[0];
+  const { id: thoughtId } = response2.result.data.insert_thoughts.returning[0];
+
+  // get connection usernids
+  const getConnectionsResponse = await Hasura(getMyConnections, {
+    cognito_sub,
+  });
+
+  const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+
+  if (userConnectionIds.length > 0) {
+    enqueueEmailNotification(12, thoughtId, actorId, userConnectionIds);
+  }
+
+  // Congratualate the user for the acheivment
+  enqueueEmailNotification(11, thoughtId, actorId, [actorId]);
 
   return res.status(201).json({
     success: true,

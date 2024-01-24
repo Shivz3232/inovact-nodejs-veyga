@@ -3,6 +3,7 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { possibleToJoinTeam } = require('./queries/queries');
 const { addTeamRequestByStudent, addTeamRequestByMentor, addTeamRequestByEntrepreneurAsMember, addTeamRequestByEntrepreneurAsMentor } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
+const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const logger = require('../../../config/logger');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -139,6 +140,13 @@ const joinTeam = catchAsync(async (req, res) => {
     user_id,
     response.result.data.notifier_ids.map((x) => x.user_id)
   ).catch(logger.error);
+
+  enqueueEmailNotification(
+    16,
+    team_id,
+    user_id,
+    response.result.data.notifier_ids.map((x) => x.user_id)
+  );
 
   return res.json({
     success: true,

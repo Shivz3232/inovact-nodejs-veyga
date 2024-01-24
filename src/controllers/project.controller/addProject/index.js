@@ -3,8 +3,10 @@
 /* eslint-disable no-restricted-syntax */
 const { validationResult } = require('express-validator');
 const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired } = require('./queries/mutations');
-const { getUser } = require('./queries/queries');
+const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
+const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
+const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
@@ -136,6 +138,39 @@ const addProject = catchAsync(async (req, res) => {
     // @TODO Fallback if documents fail to be inserted
     await Hasura(addDocuments, documentsData);
   }
+
+  // Send email notification
+  const { id: actorId } = response1.result.data.user[0];
+  const { id: projectId } = response2.result.data.insert_project.returning[0];
+  const { team_id: teamId } = projectData;
+
+  // get connection usernids
+  const getConnectionsResponse = await Hasura(getMyConnections, {
+    cognito_sub,
+  });
+
+  const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+  let isConnectionNotified = false;
+
+  if (teamId) {
+    // notify user what can he do next
+    enqueueEmailNotification(3, projectId, actorId, [actorId]);
+
+    // notify connections that the user is seeking ht ecollaborators
+    if (userConnectionIds.length > 0) {
+      enqueueEmailNotification(15, projectId, actorId, [actorId]);
+      isConnectionNotified = true;
+    }
+  }
+
+  // notifiing the user about the project but only when the connections were not notified before
+  // Dont wanna spam
+  if (userConnectionIds.length > 0 && !isConnectionNotified) {
+    enqueueEmailNotification(2, projectId, actorId, userConnectionIds);
+  }
+
+  // Congratualting the user for the acheivment
+  enqueueEmailNotification(1, projectId, actorId, [actorId]);
 
   return res.status(201).json({
     success: true,
