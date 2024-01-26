@@ -17,6 +17,20 @@ const createUserQuery = `mutation CreateUser(
 }
 `;
 
+const addTutorialCompleteStatus = `mutation addTutorialCompleteStatus($userId: Int!) {
+  insert_user_actions(
+    objects: [
+      {
+        user_id: $userId
+      }
+    ]
+  ) {
+    affected_rows
+  }
+}
+`;
+
 module.exports = {
   createUserQuery,
+  addTutorialCompleteStatus,
 };
