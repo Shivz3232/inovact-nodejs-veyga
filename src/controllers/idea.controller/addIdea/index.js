@@ -5,7 +5,9 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addIdea, addTags, addSkillsRequired, addRolesRequired } = require('./queries/mutations');
-const { getUser } = require('./queries/queries');
+const { getUser, getMyConnections } = require('./queries/queries');
+const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
+const cleanConnections = require('../../../utils/cleanConnections');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -93,6 +95,30 @@ const addIdeas = catchAsync(async (req, res) => {
     // @TODO Fallback if tags fail to be inserted
     const response3 = await Hasura(addTags, tagsData);
   }
+
+  // Send email notification
+  const { id: actorId } = response1.result.data.user[0];
+  const { id: ideaId } = response2.result.data.insert_idea.returning[0];
+  const { team_id: teamId } = ideaData;
+
+  // get connection usernids
+  const getConnectionsResponse = await Hasura(getMyConnections, {
+    cognito_sub,
+  });
+  const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+  
+  if (teamId) {
+    // Explain things that can be done next to the user who uploaded the idea.
+    enqueueEmailNotification(8, ideaId, actorId, [actorId]);
+  }
+
+  if (userConnectionIds.length > 0) {
+    // Send email to all connections that user has uploaded an idea
+    enqueueEmailNotification(7, ideaId, actorId, userConnectionIds);
+  }
+
+  // Explain things that can be done next to the user who uploaded the idea.s
+  enqueueEmailNotification(6, ideaId, actorId, [actorId]);
 
   return res.status(201).json({
     success: true,

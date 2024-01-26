@@ -48,7 +48,17 @@ const getThought = `query getThought($id: Int) {
 }
 `;
 
+const getMyConnections = `query getMyConnections($cognito_sub: String) {
+  connections(where: {_or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}], status: {_eq: "connected"}}, order_by :{formed_at :desc}) {
+    id
+    user1
+    user2
+  }
+}
+`;
+
 module.exports = {
   getUser,
   getThought,
+  getMyConnections,
 };

@@ -25,6 +25,11 @@ const getUser = `query getUser($cognito_sub: String) {
     website
     profile_complete,
     status,
+    user_action{
+     profile_tutorial_complete
+      feed_tutorial_complete
+      team_tutorial_complete
+    }
     user_skills {
       id
       skill
@@ -70,6 +75,11 @@ query getUser($id: Int, $cognito_sub: String) {
     cover_photo
     profile_complete,
     status,
+    user_action{
+      profile_tutorial_complete
+      feed_tutorial_complete
+      team_tutorial_complete
+    }
     user_skills {
       id
       skill
