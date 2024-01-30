@@ -20,6 +20,8 @@ const config = require('../../config/config');
 const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 const propellRoute = require('./propell.route');
 const userActionRoute = require('./userAction.route');
+const userPointsRoute = require('./userPoints.route');
+
 
 const router = express.Router();
 
@@ -111,6 +113,11 @@ const defaultRoutes = [
   },
   {
     path: '/userAction',
+    route: userActionRoute,
+    needAuthentication: true,
+  },
+    {
+    path: '/userPoints',
     route: userActionRoute,
     needAuthentication: true,
   },
