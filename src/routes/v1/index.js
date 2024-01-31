@@ -22,7 +22,6 @@ const propellRoute = require('./propell.route');
 const userActionRoute = require('./userAction.route');
 const userPointsRoute = require('./userPoints.route');
 
-
 const router = express.Router();
 
 const defaultRoutes = [
@@ -116,9 +115,9 @@ const defaultRoutes = [
     route: userActionRoute,
     needAuthentication: true,
   },
-    {
+  {
     path: '/userPoints',
-    route: userActionRoute,
+    route: userPointsRoute,
     needAuthentication: true,
   },
 ];

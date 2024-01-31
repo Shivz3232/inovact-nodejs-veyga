@@ -8,4 +8,4 @@ const getUserPointsQuery = `query ($cognitoSub: String!) {
     }
 }`;
 
-module.exports = getUserPointsQuery;
+module.exports = {getUserPointsQuery};

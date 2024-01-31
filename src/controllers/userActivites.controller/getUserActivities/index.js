@@ -1,9 +1,9 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { getUserPointsQuery } = require('./queries/queries');
+const { getUserActivitiesQuery } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
-const getUserPoints = catchAsync(async (req, res) => {
+const getUserActivities = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
   if (!sanitizerErrors.isEmpty()) {
     return res.status(400).json({
@@ -14,13 +14,13 @@ const getUserPoints = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
 
-  const response = await Hasura(getUserPointsQuery, {
+  const getUserActivitiesQueryResponse = await Hasura(getUserActivitiesQuery, {
     cognitoSub: cognito_sub,
   });
 
-  const responseData = response.result.data;
+  const responseData = getUserActivitiesQueryResponse.result.data.user_activities;
 
-  if (!responseData || responseData.user_points.length === 0) {
+  if (!responseData || responseData.length === 0) {
     return res.status(404).json({
       success: false,
       errorCode: 'UserNotFound',
@@ -28,7 +28,7 @@ const getUserPoints = catchAsync(async (req, res) => {
     });
   }
 
-  return res.json(responseData.user_points[0]);
+  return res.json(responseData);
 });
 
-module.exports = getUserPoints;
+module.exports = getUserActivities;

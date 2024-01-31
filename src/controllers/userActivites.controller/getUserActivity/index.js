@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { getUserPointsQuery } = require('./queries/queries');
+const { getUserActivityQuery } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const getUserPoints = catchAsync(async (req, res) => {
@@ -12,23 +12,23 @@ const getUserPoints = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub } = req.body;
+  const { activityId } = req.params;
 
-  const response = await Hasura(getUserPointsQuery, {
-    cognitoSub: cognito_sub,
+  const getUserActivityQueryResponse = await Hasura(getUserActivityQuery, {
+    activityId,
   });
 
-  const responseData = response.result.data;
+  const responseData = getUserActivityQueryResponse.result.data.user_activities;
 
-  if (!responseData || responseData.user_points.length === 0) {
+  if (!responseData || responseData.length === 0) {
     return res.status(404).json({
       success: false,
       errorCode: 'UserNotFound',
-      errorMessage: 'No user found with this cognito sub',
+      errorMessage: 'No activity found with this id',
     });
   }
 
-  return res.json(responseData.user_points[0]);
+  return res.json(responseData[0]);
 });
 
 module.exports = getUserPoints;
