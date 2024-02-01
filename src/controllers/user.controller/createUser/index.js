@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { createUserQuery, addTutorialCompleteStatus } = require('./queries/mutations');
+const { createUserQuery, addTutorialCompleteStatus, updateUserPoints } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 
@@ -36,6 +36,12 @@ const createUser = catchAsync(async (req, res) => {
   await Hasura(addTutorialCompleteStatus, {
     userId,
   });
+
+  // 100 for signup 10 for filling bio
+  await Hasura(updateUserPoints, {
+    userId,
+    points: 110,
+  })
   enqueueEmailNotification(13, userId, userId, [userId]);
 
   return res.status(201).json({

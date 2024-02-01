@@ -30,6 +30,10 @@ const getUser = `query getUser($cognito_sub: String) {
       feed_tutorial_complete
       team_tutorial_complete
     }
+    user_points{
+      id
+      points
+    }
     user_skills {
       id
       skill
@@ -79,6 +83,10 @@ query getUser($id: Int, $cognito_sub: String) {
       profile_tutorial_complete
       feed_tutorial_complete
       team_tutorial_complete
+    }
+  user_points{
+      id
+      points
     }
     user_skills {
       id
