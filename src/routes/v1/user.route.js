@@ -1,6 +1,11 @@
 const express = require('express');
 const userController = require('../../controllers/user.controller');
+const userActivityController = require('../../controllers/userActivites.controller/');
+
 const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer } = require('../../controllers/user.controller/sanitizer');
+
+//change expected
+const { getUserActivitySanitizer, getUserActivitiesSanitizer, insertUserActivitySanitizer } = require('../../controllers/userActivites.controller/sanitizer');
 
 const router = express.Router();
 
@@ -23,5 +28,10 @@ router.get('/thought', getUserPostsSanitizer, userController.getUserThoughts);
 
 router.post('/feedback', addUserFeedbackSanitizer, userController.addUserFeedback);
 router.get('/feedback', getUserFeedbackSanitizer, userController.getUserFeedback);
+
+//migration to hasura
+router.post('/activity', insertUserActivitySanitizer, userActivityController.insertUserActivity);
+router.get('/activities', getUserActivitiesSanitizer, userActivityController.getUserActivities);
+router.get('/activity/:activityId', getUserActivitySanitizer, userActivityController.getUserActivity);
 
 module.exports = router;
