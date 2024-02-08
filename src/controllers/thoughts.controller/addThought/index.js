@@ -5,6 +5,7 @@ const { addThought } = require('./queries/mutations');
 const { getUser, getThought, getMyConnections } = require('./queries/queries');
 const cleanConnections = require('../../../utils/cleanConnections');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const addThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -45,6 +46,8 @@ const addThoughts = catchAsync(async (req, res) => {
 
   // Congratualate the user for the acheivment
   enqueueEmailNotification(11, thoughtId, actorId, [actorId]);
+
+  insertUserActivity('f759ffb3-21de-44a7-b584-908bb48626ca', 'positive', actorId);
 
   return res.status(201).json({
     success: true,

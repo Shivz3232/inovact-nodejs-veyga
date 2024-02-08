@@ -30,21 +30,7 @@ const addTutorialCompleteStatus = `mutation addTutorialCompleteStatus($userId: I
 }
 `;
 
-const updateUserPoints = `mutation setUserPoints($userId:Int, $points:Int){
-  insert_user_points(objects:{
-    user_id:$userId
-    points:$points
-  }){
-    returning{
-      id
-      user_id
-      points
-    }
-  }
-}`;
-
 module.exports = {
   createUserQuery,
   addTutorialCompleteStatus,
-  updateUserPoints,
 };

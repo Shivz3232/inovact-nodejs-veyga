@@ -2,7 +2,9 @@ const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updatePost, updateRolesRequired, addRolesRequired, addSkillsRequired, updateProjectFlags, updateDocuments, UpdateProjectTeam, updateProjectTags, deleteTeam } = require('./queries/mutations');
+const { getUserIdFromCognito } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const updateProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,7 +15,7 @@ const updateProject = catchAsync(async (req, res) => {
     });
   }
 
-  const { id } = req.body;
+  const { id, cognito_sub } = req.body;
 
   const variables = {
     id: {
@@ -22,11 +24,18 @@ const updateProject = catchAsync(async (req, res) => {
     changes: {},
   };
 
+  const getUserIdFromCognitoResponse = await Hasura(getUserIdFromCognito, {
+    cognito_sub,
+  });
+
   if (req.body.description) variables.changes.description = req.body.description;
   if (req.body.title) variables.changes.title = req.body.title;
   if (req.body.link) variables.changes.link = req.body.link;
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
-  if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
+  if (req.body.completed !== undefined) {
+    variables.changes.completed = req.body.completed;
+    insertUserActivity('ca3f952b-3fb8-406e-8abd-f345a723651b', 'positive', getUserIdFromCognitoResponse.result.data.user[0].id);
+  }
 
   req.body.looking_for_members = req.body.looking_for_members || false;
   req.body.looking_for_mentors = req.body.looking_for_mentors || false;

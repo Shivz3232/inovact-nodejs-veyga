@@ -1,9 +1,10 @@
 const { validationResult } = require('express-validator');
 const { updateUser, addUserSkills, updateUserInterests } = require('./queries/mutations');
-const { getUser } = require('./queries/queries');
+const { getUser, getUserIdFromCognito } = require('./queries/queries');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { query: Hasura, checkUniquenessOfPhoneNumber } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const updateanUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -15,6 +16,12 @@ const updateanUser = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
+
+  const response = await Hasura(getUserIdFromCognito, {
+    cognito_sub,
+  });
+
+  const { id: userId } = response.result.data.user[0];
 
   const variables = {
     cognito_sub: {
@@ -50,17 +57,22 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.journey_start_date) variables.changes.journey_start_date = req.body.journey_start_date;
   if (req.body.years_of_professional_experience) variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
   if (req.body.degree) variables.changes.degree = req.body.degree;
-  if (req.body.github_profile) variables.changes.github_profile = req.body.github_profile;
+  if (req.body.github_profile) {
+    variables.changes.github_profile = req.body.github_profile;
+    insertUserActivity('b32089a1-c99c-4b30-bb4c-82e7d0cd59bd', 'positive', userId);
+  }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
   if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
 
-  if (req.body.website) variables.changes.website = req.body.website;
-  else variables.changes.website = '';
+  if (req.body.website) {
+    variables.changes.website = req.body.website;
+    insertUserActivity('de49356c-af7c-4e24-b189-02467fa1c3a9', 'positive', userId);
+  } else variables.changes.website = '';
 
   const response1 = await Hasura(updateUser, variables);
 
   // Insert skills
-  // 
+  //
   if (req.body.user_skills instanceof Array) {
     const user_skills_with_user_id = req.body.user_skills.map((ele) => {
       return {
@@ -75,6 +87,8 @@ const updateanUser = catchAsync(async (req, res) => {
     };
 
     await Hasura(addUserSkills, variables);
+
+    insertUserActivity('c049203e-0a97-4423-a8dd-9dfdf92e5aba', 'positive', userId);
   }
 
   // Insert interests
