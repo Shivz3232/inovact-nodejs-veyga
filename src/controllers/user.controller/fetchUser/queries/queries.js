@@ -39,6 +39,16 @@ const getUser = `query getUser($cognito_sub: String) {
       skill
       level
     }
+    user_event_flag{
+      id
+      user_id
+      has_uploaded_project
+      has_uploaded_idea
+      has_uploaded_thought
+      has_sought_team
+      has_sought_mentor
+      has_sought_team_and_mentor
+    }
     user_interests {
       area_of_interest {
         id
@@ -92,6 +102,16 @@ query getUser($id: Int, $cognito_sub: String) {
       id
       skill
       level
+    }
+   user_event_flag{
+      id
+      user_id
+      has_uploaded_project
+      has_uploaded_idea
+      has_uploaded_thought
+      has_sought_team
+      has_sought_mentor
+      has_sought_team_and_mentor
     }
     user_interests {
       area_of_interest {

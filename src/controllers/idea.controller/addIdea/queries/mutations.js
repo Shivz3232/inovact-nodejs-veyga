@@ -73,9 +73,18 @@ const addSkillsRequired = `mutation addSkillRequired($objects: [team_skill_requi
     }
   }`;
 
+const updateUserFlags = `mutation updateUserEventFlags($id: uuid!, $userEventFlags: user_event_flags_set_input!) {
+  update_user_event_flags(where: { id: { _eq: $id } }, _set: $userEventFlags) {
+    returning {
+      id
+    }
+  }
+}`;
+
 module.exports = {
   addIdea,
   addTags,
   addSkillsRequired,
   addRolesRequired,
+  updateUserFlags,
 };
