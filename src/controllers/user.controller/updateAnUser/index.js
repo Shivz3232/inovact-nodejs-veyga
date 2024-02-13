@@ -59,14 +59,14 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.degree) variables.changes.degree = req.body.degree;
   if (req.body.github_profile) {
     variables.changes.github_profile = req.body.github_profile;
-    insertUserActivity('b32089a1-c99c-4b30-bb4c-82e7d0cd59bd', 'positive', userId);
+    insertUserActivity('b32089a1-c99c-4b30-bb4c-82e7d0cd59bd', 'positive', [userId]);
   }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
   if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
 
   if (req.body.website) {
     variables.changes.website = req.body.website;
-    insertUserActivity('de49356c-af7c-4e24-b189-02467fa1c3a9', 'positive', userId);
+    insertUserActivity('de49356c-af7c-4e24-b189-02467fa1c3a9', 'positive', [userId]);
   } else variables.changes.website = '';
 
   const response1 = await Hasura(updateUser, variables);
@@ -88,7 +88,7 @@ const updateanUser = catchAsync(async (req, res) => {
 
     await Hasura(addUserSkills, variables);
 
-    insertUserActivity('c049203e-0a97-4423-a8dd-9dfdf92e5aba', 'positive', userId);
+    insertUserActivity('c049203e-0a97-4423-a8dd-9dfdf92e5aba', 'positive', [userId]);
   }
 
   // Insert interests

@@ -47,7 +47,7 @@ const addThoughts = catchAsync(async (req, res) => {
   // Congratualate the user for the acheivment
   enqueueEmailNotification(11, thoughtId, actorId, [actorId]);
 
-  insertUserActivity('f759ffb3-21de-44a7-b584-908bb48626ca', 'positive', actorId);
+  insertUserActivity('f759ffb3-21de-44a7-b584-908bb48626ca', 'positive', [actorId]);
 
   return res.status(201).json({
     success: true,

@@ -69,7 +69,7 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
 
   
   
-  insertUserActivity('df01f1c3-e2cf-43c5-bbea-28a5bf7f79a6', "positive", response1.result.data.team_requests[0].user_id);
+  insertUserActivity('df01f1c3-e2cf-43c5-bbea-28a5bf7f79a6', "positive", [response1.result.data.team_requests[0].user_id]);
 
   return res.status(201).json({
     success: true,
