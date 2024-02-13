@@ -29,6 +29,12 @@ const getUser = `query getUser($cognito_sub: String) {
      profile_tutorial_complete
       feed_tutorial_complete
       team_tutorial_complete
+      has_uploaded_project
+      has_uploaded_idea
+      has_uploaded_thought
+      has_sought_team
+      has_sought_mentor
+      has_sought_team_and_mentor
     }
     user_points{
       id
@@ -38,16 +44,6 @@ const getUser = `query getUser($cognito_sub: String) {
       id
       skill
       level
-    }
-    user_event_flag{
-      id
-      user_id
-      has_uploaded_project
-      has_uploaded_idea
-      has_uploaded_thought
-      has_sought_team
-      has_sought_mentor
-      has_sought_team_and_mentor
     }
     user_interests {
       area_of_interest {
@@ -93,6 +89,12 @@ query getUser($id: Int, $cognito_sub: String) {
       profile_tutorial_complete
       feed_tutorial_complete
       team_tutorial_complete
+      has_uploaded_project
+      has_uploaded_idea
+      has_uploaded_thought
+      has_sought_team
+      has_sought_mentor
+      has_sought_team_and_mentor
     }
   user_points{
       id
@@ -102,16 +104,6 @@ query getUser($id: Int, $cognito_sub: String) {
       id
       skill
       level
-    }
-   user_event_flag{
-      id
-      user_id
-      has_uploaded_project
-      has_uploaded_idea
-      has_uploaded_thought
-      has_sought_team
-      has_sought_mentor
-      has_sought_team_and_mentor
     }
     user_interests {
       area_of_interest {
