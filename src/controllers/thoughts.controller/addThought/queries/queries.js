@@ -22,7 +22,7 @@ const getUser = `query getUser($cognito_sub: String_comparison_exp) {
   cognito_sub,
   admin,
   profile_complete
-  user_event_flag{
+  user_action{
   id
   user_id
   has_uploaded_project

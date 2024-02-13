@@ -26,7 +26,7 @@ const addProject = catchAsync(async (req, res) => {
     cognito_sub: { _eq: cognito_sub },
   });
 
-  const userEventFlags = response1.result.data.user[0].user_event_flag;
+  const userEventFlags = response1.result.data.user[0].user_action;
 
   // Insert project
   const projectData = {
@@ -174,16 +174,19 @@ const addProject = catchAsync(async (req, res) => {
   // Congratualting the user for the acheivment
   enqueueEmailNotification(1, projectId, actorId, [actorId]);
 
-  // Update the user flags
+  const needsProjectUploadFlag = !userEventFlags.has_uploaded_project;
+  const needsTeamFlag = userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
+  const needsMentorFlag = userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
+  const needsTeamAndMentorFlag = !userEventFlags.has_sought_team_and_mentor;
 
-  if (!userEventFlags.has_uploaded_project && userEventFlags.has_sought_team !== looking_for_members && userEventFlags.has_sought_mentor !== looking_for_mentors && userEventFlags.has_sought_team_and_mentor) {
+  if (needsProjectUploadFlag || (needsTeamFlag && needsMentorFlag) || needsTeamAndMentorFlag) {
     userEventFlags.has_uploaded_project = true;
-    userEventFlags.has_sought_team = looking_for_members;
-    userEventFlags.has_sought_mentor = looking_for_mentors;
-    userEventFlags.has_sought_team_and_mentor = looking_for_members && looking_for_mentors;
+    userEventFlags.has_sought_team = userEventFlags.has_sought_team || looking_for_members;
+    userEventFlags.has_sought_mentor = userEventFlags.has_sought_mentor || looking_for_mentors;
+    userEventFlags.has_sought_team_and_mentor = userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
 
     await Hasura(updateUserFlags, {
-      id: userEventFlags.id,
+      userId: actorId,
       userEventFlags,
     });
   }

@@ -46,11 +46,11 @@ const addThoughts = catchAsync(async (req, res) => {
   // Congratualate the user for the acheivment
   enqueueEmailNotification(11, thoughtId, actorId, [actorId]);
 
-  const userEventFlags = response1.result.data.user[0].user_event_flag;
+  const userEventFlags = response1.result.data.user[0].user_action;
 
   if (!userEventFlags.has_uploaded_thought) {
     userEventFlags.has_uploaded_thought = true;
-    await Hasura(updateUserFlags, { id: userEventFlags.id, userEventFlags });
+    await Hasura(updateUserFlags, { userId: actorId, userEventFlags });
   }
 
   return res.status(201).json({
