@@ -44,7 +44,6 @@ const addProject = catchAsync(async (req, res) => {
   if (looking_for_members || looking_for_mentors) {
     teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
     projectData.team_id = teamCreated.team_id;
-    insertUserActivity('71db114a-b32d-41d9-a87d-5832bc270741', 'positive', [response1.result.data.user[0].id]);
   } else {
     projectData.team_id = null;
   }
@@ -79,6 +78,13 @@ const addProject = catchAsync(async (req, res) => {
     }
 
     await Hasura(addSkillsRequired, { objects: skills_data });
+  }
+
+  if (looking_for_members) {
+    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [projectData.team_id]);
+  }
+  if (looking_for_mentors) {
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [response2.result.data.insert_project.returning[0].id]);
   }
 
   // Insert mentions
@@ -174,7 +180,7 @@ const addProject = catchAsync(async (req, res) => {
   // Congratualting the user for the acheivment
   enqueueEmailNotification(1, projectId, actorId, [actorId]);
   // insertUserActivity();
-  insertUserActivity('cb918285-dd4d-420f-bcf5-0002f5450185', 'positive', [actorId]);
+  insertUserActivity('uploading-project', 'positive', actorId, [projectId]);
 
   return res.status(201).json({
     success: true,

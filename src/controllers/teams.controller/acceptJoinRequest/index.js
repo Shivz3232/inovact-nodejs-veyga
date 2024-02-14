@@ -67,9 +67,7 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
   // Notify the user
   await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [response1.result.data.team_requests[0].user_id]).catch(console.log);
 
-  
-  
-  insertUserActivity('df01f1c3-e2cf-43c5-bbea-28a5bf7f79a6', "positive", [response1.result.data.team_requests[0].user_id]);
+  insertUserActivity('getting-accepted-into-team', 'positive', response1.result.data.team_requests[0].user_id, [response1.result.data.team_requests[0].team_id]);
 
   return res.status(201).json({
     success: true,

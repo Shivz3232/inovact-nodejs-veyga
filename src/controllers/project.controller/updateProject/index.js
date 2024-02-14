@@ -34,7 +34,7 @@ const updateProject = catchAsync(async (req, res) => {
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
   if (req.body.completed !== undefined) {
     variables.changes.completed = req.body.completed;
-    insertUserActivity('ca3f952b-3fb8-406e-8abd-f345a723651b', 'positive', [getUserIdFromCognitoResponse.result.data.user[0].id]);
+    insertUserActivity('completion-of-project-idea', 'positive', getUserIdFromCognitoResponse.result.data.user[0].id, [req.body.id]);
   }
 
   req.body.looking_for_members = req.body.looking_for_members || false;

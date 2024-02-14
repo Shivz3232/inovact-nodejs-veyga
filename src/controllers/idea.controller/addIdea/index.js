@@ -40,7 +40,7 @@ const addIdeas = catchAsync(async (req, res) => {
   // Create a default team
   if (looking_for_members || looking_for_mentors) {
     teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members);
-    insertUserActivity('71db114a-b32d-41d9-a87d-5832bc270741', 'positive', [response1.result.data.user[0].id]);
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [teamCreated.team_id]);
     ideaData.team_id = teamCreated.team_id;
   } else {
     ideaData.team_id = null;
@@ -97,6 +97,13 @@ const addIdeas = catchAsync(async (req, res) => {
     const response3 = await Hasura(addTags, tagsData);
   }
 
+  if (looking_for_members) {
+    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [ideaData.team_id]);
+  }
+  if (looking_for_mentors) {
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [response2.result.data.insert_idea.returning[0].id]);
+  }
+
   // Send email notification
   const { id: actorId } = response1.result.data.user[0];
   const { id: ideaId } = response2.result.data.insert_idea.returning[0];
@@ -121,7 +128,7 @@ const addIdeas = catchAsync(async (req, res) => {
   // Explain things that can be done next to the user who uploaded the idea.s
   enqueueEmailNotification(6, ideaId, actorId, [actorId]);
 
-  insertUserActivity('1faf2f1a-0b1b-450b-99a4-e5d7ba7ad115', 'positive', [actorId]);
+  insertUserActivity('uploading-idea', 'positive', actorId, [ideaId]);
 
   return res.status(201).json({
     success: true,
