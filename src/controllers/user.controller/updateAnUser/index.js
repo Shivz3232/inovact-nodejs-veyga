@@ -32,7 +32,12 @@ const updateanUser = catchAsync(async (req, res) => {
 
   if (req.body.first_name) variables.changes.first_name = req.body.first_name;
   if (req.body.last_name) variables.changes.last_name = req.body.last_name;
-  if (req.body.bio) variables.changes.bio = req.body.bio;
+  if (req.body.bio) {
+    variables.changes.bio = req.body.bio;
+    if (response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) {
+      await insertUserActivity('filing-user-bio', 'positive', userId, []);
+    }
+  }
 
   if (req.body.avatar) variables.changes.avatar = req.body.avatar;
   if (req.body.phone_number) {
@@ -59,14 +64,18 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.degree) variables.changes.degree = req.body.degree;
   if (req.body.github_profile) {
     variables.changes.github_profile = req.body.github_profile;
-    insertUserActivity('filing-github', 'positive', userId, []);
+    if (response.result.data.user[0].github_profile === '' || response.result.data.user[0].github_profile === null) {
+      insertUserActivity('filing-github', 'positive', userId, []);
+    }
   }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
   if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
 
   if (req.body.website) {
     variables.changes.website = req.body.website;
-    insertUserActivity('filing-website', 'positive', userId, []);
+    if (response.result.data.user[0].website === '' || response.result.data.user[0].website === null) {
+      insertUserActivity('filing-website', 'positive', userId, []);
+    }
   } else variables.changes.website = '';
 
   const response1 = await Hasura(updateUser, variables);
