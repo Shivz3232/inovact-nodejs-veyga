@@ -2,7 +2,7 @@
 /* eslint-disable no-labels */
 /* eslint-disable no-restricted-syntax */
 const { validationResult } = require('express-validator');
-const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired } = require('./queries/mutations');
+const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired, updateUserFlags } = require('./queries/mutations');
 const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
@@ -26,6 +26,8 @@ const addProject = catchAsync(async (req, res) => {
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
+
+  const userEventFlags = response1.result.data.user[0].user_action;
 
   // Insert project
   const projectData = {
@@ -181,6 +183,23 @@ const addProject = catchAsync(async (req, res) => {
   enqueueEmailNotification(1, projectId, actorId, [actorId]);
   // insertUserActivity();
   insertUserActivity('uploading-project', 'positive', actorId, [projectId]);
+
+  const needsProjectUploadFlag = !userEventFlags.has_uploaded_project;
+  const needsTeamFlag = userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
+  const needsMentorFlag = userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
+  const needsTeamAndMentorFlag = !userEventFlags.has_sought_team_and_mentor;
+
+  if (needsProjectUploadFlag || (needsTeamFlag && needsMentorFlag) || needsTeamAndMentorFlag) {
+    userEventFlags.has_uploaded_project = true;
+    userEventFlags.has_sought_team = userEventFlags.has_sought_team || looking_for_members;
+    userEventFlags.has_sought_mentor = userEventFlags.has_sought_mentor || looking_for_mentors;
+    userEventFlags.has_sought_team_and_mentor = userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
+
+    await Hasura(updateUserFlags, {
+      userId: actorId,
+      userEventFlags,
+    });
+  }
 
   return res.status(201).json({
     success: true,
