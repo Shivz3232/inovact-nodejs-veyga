@@ -22,6 +22,16 @@ const getUser = `query getUser($cognito_sub: String_comparison_exp) {
     cognito_sub,
     admin,
     profile_complete
+    user_action{
+     id
+     user_id
+     has_uploaded_project
+     has_uploaded_idea
+     has_uploaded_thought
+     has_sought_team
+     has_sought_mentor
+     has_sought_team_and_mentor
+     }
     }
   }
   `;
