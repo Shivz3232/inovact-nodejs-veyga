@@ -98,7 +98,7 @@ const getUserActivityDetails = `query getUserActivities($cognitoSub: String) {
     cognito_sub:{
       _eq: $cognitoSub
     }
-  } }) {
+  }, activities: { identifier: { _in: [bio, website, github, skill] } } }) {
     id
     user_id
     direction

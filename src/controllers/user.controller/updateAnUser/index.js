@@ -110,7 +110,12 @@ const updateanUser = catchAsync(async (req, res) => {
 
     await Hasura(addUserSkills, variables);
 
-    insertUserActivity('filing-user-skills', 'positive', userId, []);
+    const activityIdentifier = 'filing-user-skills';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+
+    if (arePointsOfferable) {
+      await insertUserActivity(activityIdentifier, 'positive', userId, []);
+    }
   }
 
   // Insert interests
