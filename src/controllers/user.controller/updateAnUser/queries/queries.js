@@ -94,21 +94,29 @@ const getUserIdFromCognito = `query getUserIdFromCognito($cognito_sub: String) {
 }`;
 
 const getUserActivityDetails = `query getUserActivities($cognitoSub: String) {
-  user_activities(where: { user:{
-    cognito_sub:{
-      _eq: $cognitoSub
-    }
-  }, activities: { identifier: { _in: [bio, website, github, skill] } } }) {
+  user_activities(where: {
+    user: {
+      cognito_sub: {
+        _eq: $cognitoSub
+      }
+    },
+    activity: { 
+      identifier: { 
+        _in: ["filing-user-bio", "filing-website", "filing-github", "filing-user-skills"] 
+      } 
+    } 
+  }) {
     id
     user_id
     direction
     activity_id
     status
-    activity{
+    activity {
       identifier
     }
   }
-}`;
+}
+`;
 
 module.exports = {
   getUser,
