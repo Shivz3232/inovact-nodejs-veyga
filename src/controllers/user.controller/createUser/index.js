@@ -37,11 +37,6 @@ const createUser = catchAsync(async (req, res) => {
     userId,
   });
 
-  // 100 for signup 10 for filling bio
-  await Hasura(updateUserPoints, {
-    userId,
-    points: 110,
-  });
   enqueueEmailNotification(13, userId, userId, [userId]);
   insertUserActivity('successful-signup', 'positive', userId, []);
 

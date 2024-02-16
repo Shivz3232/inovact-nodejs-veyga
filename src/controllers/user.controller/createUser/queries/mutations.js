@@ -8,6 +8,7 @@ const createUserQuery = `mutation CreateUser(
       email_id: $email_id
       user_name: $user_name
       cognito_sub:$cognito_sub
+      user_points: { data: { points: 0 } }
     }
   ) {
     id
