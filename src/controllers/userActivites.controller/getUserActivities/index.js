@@ -13,7 +13,6 @@ const getUserActivities = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-  console.log(cognito_sub)
 
   const getUserActivitiesQueryResponse = await Hasura(getUserActivitiesQuery, {
     cognitoSub: cognito_sub,
