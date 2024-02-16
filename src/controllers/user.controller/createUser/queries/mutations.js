@@ -8,6 +8,7 @@ const createUserQuery = `mutation CreateUser(
       email_id: $email_id
       user_name: $user_name
       cognito_sub:$cognito_sub
+      user_points: { data: { points: 0 } }
     }
   ) {
     id
@@ -30,21 +31,7 @@ const addTutorialCompleteStatus = `mutation addTutorialCompleteStatus($userId: I
 }
 `;
 
-const updateUserPoints = `mutation setUserPoints($userId:Int, $points:Int){
-  insert_user_points(objects:{
-    user_id:$userId
-    points:$points
-  }){
-    returning{
-      id
-      user_id
-      points
-    }
-  }
-}`;
-
 module.exports = {
   createUserQuery,
   addTutorialCompleteStatus,
-  updateUserPoints,
 };

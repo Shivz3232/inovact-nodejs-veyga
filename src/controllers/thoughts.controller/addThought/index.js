@@ -5,6 +5,7 @@ const { addThought, updateUserFlags } = require('./queries/mutations');
 const { getUser, getThought, getMyConnections } = require('./queries/queries');
 const cleanConnections = require('../../../utils/cleanConnections');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const addThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -46,6 +47,7 @@ const addThoughts = catchAsync(async (req, res) => {
   // Congratualate the user for the acheivment
   enqueueEmailNotification(11, thoughtId, actorId, [actorId]);
 
+  insertUserActivity('uploading-thoughts', 'positive', actorId, [thoughtId]);
   const userEventFlags = response1.result.data.user[0].user_action;
 
   if (!userEventFlags.has_uploaded_thought) {

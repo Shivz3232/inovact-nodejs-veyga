@@ -6,6 +6,7 @@ const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRole
 const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
@@ -79,6 +80,13 @@ const addProject = catchAsync(async (req, res) => {
     }
 
     await Hasura(addSkillsRequired, { objects: skills_data });
+  }
+
+  if (looking_for_members) {
+    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [projectData.team_id]);
+  }
+  if (looking_for_mentors) {
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [response2.result.data.insert_project.returning[0].id]);
   }
 
   // Insert mentions
@@ -173,6 +181,8 @@ const addProject = catchAsync(async (req, res) => {
 
   // Congratualting the user for the acheivment
   enqueueEmailNotification(1, projectId, actorId, [actorId]);
+  // insertUserActivity();
+  insertUserActivity('uploading-project', 'positive', actorId, [projectId]);
 
   const needsProjectUploadFlag = !userEventFlags.has_uploaded_project;
   const needsTeamFlag = userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;

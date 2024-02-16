@@ -23,8 +23,8 @@ const getUserActivities = catchAsync(async (req, res) => {
   if (!responseData || responseData.length === 0) {
     return res.status(404).json({
       success: false,
-      errorCode: 'UserNotFound',
-      errorMessage: 'No user found with this cognito sub',
+      errorCode: 'ActivitiesNotFound',
+      errorMessage: 'No activities found with this cognito sub',
     });
   }
 

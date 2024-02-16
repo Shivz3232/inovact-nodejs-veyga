@@ -1,9 +1,10 @@
 const { validationResult } = require('express-validator');
 const { updateUser, addUserSkills, updateUserInterests } = require('./queries/mutations');
-const { getUser } = require('./queries/queries');
+const { getUser, getUserIdFromCognito, getUserActivityDetails } = require('./queries/queries');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { query: Hasura, checkUniquenessOfPhoneNumber } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const updateanUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,6 +17,17 @@ const updateanUser = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
 
+  const getUserActivityDetailsQuery = await Hasura(getUserActivityDetails, {
+    cognitoSub: cognito_sub,
+  });
+  const userActivities = getUserActivityDetailsQuery.result.data.user_activities;
+
+  const response = await Hasura(getUserIdFromCognito, {
+    cognito_sub,
+  });
+
+  const { id: userId } = response.result.data.user[0];
+
   const variables = {
     cognito_sub: {
       _eq: cognito_sub,
@@ -25,7 +37,14 @@ const updateanUser = catchAsync(async (req, res) => {
 
   if (req.body.first_name) variables.changes.first_name = req.body.first_name;
   if (req.body.last_name) variables.changes.last_name = req.body.last_name;
-  if (req.body.bio) variables.changes.bio = req.body.bio;
+  if (req.body.bio) {
+    variables.changes.bio = req.body.bio;
+    const activityIdentifier = 'filing-user-bio';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+    if ((response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) && arePointsOfferable) {
+      await insertUserActivity(activityIdentifier, 'positive', userId, []);
+    }
+  }
 
   if (req.body.avatar) variables.changes.avatar = req.body.avatar;
   if (req.body.phone_number) {
@@ -50,17 +69,32 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.journey_start_date) variables.changes.journey_start_date = req.body.journey_start_date;
   if (req.body.years_of_professional_experience) variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
   if (req.body.degree) variables.changes.degree = req.body.degree;
-  if (req.body.github_profile) variables.changes.github_profile = req.body.github_profile;
+  if (req.body.github_profile) {
+    variables.changes.github_profile = req.body.github_profile;
+    const activityIdentifier = 'filing-github';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+
+    if (response.result.data.user[0].github_profile === '' || (response.result.data.user[0].github_profile === null && arePointsOfferable)) {
+      await insertUserActivity(activityIdentifier, 'positive', userId, []);
+    }
+  }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
   if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
 
-  if (req.body.website) variables.changes.website = req.body.website;
-  else variables.changes.website = '';
+  if (req.body.website) {
+    variables.changes.website = req.body.website;
+    const activityIdentifier = 'filing-website';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+
+    if (response.result.data.user[0].website === '' || (response.result.data.user[0].website === null && arePointsOfferable)) {
+      insertUserActivity(activityIdentifier, 'positive', userId, []);
+    }
+  } else variables.changes.website = '';
 
   const response1 = await Hasura(updateUser, variables);
 
   // Insert skills
-  // 
+  //
   if (req.body.user_skills instanceof Array) {
     const user_skills_with_user_id = req.body.user_skills.map((ele) => {
       return {
@@ -75,6 +109,13 @@ const updateanUser = catchAsync(async (req, res) => {
     };
 
     await Hasura(addUserSkills, variables);
+
+    const activityIdentifier = 'filing-user-skills';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+
+    if (arePointsOfferable) {
+      await insertUserActivity(activityIdentifier, 'positive', userId, []);
+    }
   }
 
   // Insert interests
