@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const { updateUser, addUserSkills, updateUserInterests } = require('./queries/mutations');
-const { getUser, getUserIdFromCognito } = require('./queries/queries');
+const { getUser, getUserIdFromCognito, getUserActivityDetails } = require('./queries/queries');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
 const { query: Hasura, checkUniquenessOfPhoneNumber } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
@@ -16,6 +16,11 @@ const updateanUser = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
+
+  const getUserActivityDetailsQuery = await Hasura(getUserActivityDetails, {
+    cognitoSub: cognito_sub,
+  });
+  const userActivities = getUserActivityDetailsQuery.result.data.user_activities;
 
   const response = await Hasura(getUserIdFromCognito, {
     cognito_sub,
@@ -34,8 +39,10 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.last_name) variables.changes.last_name = req.body.last_name;
   if (req.body.bio) {
     variables.changes.bio = req.body.bio;
-    if (response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) {
-      await insertUserActivity('filing-user-bio', 'positive', userId, []);
+    const activityIdentifier = 'filing-user-bio';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+    if ((response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) && arePointsOfferable) {
+      await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }
 
@@ -64,8 +71,11 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.degree) variables.changes.degree = req.body.degree;
   if (req.body.github_profile) {
     variables.changes.github_profile = req.body.github_profile;
-    if (response.result.data.user[0].github_profile === '' || response.result.data.user[0].github_profile === null) {
-      insertUserActivity('filing-github', 'positive', userId, []);
+    const activityIdentifier = 'filing-github';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+
+    if (response.result.data.user[0].github_profile === '' || (response.result.data.user[0].github_profile === null && arePointsOfferable)) {
+      await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
@@ -73,8 +83,11 @@ const updateanUser = catchAsync(async (req, res) => {
 
   if (req.body.website) {
     variables.changes.website = req.body.website;
-    if (response.result.data.user[0].website === '' || response.result.data.user[0].website === null) {
-      insertUserActivity('filing-website', 'positive', userId, []);
+    const activityIdentifier = 'filing-website';
+    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+
+    if (response.result.data.user[0].website === '' || (response.result.data.user[0].website === null && arePointsOfferable)) {
+      insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   } else variables.changes.website = '';
 

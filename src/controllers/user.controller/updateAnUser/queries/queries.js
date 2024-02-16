@@ -93,9 +93,27 @@ const getUserIdFromCognito = `query getUserIdFromCognito($cognito_sub: String) {
   }
 }`;
 
+const getUserActivityDetails = `query getUserActivities($cognitoSub: String) {
+  user_activities(where: { user:{
+    cognito_sub:{
+      _eq: $cognitoSub
+    }
+  } }) {
+    id
+    user_id
+    direction
+    activity_id
+    status
+    activity{
+      identifier
+    }
+  }
+}`;
+
 module.exports = {
   getUser,
   getProject,
   checkPhoneNumber,
   getUserIdFromCognito,
+  getUserActivityDetails,
 };
