@@ -13,6 +13,7 @@ const getUserActivities = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
+  console.log(cognito_sub)
 
   const getUserActivitiesQueryResponse = await Hasura(getUserActivitiesQuery, {
     cognitoSub: cognito_sub,
@@ -23,8 +24,8 @@ const getUserActivities = catchAsync(async (req, res) => {
   if (!responseData || responseData.length === 0) {
     return res.status(404).json({
       success: false,
-      errorCode: 'UserNotFound',
-      errorMessage: 'No user found with this cognito sub',
+      errorCode: 'ActivitiesNotFound',
+      errorMessage: 'No activities found with this cognito sub',
     });
   }
 
