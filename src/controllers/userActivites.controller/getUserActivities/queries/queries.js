@@ -18,6 +18,7 @@ const getUserActivitiesQuery = `query getUserActivities($cognitoSub: String) {
       description
       points
       entity_type
+      identifier
     }
     user_activity_entities{
       entity_id
