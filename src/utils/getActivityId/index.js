@@ -1,7 +1,6 @@
 const { query: Hasura } = require('../hasura');
 const { getActivityIdQuery } = require('./queries/queries');
 
-
 const activityCache = new Map();
 
 async function getActivityId(identifier) {
@@ -14,7 +13,8 @@ async function getActivityId(identifier) {
   const getActivityIdQueryResponse = await Hasura(getActivityIdQuery, {
     identifier,
   });
-
+  console.log(JSON.stringify(getActivityIdQueryResponse));
+  console.log(identifier);
   const activityId = getActivityIdQueryResponse.result.data.activities[0].id;
 
   // Cache the result

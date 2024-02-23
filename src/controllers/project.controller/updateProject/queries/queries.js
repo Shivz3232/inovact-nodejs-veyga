@@ -4,6 +4,13 @@ const getUserIdFromCognito = `query getUserIdFromCognito($cognito_sub: String) {
     }
   }`;
 
+const getTeamMembers = `query getTeamMembers($team_id: Int) {
+    team_members(where: {team_id: {_eq: $team_id}}) {
+      user_id
+    }
+  }`;
+
 module.exports = {
   getUserIdFromCognito,
+  getTeamMembers,
 };
