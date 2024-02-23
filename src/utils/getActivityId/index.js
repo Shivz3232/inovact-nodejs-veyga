@@ -13,8 +13,6 @@ async function getActivityId(identifier) {
   const getActivityIdQueryResponse = await Hasura(getActivityIdQuery, {
     identifier,
   });
-  console.log(JSON.stringify(getActivityIdQueryResponse));
-  console.log(identifier);
   const activityId = getActivityIdQueryResponse.result.data.activities[0].id;
 
   // Cache the result
