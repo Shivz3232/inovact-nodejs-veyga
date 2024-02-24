@@ -55,11 +55,9 @@ const updateProject = catchAsync(async (req, res) => {
     const getTeamMembersResponse = await Hasura(getTeamMembers, { team_id: response.result.data.update_project.returning[0].team_id });
     const teamMembers = getTeamMembersResponse.result.data.team_members;
 
-    const insertUserActivityResponses = await Promise.all(
-      teamMembers.map(async (member) => {
-        return await insertUserActivity('completion-of-project-as-team', 'positive', member.user_id, [req.body.id]);
-      })
-    );
+    teamMembers.forEach((member) => {
+      insertUserActivity('completion-of-project-as-team', 'positive', member.user_id, [req.body.id]);
+    });
 
     await Hasura(deleteTeam, { team_id: response.result.data.update_project.returning[0].team_id });
 
@@ -83,8 +81,6 @@ const updateProject = catchAsync(async (req, res) => {
     team_id = response.result.data.update_project.returning[0].team_id;
   }
 
-  console.log('team id ', team_id);
-
   if (req.body.looking_for_mentors !== undefined || req.body.looking_for_members !== undefined) {
     const projectFlagsUpdateVariables = {
       team_id,
@@ -95,7 +91,6 @@ const updateProject = catchAsync(async (req, res) => {
   }
 
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    console.log('In here');
     if (req.body.roles_required && req.body.roles_required.length > 0) {
       if (team_id) {
         await Hasura(deleteTeam, { team_id });
@@ -105,7 +100,6 @@ const updateProject = catchAsync(async (req, res) => {
       const teamOnInovact = req.body.team_on_inovact;
       const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
       team_id = teamCreated.team_id;
-      console.log(team_id);
     }
 
     await Hasura(UpdateProjectTeam, {
