@@ -9,9 +9,6 @@ const sqs = new AWS.SQS({
 const insertUserActivity = (identifier, direction, userId, entityIds) =>
   new Promise(async (resolve, reject) => {
     const activityId = await getActivityId(identifier);
-    console.log('activityId', activityId);
-    console.log('ide3ntider,, =', identifier);
-
     const params = {
       MessageBody: JSON.stringify({
         activity_id: activityId,
