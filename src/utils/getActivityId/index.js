@@ -13,6 +13,10 @@ async function getActivityId(identifier) {
   const getActivityIdQueryResponse = await Hasura(getActivityIdQuery, {
     identifier,
   });
+
+  if (getActivityIdQueryResponse.result.data.activities.length === 0) {
+    throw new Error('Activity not found');
+  }
   const activityId = getActivityIdQueryResponse.result.data.activities[0].id;
 
   // Cache the result
