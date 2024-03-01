@@ -111,6 +111,23 @@ const addSkillsRequired = `mutation addSkillRequired($objects: [team_skill_requi
   }
 }`;
 
+const updateUserFlags = `mutation updateUserEventFlags($userId: Int!, $userEventFlags: user_actions_set_input!) {
+  update_user_actions(where: { user_id: { _eq: $userId } }, _set: $userEventFlags) {
+    returning {
+      id
+      feed_tutorial_complete
+      team_tutorial_complete
+      profile_tutorial_complete
+      has_uploaded_project
+      has_uploaded_idea
+      has_uploaded_thought
+      has_sought_team
+      has_sought_mentor
+      has_sought_team_and_mentor
+    }
+  }
+}`;
+
 module.exports = {
   addProject,
   addMentions,
@@ -120,4 +137,5 @@ module.exports = {
   addMembers,
   addRolesRequired,
   addSkillsRequired,
+  updateUserFlags,
 };

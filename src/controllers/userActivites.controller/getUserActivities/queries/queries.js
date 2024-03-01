@@ -13,6 +13,16 @@ const getUserActivitiesQuery = `query getUserActivities($cognitoSub: String) {
     status
     created_at
     updated_at
+    activity{
+      title
+      description
+      points
+      entity_type
+      identifier
+    }
+    user_activity_entities{
+      entity_id
+    }
   }
 }
 `;

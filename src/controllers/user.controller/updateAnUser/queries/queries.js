@@ -87,8 +87,41 @@ const checkPhoneNumber = `query checkPhoneNumber($phoneNumber: String) {
   }
 }`;
 
+const getUserIdFromCognito = `query getUserIdFromCognito($cognito_sub: String) {
+  user(where: {cognito_sub: {_eq: $cognito_sub}}) {
+    id
+  }
+}`;
+
+const getUserActivityDetails = `query getUserActivities($cognitoSub: String) {
+  user_activities(where: {
+    user: {
+      cognito_sub: {
+        _eq: $cognitoSub
+      }
+    },
+    activity: { 
+      identifier: { 
+        _in: ["filing-user-bio", "filing-website", "filing-github", "filing-user-skills"] 
+      } 
+    } 
+  }) {
+    id
+    user_id
+    direction
+    activity_id
+    status
+    activity {
+      identifier
+    }
+  }
+}
+`;
+
 module.exports = {
   getUser,
   getProject,
   checkPhoneNumber,
+  getUserIdFromCognito,
+  getUserActivityDetails,
 };

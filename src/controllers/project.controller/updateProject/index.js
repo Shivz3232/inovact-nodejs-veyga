@@ -2,7 +2,9 @@ const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { updatePost, updateRolesRequired, addRolesRequired, addSkillsRequired, updateProjectFlags, updateDocuments, UpdateProjectTeam, updateProjectTags, deleteTeam } = require('./queries/mutations');
+const { getUserIdFromCognito, getTeamMembers } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const updateProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,7 +15,7 @@ const updateProject = catchAsync(async (req, res) => {
     });
   }
 
-  const { id } = req.body;
+  const { id, cognito_sub } = req.body;
 
   const variables = {
     id: {
@@ -22,11 +24,18 @@ const updateProject = catchAsync(async (req, res) => {
     changes: {},
   };
 
+  const getUserIdFromCognitoResponse = await Hasura(getUserIdFromCognito, {
+    cognito_sub,
+  });
+
   if (req.body.description) variables.changes.description = req.body.description;
   if (req.body.title) variables.changes.title = req.body.title;
   if (req.body.link) variables.changes.link = req.body.link;
   if (req.body.status !== undefined) variables.changes.status = req.body.status;
-  if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
+
+  if (req.body.completed !== undefined) {
+    variables.changes.completed = req.body.completed;
+  }
 
   req.body.looking_for_members = req.body.looking_for_members || false;
   req.body.looking_for_mentors = req.body.looking_for_mentors || false;
@@ -42,6 +51,13 @@ const updateProject = catchAsync(async (req, res) => {
       lookingForMembers: false,
     };
     await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
+
+    const getTeamMembersResponse = await Hasura(getTeamMembers, { team_id: response.result.data.update_project.returning[0].team_id });
+    const teamMembers = getTeamMembersResponse.result.data.team_members;
+
+    teamMembers.forEach((member) => {
+      insertUserActivity('completion-of-project-as-team', 'positive', member.user_id, [req.body.id]);
+    });
 
     await Hasura(deleteTeam, { team_id: response.result.data.update_project.returning[0].team_id });
 
@@ -65,8 +81,6 @@ const updateProject = catchAsync(async (req, res) => {
     team_id = response.result.data.update_project.returning[0].team_id;
   }
 
-  console.log('team id ', team_id);
-
   if (req.body.looking_for_mentors !== undefined || req.body.looking_for_members !== undefined) {
     const projectFlagsUpdateVariables = {
       team_id,
@@ -77,7 +91,6 @@ const updateProject = catchAsync(async (req, res) => {
   }
 
   if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    console.log('In here');
     if (req.body.roles_required && req.body.roles_required.length > 0) {
       if (team_id) {
         await Hasura(deleteTeam, { team_id });
@@ -87,7 +100,6 @@ const updateProject = catchAsync(async (req, res) => {
       const teamOnInovact = req.body.team_on_inovact;
       const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
       team_id = teamCreated.team_id;
-      console.log(team_id);
     }
 
     await Hasura(UpdateProjectTeam, {

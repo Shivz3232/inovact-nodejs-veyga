@@ -4,6 +4,7 @@ const { checkIfPossibleToAccept, getRoleRequirement } = require('./queries/queri
 const { acceptJoinRequest1, acceptJoinRequest2 } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const acceptJoinRequest = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -65,6 +66,8 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
 
   // Notify the user
   await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [response1.result.data.team_requests[0].user_id]).catch(console.log);
+
+  insertUserActivity('getting-accepted-into-team', 'positive', response1.result.data.team_requests[0].user_id, [response1.result.data.team_requests[0].team_id]);
 
   return res.status(201).json({
     success: true,

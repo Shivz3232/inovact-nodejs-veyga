@@ -4,12 +4,13 @@
 /* eslint-disable guard-for-in */
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { addIdea, addTags, addSkillsRequired, addRolesRequired } = require('./queries/mutations');
+const { addIdea, addTags, addSkillsRequired, addRolesRequired, updateUserFlags } = require('./queries/mutations');
 const { getUser, getMyConnections } = require('./queries/queries');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const cleanConnections = require('../../../utils/cleanConnections');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const catchAsync = require('../../../utils/catchAsync');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const addIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -23,6 +24,8 @@ const addIdeas = catchAsync(async (req, res) => {
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
+
+  const userEventFlags = response1.result.data.user[0].user_action;
 
   const allowed_statuses = ['ideation', 'mvp/prototype', 'traction'];
 
@@ -39,7 +42,7 @@ const addIdeas = catchAsync(async (req, res) => {
   // Create a default team
   if (looking_for_members || looking_for_mentors) {
     teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members);
-
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [teamCreated.team_id]);
     ideaData.team_id = teamCreated.team_id;
   } else {
     ideaData.team_id = null;
@@ -96,6 +99,13 @@ const addIdeas = catchAsync(async (req, res) => {
     const response3 = await Hasura(addTags, tagsData);
   }
 
+  if (looking_for_members) {
+    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [ideaData.team_id]);
+  }
+  if (looking_for_mentors) {
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [response2.result.data.insert_idea.returning[0].id]);
+  }
+
   // Send email notification
   const { id: actorId } = response1.result.data.user[0];
   const { id: ideaId } = response2.result.data.insert_idea.returning[0];
@@ -106,7 +116,7 @@ const addIdeas = catchAsync(async (req, res) => {
     cognito_sub,
   });
   const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
-  
+
   if (teamId) {
     // Explain things that can be done next to the user who uploaded the idea.
     enqueueEmailNotification(8, ideaId, actorId, [actorId]);
@@ -119,6 +129,25 @@ const addIdeas = catchAsync(async (req, res) => {
 
   // Explain things that can be done next to the user who uploaded the idea.s
   enqueueEmailNotification(6, ideaId, actorId, [actorId]);
+
+  insertUserActivity('uploading-idea', 'positive', actorId, [ideaId]);
+
+  const needsIdeaUploadFlag = !userEventFlags.has_uploaded_idea;
+  const needsTeamFlag = userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
+  const needsMentorFlag = userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
+  const needsTeamAndMentorFlag = !userEventFlags.has_sought_team_and_mentor;
+
+  if (needsIdeaUploadFlag || (needsTeamFlag && needsMentorFlag) || needsTeamAndMentorFlag) {
+    userEventFlags.has_uploaded_idea = true;
+    userEventFlags.has_sought_team = userEventFlags.has_sought_team || looking_for_members;
+    userEventFlags.has_sought_mentor = userEventFlags.has_sought_mentor || looking_for_mentors;
+    userEventFlags.has_sought_team_and_mentor = userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
+
+    await Hasura(updateUserFlags, {
+      userId: actorId,
+      userEventFlags,
+    });
+  }
 
   return res.status(201).json({
     success: true,

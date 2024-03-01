@@ -1,9 +1,9 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { createUserQuery, addTutorialCompleteStatus, updateUserPoints } = require('./queries/mutations');
+const { createUserQuery, addTutorialCompleteStatus } = require('./queries/mutations');
 const catchAsync = require('../../../utils/catchAsync');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
-
+const insertUserActivity = require('../../../utils/insertUserActivity');
 function generateRandomUsername() {
   const min = 1000000000;
   const max = 9999999999;
@@ -37,12 +37,8 @@ const createUser = catchAsync(async (req, res) => {
     userId,
   });
 
-  // 100 for signup 10 for filling bio
-  await Hasura(updateUserPoints, {
-    userId,
-    points: 110,
-  })
   enqueueEmailNotification(13, userId, userId, [userId]);
+  insertUserActivity('successful-signup', 'positive', userId, []);
 
   return res.status(201).json({
     success: true,
