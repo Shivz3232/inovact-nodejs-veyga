@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserIdQuery } = require('./queries/queries');
-const { insertUserActivityQuery } = require('./queries/mutations');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 const catchAsync = require('../../../utils/catchAsync');
 
 const getUserPoints = catchAsync(async (req, res) => {
@@ -13,7 +13,7 @@ const getUserPoints = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, direction, activityId } = req.body;
+  const { cognito_sub, activityIdentifier, entityId } = req.body;
 
   const response = await Hasura(getUserIdQuery, {
     cognitoSub: cognito_sub,
@@ -31,15 +31,12 @@ const getUserPoints = catchAsync(async (req, res) => {
 
   const userId = getUserIdQueryResponse.user[0].id;
 
-  const insertUserActivityVariables = {
-    userId,
-    activityId,
-    direction,
-    status: 'unprocessed',
-  };
-  const insertUserActivityResponse = await Hasura(insertUserActivityQuery, insertUserActivityVariables);
+  insertUserActivity(activityIdentifier, 'positive', userId, [entityId]);
 
-  return res.json(insertUserActivityResponse.result.data.insert_user_activities_one);
+  return res.status(200).json({
+    success: true,
+    data: null,
+  });
 });
 
 module.exports = getUserPoints;
