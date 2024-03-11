@@ -89,7 +89,7 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
 
 // For verifying ssl certificate
 app.get('/.well-known/pki-validation/*', (req, res) => {
-  const filePath = path.join(__dirname, 'public', 'A71340866D0E0A28BC1EFB917223AD6D.txt');
+  const filePath = path.join(__dirname, 'public', 'B72BD37FD953C4B5F1D3DC2A003C79BB.txt');
 
   // Read the TXT file
   fs.readFile(filePath, 'utf8', (err, data) => {
