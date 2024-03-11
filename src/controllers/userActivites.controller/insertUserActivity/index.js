@@ -33,7 +33,7 @@ const getUserPoints = catchAsync(async (req, res) => {
   const isEntityValid = (await validateEntity(activityIdentifier, entityId)) || false;
 
   if (!isEntityValid) {
-    return res.status(404).json({
+    return res.status(400).json({
       success: false,
       errorCode: 'EntityNotFound',
       errorMessage: 'No entity found with this id',

@@ -16,3 +16,5 @@ module.exports.getUserThoughts = require('./getUserThoughts');
 
 module.exports.addUserFeedback = require('./addUserFeedback');
 module.exports.getUserFeedback = require('./getUserFeedback');
+
+module.exports.addUserRefferal = require('./addUserRefferal');
