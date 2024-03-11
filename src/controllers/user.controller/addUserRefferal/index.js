@@ -53,7 +53,7 @@ const addUserFeedback = catchAsync(async (req, res) => {
   if (!addUserReferralResponse || addUserReferralResponse.result.data.insert_referrals.returning.length === 0) {
     return res.status(400).json({
       success: false,
-      errorCode: 'Error',
+      errorCode: 'ErrorAddingReferal',
       errorMessage: 'Error in adding referal',
     });
   }
