@@ -2,6 +2,10 @@ const addUserReferral = `mutation addUserReferral($userId: Int!, $referrerId: In
     insert_referrals(objects: [{user_id: $userId, referrer_id: $referrerId}]) {
         returning {
             id
+            user_id
+            referrer_id
+            created_at
+            updated_at
         }
     }
 }`;

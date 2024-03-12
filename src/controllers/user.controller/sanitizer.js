@@ -28,6 +28,6 @@ const addUserFeedbackSanitizer = [cognito_sub, body('userId', 'User ID Not Provi
 
 const getUserFeedbackSanitizer = [cognito_sub, body('id', 'User ID Not Provided').exists().isInt()];
 
-const addUserReferralSanitizer = [cognito_sub, body('email_id', 'Invalid email').isEmail()];
+const addUserReferralSanitizer = [cognito_sub, body('emailId', 'Invalid email').isEmail()];
 
 module.exports = { addUserReferralSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer, editUserSkillsSanitizer, deleteUserSkillsSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer };

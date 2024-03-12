@@ -1,14 +1,20 @@
-const checkIfUserExists = `query checkIfUserExists($emailId: String) {
-    user(where: {email_id: {_eq: $emailId}}) {
+const getUserDetails = `query getUserDetails($emailId: String, $cognitoSub: String!) {
+    userWithEmail: user(where: { email_id: { _eq: $emailId } }) {
         id
-    }
-}`;
+        email_id
+  }
+    userWithCognitoSub: user(where: { cognito_sub: { _eq: $cognitoSub } }) {
+        id
+        cognito_sub
+  }
+}
+`;
 
-const checkIfReferalExists = `query checkIfReferralExists($cognitoSub: String, $referrerId: Int) {
+const checkIfReferalExists = `query checkIfReferralExists($userId: Int, $referrerId: Int) {
   referrals(
     where: {
       _and: [
-        { user: { cognito_sub: { _eq: $cognitoSub } } },
+        { user_id: {_eq: $userId} },
         { referrer_id: { _eq: $referrerId } }
       ]
     }
@@ -22,6 +28,6 @@ const checkIfReferalExists = `query checkIfReferralExists($cognitoSub: String, $
 `;
 
 module.exports = {
-  checkIfUserExists,
+  getUserDetails,
   checkIfReferalExists,
 };

@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addUserReferral } = require('./queries/mutations');
-const { checkIfUserExists, checkIfReferalExists } = require('./queries/queries');
+const { getUserDetails, checkIfReferalExists } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 const insertUserActivity = require('../../../utils/insertUserActivity');
 
@@ -16,11 +16,12 @@ const addUserFeedback = catchAsync(async (req, res) => {
 
   const { cognito_sub, emailId } = req.body;
 
-  const checkIfUserExistsResponse = await Hasura(checkIfUserExists, {
+  const checkIfUserExistsResponse = await Hasura(getUserDetails, {
     emailId,
+    cognitoSub: cognito_sub,
   });
 
-  if (!checkIfUserExistsResponse || checkIfUserExistsResponse.result.data.user.length === 0) {
+  if (!checkIfUserExistsResponse || checkIfUserExistsResponse.result.data.userWithEmail.length === 0) {
     return res.status(404).json({
       success: false,
       errorCode: 'UserNotFound',
@@ -28,22 +29,21 @@ const addUserFeedback = catchAsync(async (req, res) => {
     });
   }
 
-  const referrerId = checkIfUserExistsResponse.result.data.user[0].id;
+  const referrerId = checkIfUserExistsResponse.result.data.userWithEmail[0].id;
+  const userId = checkIfUserExistsResponse.result.data.userWithCognitoSub[0].id;
 
   const checkIfReferalExistsResponse = await Hasura(checkIfReferalExists, {
-    cognito_sub,
+    userId,
     referrerId,
   });
 
-  if (!checkIfReferalExistsResponse || checkIfReferalExistsResponse.result.data.referrals.length === 0) {
+  if (!checkIfReferalExistsResponse || checkIfReferalExistsResponse.result.data.referrals.length !== 0) {
     return res.status(400).json({
       success: false,
       errorCode: 'ReferalExists',
       errorMessage: 'A referal with this email id and user already exists',
     });
   }
-
-  const userId = checkIfUserExistsResponse.result.data.user[0].id;
 
   const addUserReferralResponse = await Hasura(addUserReferral, {
     userId,
