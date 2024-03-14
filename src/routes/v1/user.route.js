@@ -34,6 +34,6 @@ router.post('/activity', insertUserActivitySanitizer, userActivityController.ins
 router.get('/activities', getUserActivitiesSanitizer, userActivityController.getUserActivities);
 router.get('/activity/:activityId', getUserActivitySanitizer, userActivityController.getUserActivity);
 
-router.get('/referral', addUserReferralSanitizer, userController.addUserRefferal);
+router.post('/referral', addUserReferralSanitizer, userController.addUserRefferal);
 
 module.exports = router;

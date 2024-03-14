@@ -16,6 +16,18 @@ const addUserFeedback = catchAsync(async (req, res) => {
 
   const { cognito_sub, emailId } = req.body;
 
+  const checkIfReferalExistsResponse = await Hasura(checkIfReferalExists, {
+    cognitoSub: cognito_sub,
+  });
+
+  if (!checkIfReferalExistsResponse || checkIfReferalExistsResponse.result.data.referrals.length !== 0) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'ReferalExists',
+      errorMessage: 'A referal for the user already exists',
+    });
+  }
+
   const checkIfUserExistsResponse = await Hasura(getUserDetails, {
     emailId,
     cognitoSub: cognito_sub,
@@ -31,19 +43,6 @@ const addUserFeedback = catchAsync(async (req, res) => {
 
   const referrerId = checkIfUserExistsResponse.result.data.userWithEmail[0].id;
   const userId = checkIfUserExistsResponse.result.data.userWithCognitoSub[0].id;
-
-  const checkIfReferalExistsResponse = await Hasura(checkIfReferalExists, {
-    userId,
-    referrerId,
-  });
-
-  if (!checkIfReferalExistsResponse || checkIfReferalExistsResponse.result.data.referrals.length !== 0) {
-    return res.status(400).json({
-      success: false,
-      errorCode: 'ReferalExists',
-      errorMessage: 'A referal with this email id and user already exists',
-    });
-  }
 
   const addUserReferralResponse = await Hasura(addUserReferral, {
     userId,

@@ -10,14 +10,13 @@ const getUserDetails = `query getUserDetails($emailId: String, $cognitoSub: Stri
 }
 `;
 
-const checkIfReferalExists = `query checkIfReferralExists($userId: Int, $referrerId: Int) {
+const checkIfReferalExists = `query checkIfReferralExists($cognitoSub: String) {
   referrals(
-    where: {
-      _and: [
-        { user_id: {_eq: $userId} },
-        { referrer_id: { _eq: $referrerId } }
-      ]
-    }
+    where: {user:{
+      cognito_sub:{
+        _eq: $cognitoSub
+      }
+    }}
   ) {
     id
     user{
