@@ -1,8 +1,9 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserIdQuery } = require('./queries/queries');
-const { insertUserActivityQuery } = require('./queries/mutations');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 const catchAsync = require('../../../utils/catchAsync');
+const validateEntity = require('../../../utils/validateEntity');
 
 const getUserPoints = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -13,7 +14,7 @@ const getUserPoints = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, direction, activityId } = req.body;
+  const { cognito_sub, activityIdentifier, entityId, direction } = req.body;
 
   const response = await Hasura(getUserIdQuery, {
     cognitoSub: cognito_sub,
@@ -29,17 +30,24 @@ const getUserPoints = catchAsync(async (req, res) => {
     });
   }
 
+  const isEntityValid = (await validateEntity(activityIdentifier, entityId)) || false;
+
+  if (!isEntityValid) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'EntityNotFound',
+      errorMessage: 'No entity found with this id',
+    });
+  }
+
   const userId = getUserIdQueryResponse.user[0].id;
 
-  const insertUserActivityVariables = {
-    userId,
-    activityId,
-    direction,
-    status: 'unprocessed',
-  };
-  const insertUserActivityResponse = await Hasura(insertUserActivityQuery, insertUserActivityVariables);
+  insertUserActivity(activityIdentifier, direction, userId, [entityId]);
 
-  return res.json(insertUserActivityResponse.result.data.insert_user_activities_one);
+  return res.status(200).json({
+    success: true,
+    data: null,
+  });
 });
 
 module.exports = getUserPoints;
