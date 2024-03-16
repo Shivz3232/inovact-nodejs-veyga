@@ -11,23 +11,42 @@ const getUserDetails = `query getUserDetails($emailId: String, $cognitoSub: Stri
 }
 `;
 
-const checkIfReferalExists = `query checkIfReferralExists($cognitoSub: String) {
-  referrals(
-    where: {user:{
-      cognito_sub:{
-        _eq: $cognitoSub
+const getRefferralDetails = `
+  query getRefferralDetails($cognitoSub: String, $emailId: String) {
+    existingReferral: referrals(
+      where: {
+        user: {
+          cognito_sub: { _eq: $cognitoSub }
+        }
       }
-    }}
-  ) {
-    id
-    user{
+    ) {
+      id
+      user {
+        id
+      }
+    }
+    userReferred: referrals(
+      where: {
+        _and: [
+          { user:{
+            cognito_sub: {
+              _eq:$cognitoSub
+            }
+          } }
+          { userByUserId:{
+            email_id:{
+              _eq:$emailId
+            }
+          } }
+        ]
+      }
+    ) {
       id
     }
   }
-}
 `;
 
 module.exports = {
   getUserDetails,
-  checkIfReferalExists,
+  getRefferralDetails,
 };

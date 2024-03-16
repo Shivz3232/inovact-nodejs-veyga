@@ -1,9 +1,10 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { addUserReferral } = require('./queries/mutations');
-const { getUserDetails, checkIfReferalExists } = require('./queries/queries');
+const { getUserDetails, getRefferralDetails } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 const insertUserActivity = require('../../../utils/insertUserActivity');
+const notify = require('../../../utils/notify');
 
 const addUserFeedback = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,15 +17,24 @@ const addUserFeedback = catchAsync(async (req, res) => {
 
   const { cognito_sub, emailId } = req.body;
 
-  const checkIfReferalExistsResponse = await Hasura(checkIfReferalExists, {
+  const getRefferralDetailsResponse = await Hasura(getRefferralDetails, {
     cognitoSub: cognito_sub,
+    emailId,
   });
 
-  if (!checkIfReferalExistsResponse || checkIfReferalExistsResponse.result.data.referrals.length !== 0) {
+  if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.existingReferral.length !== 0) {
     return res.status(400).json({
       success: false,
       errorCode: 'ReferalExists',
       errorMessage: 'A referal for the user already exists',
+    });
+  }
+
+  if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.userReferred.length !== 0) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'CyclicalReferral',
+      errorMessage: 'Cyclical referrals are not allowed',
     });
   }
 
@@ -65,6 +75,7 @@ const addUserFeedback = catchAsync(async (req, res) => {
   }
 
   insertUserActivity('referral', 'positive', userId, []);
+  await notify(31, userId, userId, [referrerId]).catch(console.log);
 
   return res.json(addUserReferralResponse.result.data.insert_referrals.returning[0]);
 });
