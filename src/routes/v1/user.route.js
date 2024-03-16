@@ -2,7 +2,7 @@ const express = require('express');
 const userController = require('../../controllers/user.controller');
 const userActivityController = require('../../controllers/userActivites.controller/');
 
-const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer, addUserReferralSanitizer } = require('../../controllers/user.controller/sanitizer');
+const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer, addUserReferralSanitizer, getStatsSanitizer } = require('../../controllers/user.controller/sanitizer');
 
 //change expected
 const { getUserActivitySanitizer, getUserActivitiesSanitizer, insertUserActivitySanitizer } = require('../../controllers/userActivites.controller/sanitizer');
@@ -35,5 +35,7 @@ router.get('/activities', getUserActivitiesSanitizer, userActivityController.get
 router.get('/activity/:activityId', getUserActivitySanitizer, userActivityController.getUserActivity);
 
 router.post('/referral', addUserReferralSanitizer, userController.addUserRefferal);
+
+router.get('/getStats', getStatsSanitizer, userController.getStats);
 
 module.exports = router;
