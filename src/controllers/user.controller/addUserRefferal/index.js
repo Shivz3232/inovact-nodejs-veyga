@@ -40,6 +40,13 @@ const addUserFeedback = catchAsync(async (req, res) => {
       errorMessage: 'No user found with this email id',
     });
   }
+  if (emailId === checkIfUserExistsResponse.result.data.userWithCognitoSub[0].email_id) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'SelfReferral',
+      errorMessage: 'You cannot refer yourself',
+    });
+  }
 
   const referrerId = checkIfUserExistsResponse.result.data.userWithEmail[0].id;
   const userId = checkIfUserExistsResponse.result.data.userWithCognitoSub[0].id;

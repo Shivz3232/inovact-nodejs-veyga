@@ -5,6 +5,7 @@ const getUserDetails = `query getUserDetails($emailId: String, $cognitoSub: Stri
   }
     userWithCognitoSub: user(where: { cognito_sub: { _eq: $cognitoSub } }) {
         id
+        email_id
         cognito_sub
   }
 }
