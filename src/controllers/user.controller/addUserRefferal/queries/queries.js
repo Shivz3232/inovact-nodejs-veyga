@@ -15,7 +15,7 @@ const getRefferralDetails = `
   query getRefferralDetails($cognitoSub: String, $emailId: String) {
     existingReferral: referrals(
       where: {
-        user: {
+        userByUserId: {
           cognito_sub: { _eq: $cognitoSub }
         }
       }
