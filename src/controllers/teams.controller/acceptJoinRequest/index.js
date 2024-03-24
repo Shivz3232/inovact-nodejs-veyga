@@ -1,36 +1,10 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { checkIfPossibleToAccept, getRoleRequirement, getTeamJoinedCount } = require('./queries/queries');
+const { checkIfPossibleToAccept, getRoleRequirement } = require('./queries/queries');
 const { acceptJoinRequest1, acceptJoinRequest2 } = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const catchAsync = require('../../../utils/catchAsync');
 const insertUserActivity = require('../../../utils/insertUserActivity');
-
-const awardUserActivityForJoinedTeams = async (userId) => {
-  try {
-    const getTeamJoinedCountResponse = await Hasura(getTeamJoinedCount, { userId });
-
-    if (getTeamJoinedCountResponse.result.data.team_members.length > 0) {
-      const projectTeamJoinedIds = [];
-      const ideaTeamJoinedIds = [];
-
-      getTeamJoinedCountResponse.result.data.team_members.forEach((teamMember) => {
-        if (teamMember.team.projects.length > 0) projectTeamJoinedIds.push(teamMember.team.projects[0].id);
-        if (teamMember.team.ideas.length > 0) ideaTeamJoinedIds.push(teamMember.team.ideas[0].id);
-      });
-
-      if (projectTeamJoinedIds.length === 3) {
-        await insertUserActivity('getting-accepted-into-first-three-projects', 'positive', userId, projectTeamJoinedIds);
-      }
-
-      if (ideaTeamJoinedIds.length === 3) {
-        await insertUserActivity('getting-accepted-into-first-three-ideas', 'positive', userId, ideaTeamJoinedIds);
-      }
-    }
-  } catch (error) {
-    logger.error('Error in awardUserActivityForJoinedTeams:', error.message);
-  }
-};
 
 const acceptJoinRequest = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -66,11 +40,10 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
       data: null,
     });
 
-  const userIdOfRequestingUser = response1.result.data.team_requests[0].user_id;
   let query;
   const variables2 = {
     team_id: response1.result.data.team_requests[0].team_id,
-    user_id: userIdOfRequestingUser,
+    user_id: response1.result.data.team_requests[0].user_id,
     request_id,
   };
 
@@ -81,18 +54,20 @@ const acceptJoinRequest = catchAsync(async (req, res) => {
 
     variables2.role = response2.result.data.team_role_requirements[0].role_name;
     variables2.role_requirement_id = response1.result.data.team_requests[0].role_requirement_id;
+
     query = acceptJoinRequest1;
   } else {
     variables2.role = 'mentor';
+
     query = acceptJoinRequest2;
   }
 
   const response3 = await Hasura(query, variables2);
 
-  // Notify the user and award points
-  await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [userIdOfRequestingUser]).catch(console.log);
-  insertUserActivity('getting-accepted-into-team', 'positive', userIdOfRequestingUser, [response1.result.data.team_requests[0].team_id]);
-  awardUserActivityForJoinedTeams(userIdOfRequestingUser);
+  // Notify the user
+  await notify(21, response1.result.data.team_requests[0].team_id, response1.result.data.team_members[0].user_id, [response1.result.data.team_requests[0].user_id]).catch(console.log);
+
+  insertUserActivity('getting-accepted-into-team', 'positive', response1.result.data.team_requests[0].user_id, [response1.result.data.team_requests[0].team_id]);
 
   return res.status(201).json({
     success: true,
