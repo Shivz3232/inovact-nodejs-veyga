@@ -16,7 +16,31 @@ const getRoleRequirement = `query roleRequirement($roleRequirementId: Int) {
   }
 }`;
 
+const getTeamJoinedCount = `query getTeamJoinedCount($userId:Int){
+  team_members(where:{
+    _and:{
+    user_id:{
+      _eq:$userId
+    },
+    team:{
+      creator_id:{
+        _neq: $userId
+      }
+    }
+  }
+  }){
+    team_id
+    user_id
+    team{
+      ideas{id}
+      projects{id}
+    }
+    
+  }
+}`;
+
 module.exports = {
   checkIfPossibleToAccept,
   getRoleRequirement,
+  getTeamJoinedCount,
 };
