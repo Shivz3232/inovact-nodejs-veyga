@@ -5,6 +5,7 @@ mutation delete_idea($id: Int!) {
   }
   delete_idea_by_pk(id: $id) {
     id
+    user_id
   }
 }
 `;

@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const { deletequery } = require('./queries/queries');
+const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const deleteProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -18,6 +19,10 @@ const deleteProject = catchAsync(async (req, res) => {
     id,
   };
   const response = await Hasura(deletequery, variables);
+
+  console.log(response.result.data.delete_project_by_pk.user_id, [id]);
+
+  insertUserActivity('uploading-project', 'negative', response.result.data.delete_project_by_pk.user_id, [id]);
 
   return res.status(204).json({
     success: true,
