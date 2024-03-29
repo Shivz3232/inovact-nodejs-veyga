@@ -1,7 +1,7 @@
 const cron = require('node-cron');
-const { userInactivityTracker } = require('./appEngagementMonitor');
+const { userInactivityTracker } = require('../workers/userInactivityTracker/index');
 
-const job = cron.schedule(
+const userInactivityTrackerJob = cron.schedule(
   '59 23 * * *',
   () => {
     console.log('Running user inactivity tracker cron job...');
@@ -12,6 +12,8 @@ const job = cron.schedule(
   }
 );
 
-job.on('error', (err) => {
+userInactivityTrackerJob.on('error', (err) => {
   console.error('Error in user inactivity tracker cron job:', err);
 });
+
+module.exports = userInactivityTrackerJob;

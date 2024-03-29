@@ -62,6 +62,7 @@ const constructActivityResponse = async (res) => {
       }
     }
 
+
     const response = {
       id: activity.id,
       userId: activity.user_id,
