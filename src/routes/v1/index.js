@@ -113,7 +113,7 @@ const defaultRoutes = [
     needAuthentication: false,
   },
   {
-    path: '/userAction',
+    path: '/userActions',
     route: userActionRoute,
     needAuthentication: true,
   },

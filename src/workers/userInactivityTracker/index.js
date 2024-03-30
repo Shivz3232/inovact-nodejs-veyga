@@ -1,4 +1,4 @@
-const { query: Hasura } = require('../hasura');
+const { query: Hasura } = require('../../utils/hasura');
 const insertActivity = require('../../utils/insertUserActivity');
 const { getLastAppOpenedTimestamp } = require('./queries/queries');
 
@@ -20,13 +20,12 @@ const userInactivityTracker = async () => {
       const appOpenedToday = lastAppOpenedDate >= todayStart && lastAppOpenedDate <= todayEnd;
 
       if (appOpenedToday) {
-          insertActivity('daily-login', 'positive', user_id, lastAppOpenedDate);
+        insertActivity('daily-login', 'positive', user_id, lastAppOpenedDate);
       } else {
         const timeDiff = today - lastAppOpenedDate;
         const consecutiveInactiveDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
         if (consecutiveInactiveDays % 5 === 0) {
           insertActivity('inactive-five-days', 'negative', user_id, null);
-           
         }
       }
     }
