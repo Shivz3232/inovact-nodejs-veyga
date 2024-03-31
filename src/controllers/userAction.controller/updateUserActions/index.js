@@ -27,18 +27,7 @@ const getUserActionValues = catchAsync(async (req, res) => {
     cognitoSub: cognito_sub,
     data,
   });
-
-  console.log(JSON.stringify(updateUserActionsResponse));
-
-  if (!updateUserActionsResponse.success) {
-    return res.status(400).json({
-      success: false,
-      errorCode: 'InternalServerError',
-      errorMessage: JSON.stringify(updateUserActionsResponse.errors),
-      data: null,
-    });
-  }
-
+  
   return res.status(200).json({
     success: true,
     data: updateUserActionsResponse.result.data.update_user_actions.returning[0],
