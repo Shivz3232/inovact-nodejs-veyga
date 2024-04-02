@@ -10,8 +10,15 @@ const entityMap = {
   thought: 'Thoughts shared',
 };
 
-const fetchUserEntities = async (userId) => {
-  const query = `
+const getTeamDetailsQuery = `
+    query getTeamDetails($teamId: Int) {
+      team(where: { id: { _eq: $teamId } }) {
+        name
+      }
+    }
+  `;
+
+const query = `
     query GetUserEntities($userId: Int) {
       projects: project(where: { user_id: { _eq: $userId } }) {
         id
@@ -24,6 +31,7 @@ const fetchUserEntities = async (userId) => {
     }
   `;
 
+const fetchUserEntities = async (userId) => {
   try {
     const queryResponse = await Hasura(query, { userId });
     return {
@@ -56,12 +64,14 @@ const constructActivityResponse = async (res) => {
       try {
         if (activity.activity.entity_type === 'project' || activity.activity.entity_type === 'idea') {
           title = constructTitle(activity.activity.entity_type, activity.user_activity_entities[0].entity_id, userEntities);
+        } else if (activity.activity.entity_type === 'team-achievement') {
+          const teamDetails = await Hasura(getTeamDetailsQuery, { teamId: activity.user_activity_entities[0].entity_id });
+          title = teamDetails.result.data.team[0].name;
         }
       } catch (titleError) {
         logger.error(`Error getting title for ${activity.activity.entity_type}: ${titleError}`);
       }
     }
-
 
     const response = {
       id: activity.id,
