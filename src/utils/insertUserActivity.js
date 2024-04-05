@@ -22,6 +22,8 @@ const insertUserActivity = async (identifier, direction, userId, entityIds) => {
       MessageGroupId: 'activity',
     };
 
+    console.log(activityId, direction, userId, entityIds);
+
     sqs.sendMessage(params, (err, data) => {
       if (err) {
         reject(err);
