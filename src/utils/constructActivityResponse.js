@@ -64,7 +64,7 @@ const constructActivityResponse = async (res) => {
       try {
         if (activity.activity.entity_type === 'project' || activity.activity.entity_type === 'idea') {
           title = constructTitle(activity.activity.entity_type, activity.user_activity_entities[0].entity_id, userEntities);
-        } else if (activity.activity.entity_type === 'team-achievement') {
+        } else if (activity.activity.entity_type === 'team-achievement' || activity.activity.entity_type === 'team-collaboration') {
           const teamDetails = await Hasura(getTeamDetailsQuery, { teamId: activity.user_activity_entities[0].entity_id });
           title = teamDetails.result.data.team[0].name;
         }
@@ -81,7 +81,7 @@ const constructActivityResponse = async (res) => {
         identifier: activity.activity.identifier,
         title: activity.activity.title,
       },
-      entityTitle: title || entityMap[activity.activity.entity_type],
+      entityTitle: title || null,
       points: activity.activity.points,
       timestamp: activity.created_at,
     };

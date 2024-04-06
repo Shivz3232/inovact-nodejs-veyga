@@ -10,6 +10,17 @@ mutation delete_idea($id: Int!) {
 }
 `;
 
+const getUserId = `query getUserId($cognitoSub:String){
+  user(where :{
+    cognito_sub: {
+      _eq : $cognitoSub
+    }
+  }){
+    id
+  }
+}`;
+
 module.exports = {
+  getUserId,
   delete_idea,
 };
