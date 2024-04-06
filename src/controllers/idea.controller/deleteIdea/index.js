@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { delete_idea, getUserId } = require('./queries/queries');
+const { delete_idea } = require('./queries/queries');
 const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const deleteIdea = catchAsync(async (req, res) => {
@@ -13,19 +13,15 @@ const deleteIdea = catchAsync(async (req, res) => {
     });
   }
 
-  const { id, cognito_sub } = req.body;
-
-  const getUserIdResponse = await Hasura(getUserId, {
-    cognitoSub: cognito_sub,
-  });
+  const { id } = req.body;
 
   const variables = {
     id,
   };
+
   const response = await Hasura(delete_idea, variables);
- 
-  console.log(getUserIdResponse.result.data.user[0].id);
-  insertUserActivity('uploading-idea', 'negative', getUserIdResponse.result.data.user[0].id, [id]);
+
+  insertUserActivity('uploading-idea', 'negative', response.result.data.delete_idea_by_pk.user_id, [id]);
 
   return res.status(200).json({
     success: true,

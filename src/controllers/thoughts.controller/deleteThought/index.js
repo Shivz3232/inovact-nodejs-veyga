@@ -13,8 +13,6 @@ const deleteThought = catchAsync(async (req, res) => {
     });
   }
 
-  console.log(typeof req.body.thought_id);
-
   // Find user id
   const { cognito_sub } = req.body;
   const response1 = await Hasura(getUserId, {
@@ -29,7 +27,7 @@ const deleteThought = catchAsync(async (req, res) => {
   const response2 = await Hasura(getThoughtUserId, variable);
 
   // check current user
-  if (response2.result.data.thoughts[0].user_id != response1.result.data.user[0].id) {
+  if (response2.result.data.thoughts[0].user_id !== response1.result.data.user[0].id) {
     return res.status(401).json({
       success: false,
       errorCode: 'UnauthorizedUserException',
@@ -41,7 +39,7 @@ const deleteThought = catchAsync(async (req, res) => {
   const variables = {
     id,
   };
-  const response = await Hasura(delete_thought, variables);
+  await Hasura(delete_thought, variables);
 
   insertUserActivity('uploading-thoughts', 'negative', response1.result.data.user[0].id, [id]);
 

@@ -18,9 +18,8 @@ const deleteProject = catchAsync(async (req, res) => {
   const variables = {
     id,
   };
-  const response = await Hasura(deletequery, variables);
 
-  console.log(response.result.data.delete_project_by_pk.user_id, [id]);
+  const response = await Hasura(deletequery, variables);
 
   insertUserActivity('uploading-project', 'negative', response.result.data.delete_project_by_pk.user_id, [id]);
 
