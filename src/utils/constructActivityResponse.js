@@ -53,18 +53,27 @@ const constructTitle = (entityType, entityId, userEntities) => {
   return entity ? entity.title : null;
 };
 
-const constructActivityResponse = async (res) => {
-  const userEntities = await fetchUserEntities(res[0].user_id);
+const constructActivityResponse = async (activities) => {
   const responseArray = [];
 
-  for (const activity of res) {
-    let title = null;
+  if (activities.length === 0) {
+    return responseArray;
+  }
+
+  const userEntities = await fetchUserEntities(activities[0].user_id);
+
+  let activity;
+  let title;
+
+  for (let i = 0; i < activities.length; i += 1) {
+    activity = activities[i];
 
     if (activity.user_activity_entities && activity.user_activity_entities.length > 0) {
       try {
         if (activity.activity.entity_type === 'project' || activity.activity.entity_type === 'idea') {
           title = constructTitle(activity.activity.entity_type, activity.user_activity_entities[0].entity_id, userEntities);
         } else if (activity.activity.entity_type === 'team-achievement' || activity.activity.entity_type === 'team-collaboration') {
+          // eslint-disable-next-line no-await-in-loop
           const teamDetails = await Hasura(getTeamDetailsQuery, { teamId: activity.user_activity_entities[0].entity_id });
           title = teamDetails.result.data.team[0].name;
         }
@@ -76,7 +85,7 @@ const constructActivityResponse = async (res) => {
     const response = {
       id: activity.id,
       userId: activity.user_id,
-      direction:activity.direction,
+      direction: activity.direction,
       activity: {
         id: activity.activity.id,
         identifier: activity.activity.identifier,
