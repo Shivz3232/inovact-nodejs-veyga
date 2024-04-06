@@ -41,7 +41,7 @@ const updateanUser = catchAsync(async (req, res) => {
     variables.changes.bio = req.body.bio;
     const activityIdentifier = 'filing-user-bio';
     const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
-    if ((response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) && arePointsOfferable) {
+    if ((!response.result.data.user[0].bio || response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) && arePointsOfferable) {
       await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }
@@ -73,8 +73,7 @@ const updateanUser = catchAsync(async (req, res) => {
     variables.changes.github_profile = req.body.github_profile;
     const activityIdentifier = 'filing-github';
     const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
-
-    if (response.result.data.user[0].github_profile === '' || (response.result.data.user[0].github_profile === null && arePointsOfferable)) {
+    if ((!response.result.data.user[0].github_profile || response.result.data.user[0].github_profile === '' || response.result.data.user[0].github_profile === null) && arePointsOfferable) {
       await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }
@@ -85,8 +84,7 @@ const updateanUser = catchAsync(async (req, res) => {
     variables.changes.website = req.body.website;
     const activityIdentifier = 'filing-website';
     const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
-
-    if (response.result.data.user[0].website === '' || (response.result.data.user[0].website === null && arePointsOfferable)) {
+    if ((!response.result.data.user[0].website || response.result.data.user[0].website === '' || response.result.data.user[0].website === null) && arePointsOfferable) {
       insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   } else variables.changes.website = '';

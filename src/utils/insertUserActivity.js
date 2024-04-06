@@ -10,8 +10,6 @@ const sqs = new AWS.SQS({
 const insertUserActivity = async (identifier, direction, userId, entityIds) => {
   const activityId = await getActivityId(identifier);
 
-  console.log('Activity id is ', activityId);
-
   const result = await new Promise((resolve, reject) => {
     const params = {
       MessageBody: JSON.stringify({
@@ -24,8 +22,6 @@ const insertUserActivity = async (identifier, direction, userId, entityIds) => {
       MessageGroupId: 'activity',
     };
 
-    console.log(activityId, direction, userId, entityIds);
-
     sqs.sendMessage(params, (err, data) => {
       if (err) {
         reject(err);
@@ -34,10 +30,9 @@ const insertUserActivity = async (identifier, direction, userId, entityIds) => {
       }
     });
 
-    console.log('Work Done');
   });
 
-  console.log('returning the result', JSON.stringify(await result));
+
   return result;
 };
 
