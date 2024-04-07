@@ -42,6 +42,7 @@ const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
     team_members {
       joined_date
       admin
+      role
       user {
         id
         avatar
@@ -135,6 +136,7 @@ const getTeam = `query getTeam($team_id: Int) {
     team_members {
       joined_date
       admin
+      role
       user {
         id
         avatar

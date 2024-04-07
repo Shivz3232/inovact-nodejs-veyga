@@ -19,8 +19,8 @@ const fcmRoute = require('./fcm.route');
 const config = require('../../config/config');
 const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 const propellRoute = require('./propell.route');
-const userActionRoute = require('./userAction.route');
 const userPointsRoute = require('./userPoints.route');
+const referralRoute = require('./referral.route');
 
 const router = express.Router();
 
@@ -105,19 +105,20 @@ const defaultRoutes = [
     route: fcmRoute,
     needAuthentication: true,
   },
+
   {
     path: '/propell',
     route: propellRoute,
     needAuthentication: false,
   },
   {
-    path: '/userAction',
-    route: userActionRoute,
+    path: '/userPoints',
+    route: userPointsRoute,
     needAuthentication: true,
   },
   {
-    path: '/userPoints',
-    route: userPointsRoute,
+    path: '/referral',
+    route: referralRoute,
     needAuthentication: true,
   },
 ];

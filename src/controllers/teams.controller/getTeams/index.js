@@ -35,10 +35,11 @@ const getTeams = catchAsync(async (req, res) => {
         data: null,
       });
     }
-    const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
 
+    const cleanedTeamDoc = cleanTeamDocs(response.result.data.team[0]);
     return res.json(cleanedTeamDoc);
   }
+  
   const cleanedTeamDocs = response.result.data.team.map(cleanTeamDocs);
 
   return res.json(cleanedTeamDocs);

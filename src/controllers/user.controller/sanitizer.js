@@ -18,6 +18,8 @@ const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const updateUserSanitizer = [cognito_sub];
 
+const getStatsSanitizer = [cognito_sub];
+
 const createUserSanitizer = [body('email_id', 'Invalid email').isEmail()];
 
 const editUserSkillsSanitizer = [cognito_sub, body('skillId', 'Invalid skillId').exists().toInt(), body('skillLevel').optional().isString().trim(), body('skillName').optional().isString().trim()];
@@ -28,4 +30,6 @@ const addUserFeedbackSanitizer = [cognito_sub, body('userId', 'User ID Not Provi
 
 const getUserFeedbackSanitizer = [cognito_sub, body('id', 'User ID Not Provided').exists().isInt()];
 
-module.exports = { addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer, editUserSkillsSanitizer, deleteUserSkillsSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer };
+const addUserReferralSanitizer = [cognito_sub, body('emailId', 'Invalid email').isEmail()];
+
+module.exports = { addUserReferralSanitizer, addAOISanitizer, getStatsSanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, createUserSanitizer, editUserSkillsSanitizer, deleteUserSkillsSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer };

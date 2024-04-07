@@ -17,35 +17,18 @@ const getUserActivities = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
 
-  try {
-    const getUserActivitiesQueryResponse = await Hasura(getUserActivitiesQuery, {
-      cognitoSub: cognito_sub,
-    });
+  const getUserActivitiesQueryResponse = await Hasura(getUserActivitiesQuery, {
+    cognitoSub: cognito_sub,
+  });
 
-    const responseData = getUserActivitiesQueryResponse.result.data.user_activities;
+  const userActivities = getUserActivitiesQueryResponse.result.data.user_activities;
 
-    if (!responseData || responseData.length === 0) {
-      return res.status(404).json({
-        success: false,
-        errorCode: 'ActivitiesNotFound',
-        errorMessage: 'No activities found with this cognito sub',
-      });
-    }
+  const cleanedResponseData = await constructActivityResponse(userActivities);
 
-    const cleanedResponseData = await constructActivityResponse(responseData);
-
-    return res.json({
-      success: true,
-      data: cleanedResponseData,
-    });
-  } catch (error) {
-    console.error('Error fetching user activities:', error);
-    return res.status(500).json({
-      success: false,
-      errorCode: 'InternalError',
-      errorMessage: 'Internal server error. Please try again later.',
-    });
-  }
+  return res.json({
+    success: true,
+    data: cleanedResponseData,
+  });
 });
 
 module.exports = getUserActivities;

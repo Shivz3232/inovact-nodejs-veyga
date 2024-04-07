@@ -29,7 +29,9 @@ const insertUserActivity = async (identifier, direction, userId, entityIds) => {
         resolve(data);
       }
     });
+
   });
+
 
   return result;
 };
