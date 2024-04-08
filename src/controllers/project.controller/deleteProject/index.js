@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
-const { deletequery } = require('./queries/queries');
+const { deletequery, checkIfCanDelete } = require('./queries/queries');
 const insertUserActivity = require('../../../utils/insertUserActivity');
 
 const deleteProject = catchAsync(async (req, res) => {
@@ -13,11 +13,25 @@ const deleteProject = catchAsync(async (req, res) => {
     });
   }
 
-  const { id } = req.body;
+  const { id, cognito_sub } = req.body;
 
   const variables = {
     id,
   };
+
+  const checkIfCanDeleteResult = await Hasura(checkIfCanDelete, {
+    id,
+    cognito_sub,
+  });
+
+  if (checkIfCanDeleteResult.result.data.project.length == 0) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'Forbidden',
+      errorMessage: 'You can not delete this project',
+      data: null,
+    });
+  }
 
   const response = await Hasura(deletequery, variables);
 

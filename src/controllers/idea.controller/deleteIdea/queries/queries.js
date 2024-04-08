@@ -20,7 +20,17 @@ const getUserId = `query getUserId($cognitoSub:String){
   }
 }`;
 
+
+const checkIfCanDelete = `
+query checkIfCanDelete($id: Int, $cognito_sub: String) {
+  idea(where: {id: {_eq: $id}, user: {cognito_sub: {_eq: $cognito_sub}}}) {
+    id
+  }
+}
+`;
+
 module.exports = {
   getUserId,
   delete_idea,
+  checkIfCanDelete,
 };
