@@ -7,6 +7,7 @@ const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const insertUserActivity = require('../../../utils/insertUserActivity');
+const notify = require('../../../utils/notify');
 const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
@@ -177,6 +178,10 @@ const addProject = catchAsync(async (req, res) => {
   // Dont wanna spam
   if (userConnectionIds.length > 0 && !isConnectionNotified) {
     enqueueEmailNotification(2, projectId, actorId, userConnectionIds);
+  }
+
+  if (userConnectionIds.length > 0) {
+    notify(3, projectId, actorId, userConnectionIds);
   }
 
   // Congratualting the user for the acheivment

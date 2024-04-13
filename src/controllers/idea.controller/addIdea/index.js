@@ -11,6 +11,7 @@ const cleanConnections = require('../../../utils/cleanConnections');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const catchAsync = require('../../../utils/catchAsync');
 const insertUserActivity = require('../../../utils/insertUserActivity');
+const notify = require('../../../utils/notify');
 
 const addIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -123,8 +124,9 @@ const addIdeas = catchAsync(async (req, res) => {
   }
 
   if (userConnectionIds.length > 0) {
-    // Send email to all connections that user has uploaded an idea
+    // Send email And notification to all connections that user has uploaded an idea
     enqueueEmailNotification(7, ideaId, actorId, userConnectionIds);
+    notify(8, ideaId, actorId, userConnectionIds);
   }
 
   // Explain things that can be done next to the user who uploaded the idea.s
