@@ -1,10 +1,33 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getUserConnections } = require('./queries/queries');
+const { decryptMessage } = require('../../../utils/decryptMessage');
 const catchAsync = require('../../../utils/catchAsync');
+
+const cleanupResponse = (connections) => {
+  return Promise.all(
+    connections
+      .map(async (connection) => {
+        const { private_messages, ...rest } = connection;
+        const latestMessage = private_messages.length
+          ? {
+              message: await decryptMessage(private_messages[0].encrypted_message),
+              created_at: private_messages[0].created_at,
+            }
+          : null;
+        return { ...rest, latestMessage };
+      })
+      .sort((a, b) => {
+        const aDate = a.latestMessage ? new Date(a.latestMessage.created_at) : new Date(0);
+        const bDate = b.latestMessage ? new Date(b.latestMessage.created_at) : new Date(0);
+        return bDate - aDate;
+      })
+  );
+};
 
 const getUserMessages = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
+
   if (!sanitizerErrors.isEmpty()) {
     return res.status(400).json({
       success: false,
@@ -13,16 +36,10 @@ const getUserMessages = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-
   const response1 = await Hasura(getUserConnections, { cognito_sub });
+  const cleanedResponse = await cleanupResponse(response1.result.data.connections);
 
-  const connectionsSortedByLatestMessage = response1.result.data.connections.sort((a, b) => {
-    const aDate = a.private_messages.length ? new Date(a.private_messages[0].created_at) : new Date(0);
-    const bDate = b.private_messages.length ? new Date(b.private_messages[0].created_at) : new Date(0);
-    return bDate - aDate;
-  });
-
-  return res.json(connectionsSortedByLatestMessage);
+  return res.json(cleanedResponse);
 });
 
 module.exports = getUserMessages;

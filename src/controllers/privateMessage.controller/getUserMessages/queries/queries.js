@@ -21,6 +21,7 @@ const getUserConnections = `query getMyConnections($cognito_sub: String) {
       user_name
     }
     private_messages(order_by: {created_at: desc}, limit: 1) {
+      encrypted_message
       created_at
     }
   }
@@ -32,3 +33,4 @@ const getUserConnections = `query getMyConnections($cognito_sub: String) {
 module.exports = {
   getUserConnections,
 };
+
