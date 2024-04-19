@@ -13,6 +13,8 @@ const cleanupResponse = (connections) => {
           ? {
               message: await decryptMessage(private_messages[0].encrypted_message),
               created_at: private_messages[0].created_at,
+              messageSenderId: private_messages[0].primary_user_id,
+              messageReceiverId: private_messages[0].secondary_user_id,
             }
           : null;
         return { ...rest, latestMessage };

@@ -21,6 +21,8 @@ const getUserConnections = `query getMyConnections($cognito_sub: String) {
       user_name
     }
     private_messages(order_by: {created_at: desc}, limit: 1) {
+      primary_user_id
+      secondary_user_id
       encrypted_message
       created_at
     }
