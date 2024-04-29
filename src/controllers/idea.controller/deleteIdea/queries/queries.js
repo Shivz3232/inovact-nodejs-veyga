@@ -25,6 +25,12 @@ const checkIfCanDelete = `
 query checkIfCanDelete($id: Int, $cognito_sub: String) {
   idea(where: {id: {_eq: $id}, user: {cognito_sub: {_eq: $cognito_sub}}}) {
     id
+    user_id
+    team_id
+    team{
+      looking_for_members
+      looking_for_mentors
+    }
   }
 }
 `;

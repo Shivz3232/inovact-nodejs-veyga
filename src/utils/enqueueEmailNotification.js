@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const config = require('../config/config');
+const logger = require('../config/logger');
 
 const sqs = new AWS.SQS({
   region: config.region,
@@ -21,6 +22,8 @@ const enqueueEmailNotification = (entityTypeId, entityId, actorId, notifierIds) 
       if (err) {
         reject(err);
       } else {
+        console.log(entityTypeId, entityId, actorId, notifierIds);
+        logger.info('Enqueued email notification,', entityTypeId, entityId, actorId, notifierIds);
         resolve(data);
       }
     });
