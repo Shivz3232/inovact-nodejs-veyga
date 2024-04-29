@@ -35,10 +35,10 @@ const deleteIdea = catchAsync(async (req, res) => {
 
   const response = await Hasura(delete_idea, variables);
 
-  const userId = response.result.data.delete_project_by_pk.user_id;
+  const userId = checkIfCanDeleteResponse.result.data.idea[0].user_id;
   const teamId = checkIfCanDeleteResponse.result.data.idea[0].team_id;
 
-  insertUserActivity('uploading-idea', 'negative', response.result.data.delete_idea_by_pk.user_id, [id]);
+  insertUserActivity('uploading-idea', 'negative', userId, [id]);
 
   if (checkIfCanDeleteResponse.result.data.idea[0].team.looking_for_members) {
     insertUserActivity('looking-for-team-member', 'negative', userId, [teamId]);

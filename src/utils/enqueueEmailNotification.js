@@ -22,7 +22,6 @@ const enqueueEmailNotification = (entityTypeId, entityId, actorId, notifierIds) 
       if (err) {
         reject(err);
       } else {
-        console.log(entityTypeId, entityId, actorId, notifierIds);
         logger.info('Enqueued email notification,', entityTypeId, entityId, actorId, notifierIds);
         resolve(data);
       }
