@@ -17,7 +17,9 @@ const cleanupResponse = (connections) => {
               messageReceiverId: private_messages[0].secondary_user_id,
             }
           : null;
-        return { ...rest, latestMessage };
+
+        const numberOfUnreadMessages = connection.private_messages_aggregate.aggregate.count;
+        return { ...rest, latestMessage, numberOfUnreadMessages };
       })
       .sort((a, b) => {
         const aDate = a.latestMessage ? new Date(a.latestMessage.created_at) : new Date(0);
