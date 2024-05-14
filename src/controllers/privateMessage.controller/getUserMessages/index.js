@@ -19,6 +19,8 @@ const cleanupResponse = (connections) => {
           : null;
 
         const numberOfUnreadMessages = connection.private_messages_aggregate.aggregate.count;
+        delete rest.private_messages_aggregate;
+
         return { ...rest, latestMessage, numberOfUnreadMessages };
       })
       .sort((a, b) => {
