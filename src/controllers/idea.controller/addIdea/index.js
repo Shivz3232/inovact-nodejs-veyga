@@ -22,6 +22,15 @@ const addIdeas = catchAsync(async (req, res) => {
     });
   }
   const { cognito_sub, description, title, status, link, looking_for_members, looking_for_mentors, roles_required, idea_tags } = req.body;
+
+  if (looking_for_members && roles_required.length === 0) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'InvalidInput',
+      errorMessage: "Roles required can't be empty when looking for members",
+    });
+  }
+
   const response1 = await Hasura(getUser, {
     cognito_sub: { _eq: cognito_sub },
   });
