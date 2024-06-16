@@ -6,7 +6,7 @@ const getAllUsersQuery = `
     all_users: user(
       where: { profile_complete: { _eq: true } }
       order_by: [
-        { university: { _order: "asc", _nulls: "last" } },
+        { university: asc_nulls_last },
         { first_name: asc },
         { last_name: asc }
       ]
@@ -37,4 +37,4 @@ const getAllUsersQuery = `
     }
   }`;
 
-module.exports = { getAllUsersQuery }
+module.exports = { getAllUsersQuery };
