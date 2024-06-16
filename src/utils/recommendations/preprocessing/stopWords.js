@@ -1,7 +1,8 @@
 const natural = require('natural');
 
+const stopWords = new Set(natural.stopwords);
+
 function removeStopWords(tokens) {
-  const stopWords = new Set(natural.stopwords);
   return tokens.filter((token) => !stopWords.has(token));
 }
 

@@ -1,7 +1,8 @@
 const natural = require('natural');
 
+const tokenizer = new natural.WordTokenizer();
+
 function tokenize(text) {
-  const tokenizer = new natural.WordTokenizer();
   return tokenizer.tokenize(text);
 }
 

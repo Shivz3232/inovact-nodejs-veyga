@@ -1,7 +1,8 @@
 const natural = require('natural');
 
+const stemmer = natural.PorterStemmer;
+
 function stem(tokens) {
-  const stemmer = natural.PorterStemmer;
   return tokens.map((token) => stemmer.stem(token));
 }
 
