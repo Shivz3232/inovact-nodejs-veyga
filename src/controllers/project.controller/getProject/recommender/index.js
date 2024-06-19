@@ -1,6 +1,6 @@
 const { createUserProfile } = require('../userProfile');
-const { createProjectProfile } = require('../projectProfile');
-const { calculateCosineSimilarity } = require('../vectorBasedMapping');
+const { createProjectProfile } = require('./projectProfile');
+const { calculateCosineSimilarity } = require('./vectorBasedMapping');
 
 const recommend = (user, projects) => {
   const userProfile = createUserProfile(user);

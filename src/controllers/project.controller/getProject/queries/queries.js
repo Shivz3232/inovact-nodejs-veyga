@@ -173,8 +173,39 @@ const getConnections = `query getConnections($cognito_sub: String) {
   }
 }`;
 
+const getUserInfo = `query getUserInfo($cognitoSub: String) {
+  user(where: {
+    cognito_sub: {
+      _eq: $cognitoSub
+    }
+  }) {
+    user_skills {
+      skill
+    }
+    user_interests {
+      area_of_interest {
+        interest
+      }
+    }
+  }
+  project(where: {
+    user: {
+      cognito_sub: {
+        _eq: $cognitoSub
+      }
+    }
+  }) {
+    project_tags {
+      hashtag {
+        name
+      }
+    }
+  }
+}`;
+
 module.exports = {
   getProjects,
   getProject,
   getConnections,
+  getUserInfo,
 };
