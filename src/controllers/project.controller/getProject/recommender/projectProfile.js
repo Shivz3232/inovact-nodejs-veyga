@@ -1,14 +1,16 @@
 const preprocessProjectData = require('../../../../utils/recommendations/preprocessing');
-const createProjectProfile = (project) => {
 
-  // @TODO
-  // const projectTagsString = project.reduce((tagsString, project) => {
-  //   const hashtagName = project.project_tags.hashtag.name;
-  //   return tagsString ? `${tagsString} ${hashtagName}` : hashtagName;
-  // }, '');
+function createProjectProfile(project) {
+  if (!project.project_tags) {
+    return preprocessProjectData('');
+  }
 
-  // return preprocessProjectData(projectTagsString);
-};
+  const projectTags = project.project_tags.map((tag) => tag.name);
+
+  const projectTagsString = projectTags.join(' ');
+
+  return preprocessProjectData(projectTagsString);
+}
 
 module.exports = {
   createProjectProfile,
