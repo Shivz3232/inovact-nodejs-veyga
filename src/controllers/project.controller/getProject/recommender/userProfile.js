@@ -1,4 +1,4 @@
-const { getUserInfo } = require('../queries/queries.js');
+const { getUserInfo } = require('../queries/queries');
 const { query: Hasura } = require('../../../../utils/hasura');
 const preprocessUserData = require('../../../../utils/recommendations/preprocessing');
 
