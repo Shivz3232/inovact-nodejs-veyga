@@ -1,16 +1,42 @@
-const stringSimilarity = require('string-similarity-js');
+// ------------------------------------
+// Vector format:
+// {
+//   "term": weight
+// }
+// ------------------------------------
+function calculateCosineSimilarity(queryVector, documentVector) {
+  let dotProduct = 0;
+  let queryVectorModulus = 0;
+  let documentVectorModulus = 0;
 
-/**
- * Calculates the similarity between two strings.
- * @param {string} string1 - The first string.
- * @param {string} string2 - The second string.
- * @returns {number} The similarity score between 0 and 1.
- */
+  // eslint-disable-next-line no-restricted-syntax
+  for (const term in queryVector) {
+    if (Object.hasOwn(queryVector, term)) {
+      dotProduct += queryVector[term] * (documentVector[term] ? documentVector[term] : 0);
+      queryVectorModulus += queryVector[term];
+    }
+  }
 
-function calculateStringSimilarity(string1, string2) {
-  return stringSimilarity.stringSimilarity(string1, string2);
+  queryVectorModulus = Math.sqrt(queryVectorModulus);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const term in documentVector) {
+    if (Object.hasOwn(documentVector, term)) {
+      documentVectorModulus += documentVector[term];
+    }
+  }
+
+  documentVectorModulus = Math.sqrt(documentVectorModulus);
+
+  if (documentVectorModulus === 0) {
+    return 0;
+  }
+
+  const similarity = dotProduct / (queryVectorModulus * documentVectorModulus);
+
+  return similarity;
 }
 
 module.exports = {
-  calculateStringSimilarity,
+  calculateCosineSimilarity,
 };
