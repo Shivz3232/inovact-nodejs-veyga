@@ -9,7 +9,9 @@ const createUserProfile = async (cognitoSub) => {
     ...userInfoQueryResponse.result.data.user[0].user_interests.map(
       (interest) => interest.area_of_interest.interest
     ),
-    ...userInfoQueryResponse.result.data.project[0].project_tags.map((tag) => tag.hashtag.name),
+    ...userInfoQueryResponse.result.data.user[0].projects.flatMap((project) =>
+      project.project_tags.map((tag) => tag.hashtag.name)
+    ),
   ];
 
   const userProfileString = userProfleBag.join(' ');

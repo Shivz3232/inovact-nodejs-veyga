@@ -187,18 +187,12 @@ const getUserInfo = `query getUserInfo($cognitoSub: String) {
         interest
       }
     }
-  }
-  project(where: {
-    user: {
-      cognito_sub: {
-        _eq: $cognitoSub
-      }
-    }
-  }) {
+    projects{
     project_tags {
       hashtag {
         name
       }
+    }
     }
   }
 }`;
