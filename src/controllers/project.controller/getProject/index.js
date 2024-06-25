@@ -15,7 +15,7 @@ const getProject = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-  const { id } = req.query;
+  const { id, page = 1, limit = 10 } = req.query;
 
   const response = await Hasura(getConnections, { cognito_sub });
 
@@ -65,9 +65,9 @@ const getProject = catchAsync(async (req, res) => {
 
   if (id) return res.json(cleanedPosts[0]);
 
-  // return res.json(cleanedPosts);
-
   const recommendedProjects = await recommender.recommend(cognito_sub, cleanedPosts);
+
+  // TODO: Pagination
 
   return res.json(recommendedProjects);
 });

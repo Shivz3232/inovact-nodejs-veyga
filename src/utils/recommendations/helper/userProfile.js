@@ -1,6 +1,8 @@
-const { getUserInfo } = require('../queries/queries');
-const { query: Hasura } = require('../../../../utils/hasura');
-const preprocessUserData = require('../../../../utils/recommendations/preprocessing');
+const {
+  getUserInfo,
+} = require('../../../controllers/project.controller/getProject/queries/queries');
+const { query: Hasura } = require('../../hasura');
+const preprocessUserData = require('../preprocessing');
 
 const createUserProfile = async (cognitoSub) => {
   const userInfoQueryResponse = await Hasura(getUserInfo, { cognitoSub });

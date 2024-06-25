@@ -1,24 +1,26 @@
 const { TfIdf } = require('natural');
-const { createUserProfile } = require('./userProfile');
+const { createUserProfile } = require('../../../../utils/recommendations/helper/userProfile');
 const { createProjectProfile } = require('./projectProfile');
-const { calculateCosineSimilarity } = require('./vectorBasedMapping');
+const {
+  calculateCosineSimilarity,
+} = require('../../../../utils/recommendations/helper/vectorBasedMapping');
 
 const recommend = async (user, projects) => {
   // ------------------------------------
   // Step 1: Prepare user profile
   // ------------------------------------
-  const userProfile = {
+  const userProfileData = {
     profile: await createUserProfile(user),
   };
 
   // ------------------------------------
   // Step 2: Prepare project profiles
   // ------------------------------------
-  const projectProfiles = new Map();
+  const projectProfileMap = new Map();
   for (let i = 0; i < projects.length; i += 1) {
-    const profile = await createProjectProfile(projects[i]); // Parallelize
+    const profile = createProjectProfile(projects[i]); // Parallelize
 
-    projectProfiles.set(projects[i].id, { profile, project: projects[i] });
+    projectProfileMap.set(projects[i].id, { profile, project: projects[i] });
   }
 
   // ------------------------------------
@@ -27,7 +29,7 @@ const recommend = async (user, projects) => {
   const tfIdf = new TfIdf();
 
   let docIdx = 0;
-  projectProfiles.forEach((doc) => {
+  projectProfileMap.forEach((doc) => {
     tfIdf.addDocument(doc.profile);
     doc.tfIdfDocIndex = docIdx;
 
@@ -37,7 +39,7 @@ const recommend = async (user, projects) => {
   // ------------------------------------
   // Step 4: Formulate document vecotrs
   // ------------------------------------
-  projectProfiles.forEach((doc) => {
+  projectProfileMap.forEach((doc) => {
     doc.vector = {};
 
     tfIdf.listTerms(doc.tfIdfDocIndex).forEach((item) => {
@@ -48,31 +50,26 @@ const recommend = async (user, projects) => {
   // ------------------------------------
   // Step 5: Formulate query vector
   // ------------------------------------
-  tfIdf.addDocument(userProfile.profile);
+  tfIdf.addDocument(userProfileData.profile);
 
-  userProfile.vector = {};
+  userProfileData.vector = {};
   tfIdf.listTerms(projects.length).forEach((item) => {
-    userProfile.vector[item.term] = item.tfidf;
+    userProfileData.vector[item.term] = item.tfidf;
   });
 
   // ------------------------------------
   // Step 6: Score projects
   // ------------------------------------
-  projectProfiles.forEach((doc) => {
-    doc.score = calculateCosineSimilarity(userProfile.vector, doc.vector);
+  projectProfileMap.forEach((doc) => {
+    doc.score = calculateCosineSimilarity(userProfileData.vector, doc.vector);
   });
 
   // ------------------------------------
   // Step 7: Sort project based on score
   // ------------------------------------
-  const projectProfilesSortedByScore = Array.from(projectProfiles)
+  const projectProfilesSortedByScore = Array.from(projectProfileMap)
     .filter((project) => project[1].score !== 0)
     .sort((a, b) => b[1].score - a[1].score);
-
-  // projectProfilesSortedByScore.forEach((projectProfile) => {
-  //   console.log(projectProfile[1].score, projectProfile[1].vector)
-  //   console.log();
-  // })
 
   // ------------------------------------
   // Step 8: Extract Projects
