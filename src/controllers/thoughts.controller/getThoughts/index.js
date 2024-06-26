@@ -3,6 +3,7 @@ const catchAsync = require('../../../utils/catchAsync');
 const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getThought, getThoughts: getThoughtsQuery, getConnections } = require('./queries/queries');
+const recommender = require('./recommender');
 
 const getThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -64,7 +65,12 @@ const getThoughts = catchAsync(async (req, res) => {
   });
 
   if (id) return res.json(cleanedThoughts[0]);
-  return res.json(cleanedThoughts);
+
+  const recommendedProjects = await recommender.recommend(cognito_sub, cleanedThoughts);
+
+  // TODO: Pagination
+
+  return res.json(recommendedProjects);
 });
 
 module.exports = getThoughts;
