@@ -12,36 +12,36 @@ function calculateCosineSimilarity(queryVector, documentVector) {
   }
 
   let dotProduct = 0;
-  let queryVectorModulusSquared = 0;
-  let documentVectorModulusSquared = 0;
+  let queryVectorSquared = 0;
+  let docuemntVectorSquared = 0;
 
   // Process query vector and calculate dot product
   for (const term of Object.keys(queryVector)) {
     const queryWeight = queryVector[term];
-    queryVectorModulusSquared += queryWeight ** 2; // Eucledian form computation, considered better than the previouse l1/Manhatton norm
+    queryVectorSquared += queryWeight ** 2; // Eucledian form computation, considered better than the previouse l1/Manhatton norm
 
     const documentWeight = documentVector[term] || 0;
     dotProduct += queryWeight * documentWeight;
   }
 
   // Early return if query vector magnitude is zero
-  if (queryVectorModulusSquared === 0) {
+  if (queryVectorSquared === 0) {
     return 0;
   }
 
   // Process document vector
   for (const term of Object.keys(documentVector)) {
     const documentWeight = documentVector[term];
-    documentVectorModulusSquared += documentWeight ** 2; // Eucledian form computation, considered better than the previouse l1/Manhatton norm
+    docuemntVectorSquared += documentWeight ** 2; // Eucledian form computation, considered better than the previouse l1/Manhatton norm
   }
 
   // Early return if document vector magnitude is zero
-  if (documentVectorModulusSquared === 0) {
+  if (docuemntVectorSquared === 0) {
     return 0;
   }
 
   return (
-    dotProduct / (Math.sqrt(queryVectorModulusSquared) * Math.sqrt(documentVectorModulusSquared)) // Implace computations
+    dotProduct / (Math.sqrt(queryVectorSquared) * Math.sqrt(docuemntVectorSquared)) // Implace computations
   );
 }
 

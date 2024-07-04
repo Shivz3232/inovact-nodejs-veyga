@@ -1,6 +1,4 @@
-const {
-  getUserInfo,
-} = require('../../../controllers/project.controller/getProject/queries/queries');
+const { getUserInfo } = require('../queries/queries');
 const { query: Hasura } = require('../../hasura');
 const preprocessUserData = require('../preprocessing');
 

@@ -9,7 +9,6 @@ function createProjectProfile(project) {
 
   const projectTagsString = projectTags.join(' ');
 
-  console.log(projectTagsString);
   return preprocessProjectData(projectTagsString);
 }
 

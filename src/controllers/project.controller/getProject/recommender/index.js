@@ -5,12 +5,12 @@ const {
   calculateCosineSimilarity,
 } = require('../../../../utils/recommendations/helper/vectorBasedMapping');
 
-const recommend = async (user, projects) => {
+const recommend = async (cognitoSub, projects) => {
   // ------------------------------------
   // Step 1: Prepare user profile
   // ------------------------------------
   const userProfileData = {
-    profile: await createUserProfile(user),
+    profile: await createUserProfile(cognitoSub),
   };
 
   // ------------------------------------
