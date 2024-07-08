@@ -68,7 +68,7 @@ const recommend = async (cognitoSub, projects) => {
   // Step 7: Sort project based on score
   // ------------------------------------
   const projectProfilesSortedByScore = Array.from(projectProfileMap)
-    .filter((project) => project[1].score !== 0)
+    // .filter((project) => project[1].score !== 0)
     .sort((a, b) => b[1].score - a[1].score);
 
   // ------------------------------------
