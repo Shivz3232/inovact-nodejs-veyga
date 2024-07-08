@@ -111,7 +111,7 @@ const updateanUser = catchAsync(async (req, res) => {
     const activityIdentifier = 'filing-user-skills';
     const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
 
-    if (arePointsOfferable) {
+    if (arePointsOfferable && req.body.user_skills.length > 0) {
       await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }

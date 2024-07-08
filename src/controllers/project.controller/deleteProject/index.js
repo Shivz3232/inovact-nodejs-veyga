@@ -35,7 +35,18 @@ const deleteProject = catchAsync(async (req, res) => {
 
   const response = await Hasura(deletequery, variables);
 
-  insertUserActivity('uploading-project', 'negative', response.result.data.delete_project_by_pk.user_id, [id]);
+  const userId = response.result.data.delete_project_by_pk.user_id;
+  const teamId = checkIfCanDeleteResult.result.data.project[0].team_id;
+
+  insertUserActivity('uploading-project', 'negative', userId, [id]);
+
+  if (checkIfCanDeleteResult.result.data.project[0].team.looking_for_members) {
+    insertUserActivity('looking-for-team-member', 'negative', userId, [teamId]);
+  }
+
+  if (checkIfCanDeleteResult.result.data.project[0].team.looking_for_mentors) {
+    insertUserActivity('looking-for-team-mentor', 'negative', userId, [teamId]);
+  }
 
   return res.status(204).json({
     success: true,

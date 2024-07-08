@@ -7,6 +7,7 @@ const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const insertUserActivity = require('../../../utils/insertUserActivity');
+const notify = require('../../../utils/notify');
 const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
@@ -21,6 +22,14 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub, description, title, status, completed, link, looking_for_members, looking_for_mentors, roles_required, mentions, project_tags, documents } = req.body;
+
+  if (looking_for_members && roles_required.length === 0) {
+    return res.status(400).json({
+      success: false,
+      errorCode: 'InvalidInput',
+      errorMessage: "Roles required can't be empty when looking for members",
+    });
+  }
 
   // Find user id
   const response1 = await Hasura(getUser, {
@@ -177,6 +186,10 @@ const addProject = catchAsync(async (req, res) => {
   // Dont wanna spam
   if (userConnectionIds.length > 0 && !isConnectionNotified) {
     enqueueEmailNotification(2, projectId, actorId, userConnectionIds);
+  }
+
+  if (userConnectionIds.length > 0) {
+    notify(3, projectId, actorId, userConnectionIds);
   }
 
   // Congratualting the user for the acheivment

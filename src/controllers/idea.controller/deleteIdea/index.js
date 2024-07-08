@@ -21,7 +21,7 @@ const deleteIdea = catchAsync(async (req, res) => {
 
   const checkIfCanDeleteResponse = await Hasura(checkIfCanDelete, {
     id,
-    cognito_sub
+    cognito_sub,
   });
 
   if (checkIfCanDeleteResponse.result.data.idea.length === 0) {
@@ -35,7 +35,18 @@ const deleteIdea = catchAsync(async (req, res) => {
 
   const response = await Hasura(delete_idea, variables);
 
-  insertUserActivity('uploading-idea', 'negative', response.result.data.delete_idea_by_pk.user_id, [id]);
+  const userId = checkIfCanDeleteResponse.result.data.idea[0].user_id;
+  const teamId = checkIfCanDeleteResponse.result.data.idea[0].team_id;
+
+  insertUserActivity('uploading-idea', 'negative', userId, [id]);
+
+  if (checkIfCanDeleteResponse.result.data.idea[0].team.looking_for_members) {
+    insertUserActivity('looking-for-team-member', 'negative', userId, [teamId]);
+  }
+
+  if (checkIfCanDeleteResponse.result.data.idea[0].team.looking_for_mentors) {
+    insertUserActivity('looking-for-team-mentor', 'negative', userId, [teamId]);
+  }
 
   return res.status(200).json({
     success: true,

@@ -6,6 +6,8 @@ const { getUser, getThought, getMyConnections } = require('./queries/queries');
 const cleanConnections = require('../../../utils/cleanConnections');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const insertUserActivity = require('../../../utils/insertUserActivity');
+const notify = require('../../../utils/notify');
+
 
 const addThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -42,6 +44,7 @@ const addThoughts = catchAsync(async (req, res) => {
 
   if (userConnectionIds.length > 0) {
     enqueueEmailNotification(12, thoughtId, actorId, userConnectionIds);
+    notify(13, thoughtId, actorId, userConnectionIds);
   }
 
   // Congratualate the user for the acheivment
