@@ -108,6 +108,10 @@ query getUser($id: Int, $cognito_sub: String) {
       id
       points
     }
+    user_point{
+      id
+      points
+    }
     user_skills {
       id
       skill

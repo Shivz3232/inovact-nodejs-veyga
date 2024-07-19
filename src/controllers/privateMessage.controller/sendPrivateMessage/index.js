@@ -43,6 +43,7 @@ const sendPrivateMessage = catchAsync(async (req, res) => {
   const variables2 = {
     primary_user_id: response1.result.data.user[0].id,
     encrypted_message: encryptedMessageString,
+    unencrypted_message: message,
     secondary_user_id: user_id,
     connection_id: response1.result.data.connections[0].id,
   };
