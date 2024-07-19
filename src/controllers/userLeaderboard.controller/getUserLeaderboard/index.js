@@ -8,27 +8,30 @@ const getUserLeaderboard = catchAsync(async (req, res) => {
   if (!sanitizerErrors.isEmpty()) {
     return res.status(400).json({
       success: false,
-      ...sanitizerErrors,
+      errors: sanitizerErrors.array(),
     });
   }
 
-  const { cognito_sub } = req.body;
+  // Get pagination parameters from query string
+  const pageSize = parseInt(req.query.pageSize) || 500;
+  const pageNumber = parseInt(req.query.pageNumber) || 1;
 
-  const response = await Hasura(getUserLeaderboardQuery, {
-    cognitoSub: cognito_sub,
-  });
+  // Calculate offset
+  const offset = (pageNumber - 1) * pageSize;
+
+  const variables = {
+    limit: pageSize,
+    offset: offset,
+  };
+
+  const response = await Hasura(getUserLeaderboardQuery, variables);
 
   const responseData = response.result.data;
 
-  if (!responseData || responseData.user.length === 0) {
-    return res.status(404).json({
-      success: false,
-      errorCode: 'UserNotFound',
-      errorMessage: 'No user found with this cognito sub',
-    });
-  }
-
-  return res.json(responseData.user_points);
+  return res.json({
+    success: true,
+    data: responseData.user_points,
+  });
 });
 
 module.exports = getUserLeaderboard;
