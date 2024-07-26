@@ -1,11 +1,3 @@
-const { validationResult } = require('express-validator');
-const catchAsync = require('../../../utils/catchAsync');
-const { query: Hasura } = require('../../../utils/hasura');
-const { updatePost, updateRolesRequired, addRolesRequired, addSkillsRequired, updateProjectFlags, updateDocuments, UpdateProjectTeam, updateProjectTags, deleteTeam } = require('./queries/mutations');
-const { getUserIdFromCognito, getTeamMembers } = require('./queries/queries');
-const createDefaultTeam = require('../../../utils/createDefaultTeam');
-const insertUserActivity = require('../../../utils/insertUserActivity');
-
 const updateProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
   if (!sanitizerErrors.isEmpty()) {
@@ -18,169 +10,127 @@ const updateProject = catchAsync(async (req, res) => {
   const { id, cognito_sub } = req.body;
 
   const variables = {
-    id: {
-      _eq: id,
-    },
+    id: { _eq: id },
     changes: {},
   };
 
-  const getUserIdFromCognitoResponse = await Hasura(getUserIdFromCognito, {
-    cognito_sub,
+  const getUserIdFromCognitoResponse = await Hasura(getUserIdFromCognito, { cognito_sub });
+  const { user_id } = getUserIdFromCognitoResponse.result.data.user[0];
+
+  // Update basic project information
+  ['description', 'title', 'link', 'status'].forEach((field) => {
+    if (req.body[field] !== undefined) variables.changes[field] = req.body[field];
   });
-
-  if (req.body.description) variables.changes.description = req.body.description;
-  if (req.body.title) variables.changes.title = req.body.title;
-  if (req.body.link) variables.changes.link = req.body.link;
-  if (req.body.status !== undefined) variables.changes.status = req.body.status;
-
-  if (req.body.completed !== undefined) {
-    variables.changes.completed = req.body.completed;
-  }
-
-  req.body.looking_for_members = req.body.looking_for_members || false;
-  req.body.looking_for_mentors = req.body.looking_for_mentors || false;
 
   const response = await Hasura(updatePost, variables);
-  const { user_id } = response.result.data.update_project.returning[0];
-  let team_id;
+  let { team_id } = response.result.data.update_project.returning[0];
 
+  // Check if major changes are being made
+  const majorChanges =
+    req.body.completed !== undefined ||
+    req.body.looking_for_members !== undefined ||
+    req.body.looking_for_mentors !== undefined ||
+    (req.body.roles_required && req.body.roles_required.length > 0);
+
+  // Handle project completion
   if (req.body.completed) {
-    const projectFlagsUpdateVariables = {
-      team_id: response.result.data.update_project.returning[0].team_id,
-      lookingForMentors: false,
-      lookingForMembers: false,
-    };
-    await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
-
-    const getTeamMembersResponse = await Hasura(getTeamMembers, { team_id: response.result.data.update_project.returning[0].team_id });
-    const teamMembers = getTeamMembersResponse.result.data.team_members;
-
-    teamMembers.forEach((member) => {
-      insertUserActivity('completion-of-project-as-team', 'positive', member.user_id, [req.body.id]);
-    });
-
-    await Hasura(deleteTeam, { team_id: response.result.data.update_project.returning[0].team_id });
-
-    return res.json({
-      success: true,
-      errorCode: '',
-      errorMessage: '',
-    });
+    await handleProjectCompletion(team_id, id);
+    return res.json({ success: true, errorCode: '', errorMessage: '' });
   }
 
-  if (response.result.data.update_project.returning[0].team_id === null) {
-    const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
-    const teamOnInovact = req.body.team_on_inovact;
-    const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
-    team_id = teamCreated.team_id;
-    await Hasura(UpdateProjectTeam, {
-      projectId: id,
-      newTeamId: team_id,
-    });
-  } else {
-    team_id = response.result.data.update_project.returning[0].team_id;
+  // Create or update team if necessary
+  if (!team_id || majorChanges) {
+    team_id = await handleTeamCreationOrUpdate(team_id, user_id, req.body);
   }
 
-  if (req.body.looking_for_mentors !== undefined || req.body.looking_for_members !== undefined) {
-    const projectFlagsUpdateVariables = {
-      team_id,
-      lookingForMentors: req.body.looking_for_mentors,
-      lookingForMembers: req.body.looking_for_members,
-    };
-    await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
+  // Update project flags if changed
+  if (req.body.looking_for_members !== undefined || req.body.looking_for_mentors !== undefined) {
+    await updateProjectFlags(team_id, req.body.looking_for_mentors, req.body.looking_for_members);
   }
 
-  if (req.body.looking_for_members || req.body.looking_for_mentors) {
-    if (req.body.roles_required && req.body.roles_required.length > 0) {
-      if (team_id) {
-        await Hasura(deleteTeam, { team_id });
-        team_id = null;
-      }
-      const teamName = req.body.team_name ? req.body.team_name : `${req.body.title} team`;
-      const teamOnInovact = req.body.team_on_inovact;
-      const teamCreated = await createDefaultTeam(user_id, teamName, req.body.looking_for_mentors, req.body.looking_for_members, teamOnInovact);
-      team_id = teamCreated.team_id;
-    }
-
-    await Hasura(UpdateProjectTeam, {
-      projectId: id,
-      newTeamId: team_id,
-    });
-
-    if (req.body.roles_required.length > 0 && team_id) {
-      // Insert roles required and skills required
-      role_if: if (req.body.roles_required && req.body.roles_required.length > 0 && team_id) {
-        const { roles_required } = req.body;
-        const roles_data = roles_required.map((ele) => {
-          return {
-            team_id,
-            role_name: ele.role_name,
-          };
-        });
-
-        const response1 = await Hasura(addRolesRequired, { objects: roles_data });
-
-        if (!response1.success) break role_if;
-
-        const skills_data = [];
-
-        for (const i in roles_required) {
-          // eslint-disable-next-line no-prototype-builtins
-          if (roles_required.hasOwnProperty(i)) {
-            for (const skill of roles_required[i].skills_required) {
-              skills_data.push({
-                role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
-                skill_name: skill,
-              });
-            }
-          }
-        }
-
-        await Hasura(addSkillsRequired, { objects: skills_data });
-      }
-    }
-  } else if (req.body.looking_for_members === false && req.body.looking_for_mentors === false && team_id) {
-    await Hasura(deleteTeam, { team_id });
-    variables.changes.team_id = null;
+  // Handle roles and skills
+  if (majorChanges && req.body.roles_required && req.body.roles_required.length > 0) {
+    await handleRolesAndSkills(team_id, req.body.roles_required);
   }
 
+  // Update documents if provided
   if (req.body.documents && req.body.documents.length > 0) {
-    const documents = req.body.documents.map((document) => ({
-      name: document.name,
-      url: document.url,
-      project_id: id,
-    }));
-    await Hasura(updateDocuments, { project_id: id, documents });
+    await updateProjectDocuments(id, req.body.documents);
   }
 
+  // Update project tags if provided
   if (req.body.project_tags && req.body.project_tags.length > 0) {
-    const tags = req.body.project_tags.map((tag_name) => ({
-      hashtag: {
-        data: {
-          name: tag_name.toLowerCase(),
-        },
-        on_conflict: {
-          constraint: 'hashtag_tag_name_key',
-          update_columns: 'name',
-        },
-      },
-      project_id: id,
-    }));
-    // Define variables object with projectId and tags
-    const variables = {
-      projectId: id,
-      tags: tags,
-    };
-
-    // Execute the GraphQL mutation
-    await Hasura(updateProjectTags, variables);
+    await updateProjectTags(id, req.body.project_tags);
   }
 
-  return res.json({
-    success: true,
-    errorCode: '',
-    errorMessage: '',
-  });
+  return res.json({ success: true, errorCode: '', errorMessage: '' });
 });
+
+// Helper functions
+
+async function handleProjectCompletion(team_id, project_id) {
+  await Hasura(updateProjectFlags, { team_id, lookingForMentors: false, lookingForMembers: false });
+  const getTeamMembersResponse = await Hasura(getTeamMembers, { team_id });
+  const teamMembers = getTeamMembersResponse.result.data.team_members;
+  teamMembers.forEach((member) => {
+    insertUserActivity('completion-of-project-as-team', 'positive', member.user_id, [project_id]);
+  });
+  await Hasura(deleteTeam, { team_id });
+}
+
+async function handleTeamCreationOrUpdate(team_id, user_id, body) {
+  if (!team_id) {
+    const teamName = body.team_name || `${body.title} team`;
+    const teamCreated = await createDefaultTeam(
+      user_id,
+      teamName,
+      body.looking_for_mentors,
+      body.looking_for_members,
+      body.team_on_inovact
+    );
+    team_id = teamCreated.team_id;
+    await Hasura(UpdateProjectTeam, { projectId: body.id, newTeamId: team_id });
+  }
+  return team_id;
+}
+
+async function updateProjectFlags(team_id, lookingForMentors, lookingForMembers) {
+  await Hasura(updateProjectFlags, { team_id, lookingForMentors, lookingForMembers });
+}
+
+async function handleRolesAndSkills(team_id, roles_required) {
+  const roles_data = roles_required.map((ele) => ({ team_id, role_name: ele.role_name }));
+  const response = await Hasura(addRolesRequired, { objects: roles_data });
+
+  if (response.success) {
+    const skills_data = roles_required.flatMap((role, index) =>
+      role.skills_required.map((skill) => ({
+        role_requirement_id: response.result.data.insert_team_role_requirements.returning[index].id,
+        skill_name: skill,
+      }))
+    );
+    await Hasura(addSkillsRequired, { objects: skills_data });
+  }
+}
+
+async function updateProjectDocuments(project_id, documents) {
+  const formattedDocuments = documents.map((document) => ({
+    name: document.name,
+    url: document.url,
+    project_id,
+  }));
+  await Hasura(updateDocuments, { project_id, documents: formattedDocuments });
+}
+
+async function updateProjectTags(project_id, project_tags) {
+  const tags = project_tags.map((tag_name) => ({
+    hashtag: {
+      data: { name: tag_name.toLowerCase() },
+      on_conflict: { constraint: 'hashtag_tag_name_key', update_columns: 'name' },
+    },
+    project_id,
+  }));
+  await Hasura(updateProjectTags, { projectId: project_id, tags });
+}
 
 module.exports = updateProject;
