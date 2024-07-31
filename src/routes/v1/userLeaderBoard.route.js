@@ -1,5 +1,5 @@
 const express = require('express');
-const userLeaderboardController = require('../../controllers/userLeaderboard.controller/');
+const userLeaderboardController = require('../../controllers/userLeaderboard.controller');
 const {
   getUserLeaderboardSanitizer,
 } = require('../../controllers/userLeaderboard.controller/sanitizer');
