@@ -30,7 +30,7 @@ const addUserFeedback = catchAsync(async (req, res) => {
   //   });
   // }
 
-  console.log(JSON.stringify(getRefferralDetailsResponse));
+  // console.log(JSON.stringify(getRefferralDetailsResponse));
 
   if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.userReferred.length !== 0) {
     return res.status(400).json({
