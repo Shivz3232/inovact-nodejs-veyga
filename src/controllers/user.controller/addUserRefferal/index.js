@@ -22,13 +22,15 @@ const addUserFeedback = catchAsync(async (req, res) => {
     emailId,
   });
 
-  if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.existingReferral.length !== 0) {
-    return res.status(400).json({
-      success: false,
-      errorCode: 'ReferalExists',
-      errorMessage: 'A referal for the user already exists',
-    });
-  }
+  // if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.existingReferral.length !== 0) {
+  //   return res.status(400).json({
+  //     success: false,
+  //     errorCode: 'ReferalExists',
+  //     errorMessage: 'A referal for the user already exists',
+  //   });
+  // }
+
+  console.log(JSON.stringify(getRefferralDetailsResponse));
 
   if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.userReferred.length !== 0) {
     return res.status(400).json({

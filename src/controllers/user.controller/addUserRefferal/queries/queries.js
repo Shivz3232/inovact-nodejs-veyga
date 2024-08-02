@@ -28,12 +28,12 @@ const getRefferralDetails = `
     userReferred: referrals(
       where: {
         _and: [
-          { user:{
+          { userByUserId:{
             cognito_sub: {
               _eq:$cognitoSub
             }
           } }
-          { userByUserId:{
+          { user:{
             email_id:{
               _eq:$emailId
             }
