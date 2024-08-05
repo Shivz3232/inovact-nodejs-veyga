@@ -76,7 +76,7 @@ const addUserFeedback = catchAsync(async (req, res) => {
     });
   }
 
-  insertUserActivity('referral', 'positive', userId, []);
+  insertUserActivity('referral', 'positive', referrerId, []);
   await notify(31, userId, userId, [referrerId]).catch(console.log);
 
   return res.json(addUserReferralResponse.result.data.insert_referrals.returning[0]);
