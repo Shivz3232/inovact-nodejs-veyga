@@ -20,6 +20,7 @@ const config = require('../../config/config');
 const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 const propellRoute = require('./propell.route');
 const userPointsRoute = require('./userPoints.route');
+const leaderBoardRoute = require('./userLeaderboard.route');
 const referralRoute = require('./referral.route');
 
 const router = express.Router();
@@ -119,6 +120,11 @@ const defaultRoutes = [
   {
     path: '/referral',
     route: referralRoute,
+    needAuthentication: true,
+  },
+  {
+    path: '/leaderBoard',
+    route: leaderBoardRoute,
     needAuthentication: true,
   },
 ];

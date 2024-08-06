@@ -37,7 +37,7 @@ const recommend = async (cognitoSub, projects) => {
   });
 
   // ------------------------------------
-  // Step 4: Formulate document vecotrs
+  // Step 4: Formulate document 
   // ------------------------------------
   projectProfileMap.forEach((doc) => {
     doc.vector = {};
@@ -53,7 +53,7 @@ const recommend = async (cognitoSub, projects) => {
   tfIdf.addDocument(userProfileData.profile);
 
   userProfileData.vector = {};
-  tfIdf.listTerms(projects.length).forEach((item) => {
+  tfIdf.listTerms(projects.length).forEach((item) => { 
     userProfileData.vector[item.term] = item.tfidf;
   });
 
