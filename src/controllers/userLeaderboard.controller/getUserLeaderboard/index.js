@@ -13,7 +13,7 @@ const getUserLeaderboard = catchAsync(async (req, res) => {
   }
 
   // Get pagination parameters from query string
-  const pageSize = parseInt(req.query.pageSize) || 500;
+  const pageSize = parseInt(req.query.pageSize) || 50;
   const pageNumber = parseInt(req.query.pageNumber) || 1;
 
   // Calculate offset
