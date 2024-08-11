@@ -44,7 +44,16 @@ const getUserConnections = `query getMyConnections($cognito_sub: String) {
         created_at
         seen
       }
-      private_messages_aggregate(where: { seen: { _eq: false } }) {
+      private_messages_aggregate(where: { _and:{
+        seen:{
+          _eq : false
+        },
+        userBySecondaryUserId : {
+          cognito_sub : {
+            _eq: $cognito_sub
+          }
+        }
+      } }) {
         aggregate {
           count
         }
