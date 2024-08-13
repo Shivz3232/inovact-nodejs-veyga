@@ -26,11 +26,21 @@ const getUserLeaderboard = catchAsync(async (req, res) => {
 
   const response = await Hasura(getUserLeaderboardQuery, variables);
 
-  const responseData = response.result.data;
+  const userPoints = response.result.data.user_points;
+
+  const dataWithRank = userPoints.map((entry, index) => ({
+    rank: index + 1,
+    first_name: entry.user.first_name,
+    last_name: entry.user.last_name,
+    role: entry.user.role,
+    organization: entry.user.organization,
+    avatar: entry.user.avatar,
+    points: entry.points,
+  }));
 
   return res.json({
     success: true,
-    data: responseData.user_points,
+    data: dataWithRank,
   });
 });
 
