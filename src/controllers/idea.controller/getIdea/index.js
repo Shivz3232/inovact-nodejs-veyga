@@ -3,6 +3,7 @@ const catchAsync = require('../../../utils/catchAsync');
 const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getIdea, getIdeas: getIdeasQuery, getConnections } = require('./queries/queries');
+const recommender = require('./recommender');
 
 const getIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -52,7 +53,7 @@ const getIdeas = catchAsync(async (req, res) => {
     return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
-      errorMessage: 'Project not found',
+      errorMessage: 'Idea not found',
       data: null,
     });
   }
@@ -67,7 +68,19 @@ const getIdeas = catchAsync(async (req, res) => {
     return res.json(cleanedIdeas[0]);
   }
 
-  return res.json(cleanedIdeas);
+  // Separate user's Ideas and other Ideas
+  const userIdeas = cleanedIdeas.filter((idea) => idea.user.id === userId);
+  const otherIdeas = cleanedIdeas.filter((idea) => idea.user.id !== userId);
+
+  // Get recommendations for other Ideas
+  const recommendedOtherIdeas = await recommender.recommend(cognito_sub, otherIdeas);
+
+  // Append user's Ideas at the end
+  const finalRecommendations = [...recommendedOtherIdeas, ...userIdeas];
+
+  // TODO: Pagination
+
+  return res.json(finalRecommendations);
 });
 
 module.exports = getIdeas;
