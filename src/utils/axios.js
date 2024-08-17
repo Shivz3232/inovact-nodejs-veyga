@@ -27,7 +27,7 @@ const getHasuraECSInstancesFromCloudMap = async () => {
 };
 
 let instanceIndex = 0;
-async function hostedHasuraInstance() {
+async function getHostedHasuraInstance() {
   const hasuraInstances = await getHasuraECSInstancesFromCloudMap().catch(logger.error);
 
   if (!hasuraInstances || hasuraInstances.length === 0) return;
@@ -39,37 +39,55 @@ async function hostedHasuraInstance() {
   return selectedInstance;
 }
 
-function providerHasuraInstance() {
+function getProviderHasuraInstance() {
   return axios.create({
     baseURL: config.hasuraApi,
     headers: {
       'content-type': 'application/json',
       'x-hasura-admin-secret': config.hasuraAdminSecret,
     },
-    httpAgent: new http.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
-    httpsAgent: new https.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
+    httpAgent: new http.Agent({
+      keepAlive: true,
+      keepAliveMsecs: 60 * 60 * 1000,
+      maxSockets: Infinity,
+    }),
+    httpsAgent: new https.Agent({
+      keepAlive: true,
+      keepAliveMsecs: 60 * 60 * 1000,
+      maxSockets: Infinity,
+    }),
   });
 }
 
-const createInstance = async () => {
+const getBestInstance = async () => {
   if (config.NODE_ENV !== 'development') {
-    const hasuraInstance = await hostedHasuraInstance();
+    const hostedHasuraInstance = await getHostedHasuraInstance();
 
-    if (hasuraInstance) {
-      const instanceAttributes = hasuraInstance.Attributes;
+    if (hostedHasuraInstance) {
+      const instanceAttributes = hostedHasuraInstance.Attributes;
 
       return axios.create({
         baseURL: `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}/v1/graphql`,
         headers: null,
-        httpAgent: new http.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
-        httpsAgent: new https.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
+        httpAgent: new http.Agent({
+          keepAlive: true,
+          keepAliveMsecs: 60 * 60 * 1000,
+          maxSockets: Infinity,
+        }),
+        httpsAgent: new https.Agent({
+          keepAlive: true,
+          keepAliveMsecs: 60 * 60 * 1000,
+          maxSockets: Infinity,
+        }),
       });
     }
   }
 
-  return providerHasuraInstance();
+  return getProviderHasuraInstance();
 };
 
 module.exports = {
-  createInstance,
+  createInstance: getBestInstance,
+  getProviderHasuraInstance,
+  getHostedHasuraInstance,
 };

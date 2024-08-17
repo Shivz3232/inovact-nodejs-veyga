@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
+const { getProviderHasuraInstance } = require('../../../utils/axios');
 const { getUserLeaderboardQuery, getRankOfUser } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
@@ -30,7 +31,11 @@ const getUserLeaderboard = catchAsync(async (req, res) => {
   const response = await Hasura(getUserLeaderboardQuery, variables);
 
   const currentUserId = response.result.data.currentUser[0].user.id;
-  const currentUserRankResponse = await Hasura(getRankOfUser, { user_id: currentUserId });
+  const currentUserRankResponse = await Hasura(
+    getRankOfUser,
+    { user_id: currentUserId },
+    getProviderHasuraInstance()
+  );
 
   return res.json({
     success: true,
