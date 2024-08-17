@@ -65,11 +65,19 @@ const getProject = catchAsync(async (req, res) => {
 
   if (id) return res.json(cleanedPosts[0]);
 
-  const recommendedProjects = await recommender.recommend(cognito_sub, cleanedPosts);
+  // Separate user's projects and other projects
+  const userProjects = cleanedPosts.filter(project => project.user.id === userId);
+  const otherProjects = cleanedPosts.filter(project => project.user.id !== userId);
+
+  // Get recommendations for other projects
+  const recommendedOtherProjects = await recommender.recommend(cognito_sub, otherProjects);
+
+  // Append user's projects at the end
+  const finalRecommendations = [...recommendedOtherProjects, ...userProjects];
 
   // TODO: Pagination
 
-  return res.json(recommendedProjects);
-});
+  return res.json(finalRecommendations);
+});     
 
 module.exports = getProject;

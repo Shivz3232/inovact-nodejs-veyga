@@ -22,13 +22,14 @@ const addUserFeedback = catchAsync(async (req, res) => {
     emailId,
   });
 
-  if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.existingReferral.length !== 0) {
+  if (getRefferralDetailsResponse.result.data.existingReferral.length !== 0) {
     return res.status(400).json({
       success: false,
       errorCode: 'ReferalExists',
       errorMessage: 'A referal for the user already exists',
     });
   }
+
 
   if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.userReferred.length !== 0) {
     return res.status(400).json({
@@ -74,7 +75,7 @@ const addUserFeedback = catchAsync(async (req, res) => {
     });
   }
 
-  insertUserActivity('referral', 'positive', userId, []);
+  insertUserActivity('referral', 'positive', referrerId, []);
   await notify(31, userId, userId, [referrerId]).catch(console.log);
 
   return res.json(addUserReferralResponse.result.data.insert_referrals.returning[0]);
