@@ -9,7 +9,7 @@ const serviceDiscovery = new AWS.ServiceDiscovery({
   region: config.region,
 });
 
-const getHasuraInstancesFromCloudMap = async () => {
+const getHasuraECSInstancesFromCloudMap = async () => {
   const params = {
     ServiceId: config.cloudMapHasuraServiceId,
   };
@@ -27,8 +27,8 @@ const getHasuraInstancesFromCloudMap = async () => {
 };
 
 let instanceIndex = 0;
-async function chooseHasuraInstance() {
-  const hasuraInstances = await getHasuraInstancesFromCloudMap().catch(logger.error);
+async function hostedHasuraInstance() {
+  const hasuraInstances = await getHasuraECSInstancesFromCloudMap().catch(logger.error);
 
   if (!hasuraInstances || hasuraInstances.length === 0) return;
 
@@ -39,32 +39,35 @@ async function chooseHasuraInstance() {
   return selectedInstance;
 }
 
-const createInstance = async () => {
-  let baseURL = config.hasuraApi;
-  const headers = {
-    'content-type': 'application/json',
-    'x-hasura-admin-secret': config.hasuraAdminSecret,
-  };
+function providerHasuraInstance() {
+  return axios.create({
+    baseURL: config.hasuraApi,
+    headers: {
+      'content-type': 'application/json',
+      'x-hasura-admin-secret': config.hasuraAdminSecret,
+    },
+    httpAgent: new http.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
+    httpsAgent: new https.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
+  });
+}
 
+const createInstance = async () => {
   if (config.NODE_ENV !== 'development') {
-    const hasuraInstance = await chooseHasuraInstance();
+    const hasuraInstance = await hostedHasuraInstance();
 
     if (hasuraInstance) {
       const instanceAttributes = hasuraInstance.Attributes;
 
-      baseURL = `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}/v1/graphql`;
-      headers['x-hasura-admin-secret'] = null;
-    } else {
-      logger.debug('No hasura instances found, continuing with default instance');
+      return axios.create({
+        baseURL: `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}/v1/graphql`,
+        headers: null,
+        httpAgent: new http.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
+        httpsAgent: new https.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
+      });
     }
   }
 
-  return axios.create({
-    baseURL,
-    headers,
-    httpAgent: new http.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
-    httpsAgent: new https.Agent({ keepAlive: true, keepAliveMsecs: 60 * 60 * 1000, maxSockets: Infinity }),
-  });
+  return providerHasuraInstance();
 };
 
 module.exports = {

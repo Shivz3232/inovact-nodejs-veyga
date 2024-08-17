@@ -1,5 +1,5 @@
 const getUserLeaderboardQuery = `query getUserLeaderboard($limit: Int!, $offset: Int!, $cognito_sub: String) {
-  user_points(order_by: {points: desc}, limit: $limit, offset: $offset, where: {user: {cognito_sub: {_neq: $cognito_sub}}}) {
+  user_points(order_by: {points: desc}, limit: $limit, offset: $offset) {
     user {
       id
       first_name
