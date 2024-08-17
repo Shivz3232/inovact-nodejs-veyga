@@ -7,8 +7,8 @@ const { createInstance: createAxiosInstance } = require('./axios');
  * @returns {Object}
  */
 
-async function query(queryString, variables = {}) {
-  const axiosInstance = await createAxiosInstance();
+async function query(queryString, variables = {}, axiosInstance = createAxiosInstance()) {
+  axiosInstance = await axiosInstance;
 
   const result = await axiosInstance
     .post(null, { query: queryString, variables })
