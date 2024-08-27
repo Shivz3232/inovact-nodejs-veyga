@@ -12,7 +12,7 @@ const getUserDetails = `query getUserDetails($emailId: String, $cognitoSub: Stri
 `;
 
 const getRefferralDetails = `
-  query getRefferralDetails($cognitoSub: String) {
+  query getRefferralDetails($cognitoSub: String, $emailId: String) {
     existingReferral: referrals(
       where: {
         userByUserId: {
@@ -24,6 +24,24 @@ const getRefferralDetails = `
       user {
         id
       }
+    }
+    userReferred: referrals(
+      where: {
+        _and: [
+          { userByUserId:{
+            cognito_sub: {
+              _eq:$cognitoSub
+            }
+          } }
+          { user:{
+            email_id:{
+              _eq:$emailId
+            }
+          } }
+        ]
+      }
+    ) {
+      id
     }
   }
 `;

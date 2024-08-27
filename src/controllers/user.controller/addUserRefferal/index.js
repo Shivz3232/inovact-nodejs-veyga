@@ -15,7 +15,13 @@ const addUserFeedback = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, emailId } = req.body;
+  const { cognito_sub } = req.body;
+  let { emailId } = req.body;
+
+  //check for emailId in req query
+  if (req.query.emailId) {
+    emailId = req.query.emailId;
+  }
 
   const getRefferralDetailsResponse = await Hasura(getRefferralDetails, {
     cognitoSub: cognito_sub,
@@ -30,8 +36,10 @@ const addUserFeedback = catchAsync(async (req, res) => {
     });
   }
 
-
-  if (!getRefferralDetailsResponse || getRefferralDetailsResponse.result.data.userReferred.length !== 0) {
+  if (
+    !getRefferralDetailsResponse ||
+    getRefferralDetailsResponse.result.data.userReferred.length !== 0
+  ) {
     return res.status(400).json({
       success: false,
       errorCode: 'CyclicalReferral',
@@ -44,7 +52,10 @@ const addUserFeedback = catchAsync(async (req, res) => {
     cognitoSub: cognito_sub,
   });
 
-  if (!checkIfUserExistsResponse || checkIfUserExistsResponse.result.data.userWithEmail.length === 0) {
+  if (
+    !checkIfUserExistsResponse ||
+    checkIfUserExistsResponse.result.data.userWithEmail.length === 0
+  ) {
     return res.status(404).json({
       success: false,
       errorCode: 'UserNotFound',
@@ -67,7 +78,10 @@ const addUserFeedback = catchAsync(async (req, res) => {
     referrerId,
   });
 
-  if (!addUserReferralResponse || addUserReferralResponse.result.data.insert_referrals.returning.length === 0) {
+  if (
+    !addUserReferralResponse ||
+    addUserReferralResponse.result.data.insert_referrals.returning.length === 0
+  ) {
     return res.status(400).json({
       success: false,
       errorCode: 'ErrorAddingReferal',
