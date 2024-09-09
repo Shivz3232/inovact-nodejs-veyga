@@ -48,6 +48,8 @@ const fetchUser = catchAsync(async (req, res) => {
 
   const cleanedUserDoc = cleanUserdoc(responseData.user[0], responseData.connections[0]);
 
+  cleanedUserDoc.teamsJoined = responseData.team_members_aggregate.aggregate.count;
+
   return res.json(cleanedUserDoc);
 });
 

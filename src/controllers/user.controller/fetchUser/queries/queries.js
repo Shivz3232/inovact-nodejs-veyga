@@ -59,6 +59,17 @@ const getUser = `query getUser($cognito_sub: String) {
   connections(where: {id: {_eq: 0}}) {
     status
   }
+  team_members_aggregate(where: {
+    user: {
+      cognito_sub: {
+        _eq: $cognito_sub
+      }
+    }
+  }){
+    aggregate {
+      count
+    }
+  }
 }`;
 
 const getUserById = `
@@ -122,6 +133,17 @@ query getUser($id: Int, $cognito_sub: String) {
         id
         interest
       }
+    }
+  }
+  team_members_aggregate(where: {
+    user: {
+      cognito_sub: {
+        _eq: $cognito_sub
+      }
+    }
+  }){
+    aggregate {
+      count
     }
   }
   connections(where: { _or: [
