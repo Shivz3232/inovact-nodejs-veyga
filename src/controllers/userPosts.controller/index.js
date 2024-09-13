@@ -1,7 +1,7 @@
-const { query: Hasura } = require('../../utils/hasura');
+const { query: Hasura } = require('../../utils/hasura.js');
 const { getUserId, getUserPosts } = require('./queries/queries.js');
-const cleanPostDoc = require('../../utils/cleanPostDoc');
-const catchAsync = require('../../utils/catchAsync');
+const cleanPostDoc = require('../../utils/cleanPostDoc.js');
+const catchAsync = require('../../utils/catchAsync.js');
 
 const getUserPost = catchAsync(async (req, res) => {
   let { user_id } = req.query;

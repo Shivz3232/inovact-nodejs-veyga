@@ -1,1 +1,1 @@
-module.exports.getUserPoints = require('./getUserPoints/');
+module.exports.getUserPoints = require('./getUserPoints');

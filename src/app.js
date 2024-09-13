@@ -14,7 +14,11 @@ const logger = require('./config/logger');
 const morgan = require('./config/morgan');
 // const { jwtStrategy } = require('./config/passport');
 // const { authLimiter } = require('./middlewares/rateLimiter');
-const routes = require('./routes/v1');
+const routesV1 = require('./routes/v1');
+const routesV2 = require('./routes/v2');
+
+// Use the routes as needed, e.g., app.use()
+
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 const prober = require('./middlewares/prober');
@@ -104,7 +108,8 @@ app.get('/.well-known/pki-validation/*', (req, res) => {
 });
 
 // v1 api routes
-app.use('/v1', routes);
+app.use('/v1', routesV1);
+app.use('/v2', routesV2);
 
 // send back a 404 error for any unknown api request
 app.use((_, res, next) => {
