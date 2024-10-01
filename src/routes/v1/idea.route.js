@@ -1,6 +1,6 @@
 const express = require('express');
-const ideaController = require('../../controllers/idea.controller');
-const { getIdeaSanitizer, addIdeaSanitizer, updateIdeaSanitizer, deleteIdeaSanitizer, likeIdeaSanitizer } = require('../../controllers/idea.controller/sanitizer');
+const ideaController = require('../../controllers/v1/idea.controller');
+const { getIdeaSanitizer, addIdeaSanitizer, updateIdeaSanitizer, deleteIdeaSanitizer, likeIdeaSanitizer } = require('../../controllers/v1/idea.controller/sanitizer');
 
 const router = express.Router();
 

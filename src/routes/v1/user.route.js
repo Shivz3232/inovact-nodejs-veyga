@@ -1,12 +1,12 @@
 const express = require('express');
 
-const userActionController = require('../../controllers/userAction.controller');
-const userController = require('../../controllers/user.controller');
-const userActivityController = require('../../controllers/userActivites.controller');
+const userActionController = require('../../controllers/v1/userAction.controller');
+const userController = require('../../controllers/v1/user.controller');
+const userActivityController = require('../../controllers/v1/userActivites.controller');
 
-const { getUserActionsSanitizer, updateUserActionSanitizer } = require('../../controllers/userAction.controller/sanitizer');
-const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer, addUserReferralSanitizer, getStatsSanitizer } = require('../../controllers/user.controller/sanitizer');
-const { getUserActivitySanitizer, getUserActivitiesSanitizer, insertUserActivitySanitizer } = require('../../controllers/userActivites.controller/sanitizer');
+const { getUserActionsSanitizer, updateUserActionSanitizer } = require('../../controllers/v1/userAction.controller/sanitizer');
+const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer, addUserReferralSanitizer, getStatsSanitizer } = require('../../controllers/v1/user.controller/sanitizer');
+const { getUserActivitySanitizer, getUserActivitiesSanitizer, insertUserActivitySanitizer } = require('../../controllers/v1/userActivites.controller/sanitizer');
 
 const router = express.Router();
 

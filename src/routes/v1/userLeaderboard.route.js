@@ -1,8 +1,8 @@
 const express = require('express');
-const userLeaderboardController = require('../../controllers/userLeaderboard.controller');
+const userLeaderboardController = require('../../controllers/v1/userLeaderboard.controller');
 const {
   getUserLeaderboardSanitizer,
-} = require('../../controllers/userLeaderboard.controller/sanitizer');
+} = require('../../controllers/v1/userLeaderboard.controller/sanitizer');
 
 const router = express.Router();
 

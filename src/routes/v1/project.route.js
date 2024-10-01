@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const projectController = require('../../controllers/project.controller');
+const projectController = require('../../controllers/v1/project.controller');
 const multerUpload = require('../../utils/multerUpload');
-const { addProjectSanitizer, deleteProjectSanitizer, getProjectSanitizer, updateProjectSanitizer, likeProjectSanitizer } = require('../../controllers/project.controller/sanitizer');
+const { addProjectSanitizer, deleteProjectSanitizer, getProjectSanitizer, updateProjectSanitizer, likeProjectSanitizer } = require('../../controllers/v1/project.controller/sanitizer');
 
 router.post('/', addProjectSanitizer, projectController.addProject);
 

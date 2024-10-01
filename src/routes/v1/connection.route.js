@@ -2,8 +2,8 @@ const express = require('express');
 // const auth = require('../../middlewares/auth');
 // const validate = require('../../middlewares/validate');
 // const userValidation = require('../../validations/user.validation');
-const connectionsController = require('../../controllers/connection.controller');
-const { getConnectionSanitizer, connectionsSanitizer, getNetStatSanitizer } = require('../../controllers/connection.controller/sanitizer');
+const connectionsController = require('../../controllers/v1/connection.controller');
+const { getConnectionSanitizer, connectionsSanitizer, getNetStatSanitizer } = require('../../controllers/v1/connection.controller/sanitizer');
 
 const router = express.Router();
 
