@@ -4,7 +4,13 @@
 /* eslint-disable guard-for-in */
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
-const { addIdea, addTags, addSkillsRequired, addRolesRequired, updateUserFlags } = require('./queries/mutations');
+const {
+  addIdea,
+  addTags,
+  addSkillsRequired,
+  addRolesRequired,
+  updateUserFlags,
+} = require('./queries/mutations');
 const { getUser, getMyConnections } = require('./queries/queries');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const cleanConnections = require('../../../utils/cleanConnections');
@@ -21,7 +27,17 @@ const addIdeas = catchAsync(async (req, res) => {
       ...sanitizerErrors,
     });
   }
-  const { cognito_sub, description, title, status, link, looking_for_members, looking_for_mentors, roles_required, idea_tags } = req.body;
+  const {
+    cognito_sub,
+    description,
+    title,
+    status,
+    link,
+    looking_for_members,
+    looking_for_mentors,
+    roles_required,
+    idea_tags,
+  } = req.body;
 
   if (looking_for_members && roles_required.length === 0) {
     return res.status(400).json({
@@ -51,8 +67,12 @@ const addIdeas = catchAsync(async (req, res) => {
 
   // Create a default team
   if (looking_for_members || looking_for_mentors) {
-    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members);
-    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [teamCreated.team_id]);
+    teamCreated = await createDefaultTeam(
+      response1.result.data.user[0].id,
+      req.body.team_name ? req.body.team_name : `${req.body.title} team`,
+      req.body.looking_for_mentors,
+      req.body.looking_for_members
+    );
     ideaData.team_id = teamCreated.team_id;
   } else {
     ideaData.team_id = null;
@@ -110,10 +130,14 @@ const addIdeas = catchAsync(async (req, res) => {
   }
 
   if (looking_for_members) {
-    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [ideaData.team_id]);
+    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [
+      ideaData.team_id,
+    ]);
   }
   if (looking_for_mentors) {
-    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [response2.result.data.insert_idea.returning[0].id]);
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [
+      response2.result.data.insert_idea.returning[0].id,
+    ]);
   }
 
   // Send email notification
@@ -125,7 +149,10 @@ const addIdeas = catchAsync(async (req, res) => {
   const getConnectionsResponse = await Hasura(getMyConnections, {
     cognito_sub,
   });
-  const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+  const userConnectionIds = cleanConnections(
+    getConnectionsResponse.result.data.connections,
+    actorId
+  );
 
   if (teamId) {
     // Explain things that can be done next to the user who uploaded the idea.
@@ -144,15 +171,18 @@ const addIdeas = catchAsync(async (req, res) => {
   insertUserActivity('uploading-idea', 'positive', actorId, [ideaId]);
 
   const needsIdeaUploadFlag = !userEventFlags.has_uploaded_idea;
-  const needsTeamFlag = userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
-  const needsMentorFlag = userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
+  const needsTeamFlag =
+    userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
+  const needsMentorFlag =
+    userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
   const needsTeamAndMentorFlag = !userEventFlags.has_sought_team_and_mentor;
 
   if (needsIdeaUploadFlag || (needsTeamFlag && needsMentorFlag) || needsTeamAndMentorFlag) {
     userEventFlags.has_uploaded_idea = true;
     userEventFlags.has_sought_team = userEventFlags.has_sought_team || looking_for_members;
     userEventFlags.has_sought_mentor = userEventFlags.has_sought_mentor || looking_for_mentors;
-    userEventFlags.has_sought_team_and_mentor = userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
+    userEventFlags.has_sought_team_and_mentor =
+      userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
 
     await Hasura(updateUserFlags, {
       userId: actorId,
