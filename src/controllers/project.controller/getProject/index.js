@@ -1,9 +1,8 @@
 const { validationResult } = require('express-validator');
-const { query: Hasura } = require('../../../utils/hasura');
+const { query: Hasura } = require('../../../../utils/hasura');
 const { getProjects, getProject: getProjectQuery, getConnections } = require('./queries/queries');
-const cleanPostDoc = require('../../../utils/cleanPostDoc');
-const catchAsync = require('../../../utils/catchAsync');
-const recommender = require('./recommender');
+const cleanPostDoc = require('../../../../utils/cleanPostDoc');
+const catchAsync = require('../../../../utils/catchAsync');
 
 const getProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -15,7 +14,7 @@ const getProject = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-  const { id, page = 1, limit = 10 } = req.query;
+  const { id } = req.query;
 
   const response = await Hasura(getConnections, { cognito_sub });
 
@@ -65,19 +64,7 @@ const getProject = catchAsync(async (req, res) => {
 
   if (id) return res.json(cleanedPosts[0]);
 
-  // Separate user's projects and other projects
-  const userProjects = cleanedPosts.filter(project => project.user.id === userId);
-  const otherProjects = cleanedPosts.filter(project => project.user.id !== userId);
-
-  // Get recommendations for other projects
-  const recommendedOtherProjects = await recommender.recommend(cognito_sub, otherProjects);
-
-  // Append user's projects at the end
-  const finalRecommendations = [...recommendedOtherProjects, ...userProjects];
-
-  // TODO: Pagination
-
-  return res.json(finalRecommendations);
-});     
+  return res.json(cleanedPosts);
+});
 
 module.exports = getProject;
