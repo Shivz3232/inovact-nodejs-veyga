@@ -18,6 +18,14 @@ const getThoughts = catchAsync(async (req, res) => {
   const { id } = req.query;
 
   const response = await Hasura(getConnections, { cognito_sub });
+  if (response.result.data.user.length === 0) {
+    return res.status(401).json({
+      success: false,
+      errorCode: 'NotFound',
+      errorMessage: 'User not found in the database',
+      data: null,
+    });
+  }
 
   const userId = response.result.data.user[0].id;
 

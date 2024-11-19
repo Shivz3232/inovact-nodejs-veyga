@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
-const catchAsync = require('../../../../utils/catchAsync');
-const cleanIdeaDoc = require('../../../../utils/cleanIdeaDoc');
-const { query: Hasura } = require('../../../../utils/hasura');
+const catchAsync = require('../../../utils/catchAsync');
+const cleanIdeaDoc = require('../../../utils/cleanIdeaDoc');
+const { query: Hasura } = require('../../../utils/hasura');
 const { getIdea, getIdeas: getIdeasQuery, getConnections } = require('./queries/queries');
 
 const getIdeas = catchAsync(async (req, res) => {
@@ -17,6 +17,15 @@ const getIdeas = catchAsync(async (req, res) => {
   const { id } = req.query;
 
   const response = await Hasura(getConnections, { cognito_sub });
+
+  if (response.result.data.user.length === 0) {
+    return res.status(401).json({
+      success: false,
+      errorCode: 'NotFound',
+      errorMessage: 'User not found in the database',
+      data: null,
+    });
+  }
 
   const userId = response.result.data.user[0].id;
 
