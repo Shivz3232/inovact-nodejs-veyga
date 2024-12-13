@@ -40,8 +40,14 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.bio) {
     variables.changes.bio = req.body.bio;
     const activityIdentifier = 'filing-user-bio';
-    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
-    if ((!response.result.data.user[0].bio || response.result.data.user[0].bio === '' || response.result.data.user[0].bio === null) && arePointsOfferable) {
+    const arePointsOfferable =
+      userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+    if (
+      (!response.result.data.user[0].bio ||
+        response.result.data.user[0].bio === '' ||
+        response.result.data.user[0].bio === null) &&
+      arePointsOfferable
+    ) {
       await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }
@@ -63,28 +69,44 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.role) variables.changes.role = req.body.role;
   if (req.body.designation) variables.changes.designation = req.body.designation;
   if (req.body.organization) variables.changes.organization = req.body.organization;
-  if (req.body.organizational_role) variables.changes.organizational_role = req.body.organizational_role;
+  if (req.body.organizational_role)
+    variables.changes.organizational_role = req.body.organizational_role;
   if (req.body.university) variables.changes.university = req.body.university;
   if (req.body.graduation_year) variables.changes.graduation_year = req.body.graduation_year;
-  if (req.body.journey_start_date) variables.changes.journey_start_date = req.body.journey_start_date;
-  if (req.body.years_of_professional_experience) variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
+  if (req.body.journey_start_date)
+    variables.changes.journey_start_date = req.body.journey_start_date;
+  if (req.body.years_of_professional_experience)
+    variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
   if (req.body.degree) variables.changes.degree = req.body.degree;
   if (req.body.github_profile) {
     variables.changes.github_profile = req.body.github_profile;
     const activityIdentifier = 'filing-github';
-    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
-    if ((!response.result.data.user[0].github_profile || response.result.data.user[0].github_profile === '' || response.result.data.user[0].github_profile === null) && arePointsOfferable) {
+    const arePointsOfferable =
+      userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+    if (
+      (!response.result.data.user[0].github_profile ||
+        response.result.data.user[0].github_profile === '' ||
+        response.result.data.user[0].github_profile === null) &&
+      arePointsOfferable
+    ) {
       await insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
-  if (req.body.profile_complete) variables.changes.profile_complete = req.body.profile_complete;
+  if (req.body.hasOwnProperty('profile_complete'))
+    variables.changes.profile_complete = req.body.profile_complete;
 
   if (req.body.website) {
     variables.changes.website = req.body.website;
     const activityIdentifier = 'filing-website';
-    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
-    if ((!response.result.data.user[0].website || response.result.data.user[0].website === '' || response.result.data.user[0].website === null) && arePointsOfferable) {
+    const arePointsOfferable =
+      userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+    if (
+      (!response.result.data.user[0].website ||
+        response.result.data.user[0].website === '' ||
+        response.result.data.user[0].website === null) &&
+      arePointsOfferable
+    ) {
       insertUserActivity(activityIdentifier, 'positive', userId, []);
     }
   } else variables.changes.website = '';
@@ -109,7 +131,8 @@ const updateanUser = catchAsync(async (req, res) => {
     await Hasura(addUserSkills, variables);
 
     const activityIdentifier = 'filing-user-skills';
-    const arePointsOfferable = userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
+    const arePointsOfferable =
+      userActivities.filter((ele) => ele.activity.identifier === activityIdentifier).length === 0;
 
     if (arePointsOfferable && req.body.user_skills.length > 0) {
       await insertUserActivity(activityIdentifier, 'positive', userId, []);
