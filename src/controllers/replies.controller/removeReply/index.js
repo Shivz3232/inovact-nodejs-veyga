@@ -1,30 +1,10 @@
 const { validationResult } = require('express-validator');
-const logger = require('../../../config/logger.js');
-const { removeProjectComment, removeIdeaComment, removeThoughtComment } = require('./queries/mutations.js');
+const { checkUserAndReply } = require('./queries/queries.js');
+const removeReplyFromComment = require('./helpers/removeReplyFromComment.js');
 const { query: Hasura } = require('../../../utils/hasura.js');
 const catchAsync = require('../../../utils/catchAsync.js');
 
-const handleRemoveComment = async (removeFunction, commentId, cognitoSub) => {
-  const removeCommentResponse = await Hasura(removeFunction, { id: commentId, cognitoSub });
-
-  if (!removeCommentResponse.success) {
-    return {
-      success: false,
-      errorCode: removeCommentResponse.errorCode,
-      errorMessage: removeCommentResponse.errorMessage,
-      data: null,
-    };
-  }
-
-  return {
-    success: true,
-    errorCode: '',
-    errorMessage: '',
-    data: null,
-  };
-};
-
-const removeComment = catchAsync(async (req, res) => {
+const removeReply = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
   if (!sanitizerErrors.isEmpty()) {
     return res.status(400).json({
@@ -33,47 +13,28 @@ const removeComment = catchAsync(async (req, res) => {
     });
   }
 
-  const { commentId } = req.params;
-  const { cognito_sub, articleType } = req.body;
+  const { cognito_sub, commentType } = req.body;
+  const { replyId } = req.params;
 
-  logger.info(`Removing comment: commentId=${commentId}, cognito_sub=${cognito_sub}, articleType=${articleType}`);
+  // Fetch User ID
+  const response = await Hasura(checkUserAndReply, {
+    cognito_sub,
+    replyId,
+  });
 
-  let removeResponse;
-
-  switch (articleType) {
-    case 'post':
-      removeResponse = await handleRemoveComment(removeProjectComment, commentId, cognito_sub);
-      break;
-    case 'idea':
-      removeResponse = await handleRemoveComment(removeIdeaComment, commentId, cognito_sub);
-      break;
-    case 'thought':
-      removeResponse = await handleRemoveComment(removeThoughtComment, commentId, cognito_sub);
-      break;
-    default:
-      return res.status(400).json({
-        success: false,
-        errorCode: 'INVALID_ARTICLE_TYPE',
-        errorMessage: 'Invalid article type provided',
-        data: null,
-      });
-  }
-
-  if (!removeResponse.success) {
+  if (!response.result.data.post_comment_replies.length) {
     return res.status(400).json({
       success: false,
-      errorCode: removeResponse.errorCode || 'REMOVE_COMMENT_FAILED',
-      errorMessage: removeResponse.errorMessage || 'Failed to remove comment',
-      data: null,
+      message: 'User not found or the reply doesnt belong to this user',
     });
   }
 
+  const data = await removeReplyFromComment(commentType, replyId);
+
   return res.status(200).json({
     success: true,
-    errorCode: '',
-    errorMessage: '',
-    data: removeResponse.data,
+    data: null,
   });
 });
 
-module.exports = removeComment;
+module.exports = removeReply;

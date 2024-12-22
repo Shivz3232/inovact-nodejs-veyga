@@ -4,7 +4,7 @@ const replyComment = require('./helpers/replyComment.js');
 const { query: Hasura } = require('../../../utils/hasura.js');
 const catchAsync = require('../../../utils/catchAsync.js');
 
-const addComment = catchAsync(async (req, res) => {
+const addReply = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
   if (!sanitizerErrors.isEmpty()) {
     return res.status(400).json({
@@ -15,14 +15,6 @@ const addComment = catchAsync(async (req, res) => {
 
   const { text, parentReplyId, cognito_sub, commentType } = req.body;
   const { commentId } = req.params;
-
-  // Validation
-  if (!text || !commentId || !commentType) {
-    return res.status(400).json({
-      success: false,
-      message: 'Missing required fields: text, commentId, or commentType',
-    });
-  }
 
   // Fetch User ID
   const response = await Hasura(getUserId, {
@@ -38,21 +30,12 @@ const addComment = catchAsync(async (req, res) => {
 
   const userId = response.result.data.user[0].id;
 
-  // Add Reply
-  try {
-    const data = await replyComment(commentType, text, commentId, userId, parentReplyId || null);
-    console.log(JSON.stringify(data));
+  const data = await replyComment(commentType, text, commentId, userId, parentReplyId || null);
 
-    return res.status(201).json({
-      success: true,
-      data: data.result.data.insert_post_comment_replies_one,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+  return res.status(201).json({
+    success: true,
+    data: data.result.data.insert_post_comment_replies_one,
+  });
 });
 
-module.exports = addComment;
+module.exports = addReply;

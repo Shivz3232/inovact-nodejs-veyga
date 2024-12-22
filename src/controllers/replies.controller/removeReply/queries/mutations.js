@@ -1,32 +1,26 @@
-const removeProjectComment = `mutation removeProjectComment($id: Int!, $cognitoSub: String!) {
-  delete_project_comment(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }) {
-    returning {
-      id
-    }
+const removeReplyOnPostComment = `mutation removePostCommentReply($id: Int!) {
+  delete_post_comment_replies_by_pk(id: $id) {
+    id
   }
 }
 `;
 
-const removeIdeaComment = `mutation removeIdeaComment($id: Int!, $cognitoSub: String!) {
-  delete_idea_comment(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }) {
-    returning{
-      id
-    }
+const removeReplyOnIdeaComment = `mutation removePostCommentReply($id: Int!) {
+  delete_idea_comment_replies_by_pk(id: $id) {
+    id
   }
 }
 `;
 
-const removeThoughtComment = `mutation removeThoughtComment($id: Int!, $cognitoSub: String) {
-  delete_thought_comments(where: { id: { _eq: $id }, user: { cognito_sub: { _eq: $cognitoSub } } }) {
-    returning{
-      id
-    }
+const removeReplyOnThoughtComment = `mutation removePostCommentReply($id: Int!) {
+  delete_thought_comment_replies_by_pk(id: $id) {
+    id
   }
 }
 `;
 
 module.exports = {
-  removeProjectComment,
-  removeIdeaComment,
-  removeThoughtComment,
+  removeReplyOnPostComment,
+  removeReplyOnIdeaComment,
+  removeReplyOnThoughtComment,
 };

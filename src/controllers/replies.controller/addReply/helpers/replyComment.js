@@ -1,3 +1,4 @@
+const { log } = require('../../../../config/logger');
 const { query: Hasura } = require('../../../../utils/hasura');
 const {
   replyOnPostComment,
@@ -13,9 +14,6 @@ async function replyComment(commentType, text, commentId, userId, parentReplyId)
   };
 
   const mutation = mutationMap[commentType];
-  if (!mutation) {
-    throw new Error(`Invalid comment type: ${commentType}`);
-  }
 
   return await Hasura(mutation, {
     text,

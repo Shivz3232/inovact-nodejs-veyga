@@ -7,7 +7,7 @@ const {
 } = require('../../controllers/replies.controller/sanitizer');
 
 router.post('/', replySanitizer, repliesController.addReply);
-// router.put('/:commentId', updateReplySanitizer, repliesController.updateComment);
-// router.delete('/:commentId', removeReplySanitizer, repliesController.removeComment);
+router.put('/:replyId', updateReplySanitizer, repliesController.updateReply);
+router.delete('/:replyId', removeReplySanitizer, repliesController.removeReply);
 
 module.exports = router;
