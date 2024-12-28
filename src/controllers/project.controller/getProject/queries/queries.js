@@ -31,6 +31,12 @@ const getProjects = `query getProjects($cognito_sub: String) {
         last_name
         role
       }
+      post_comment_replies(limit: 1) {
+        id
+        text
+        created_at
+        updated_at
+      }
     }
     project_mentions {
       user {
@@ -113,6 +119,12 @@ const getProject = `query getProject($id: Int, $cognito_sub: String) {
         last_name
         role
       }
+      post_comment_replies(limit: 1) {
+        id
+        text
+        created_at
+        updated_at
+      }
     }
     project_mentions {
       user {
@@ -145,7 +157,7 @@ const getProject = `query getProject($id: Int, $cognito_sub: String) {
       looking_for_mentors
       looking_for_members
       team_requests(where: { user: { cognito_sub: { _eq: $cognito_sub } } }) {
-       user_id
+        user_id
       }
       team_members {
         user {

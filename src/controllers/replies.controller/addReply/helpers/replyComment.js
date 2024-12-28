@@ -6,13 +6,12 @@ const {
   replyOnThoughtComment,
 } = require('../queries/mutations');
 
+const mutationMap = {
+  post: replyOnPostComment,
+  idea: replyOnIdeaComment,
+  thought: replyOnThoughtComment,
+};
 async function replyComment(commentType, text, commentId, userId, parentReplyId) {
-  const mutationMap = {
-    post: replyOnPostComment,
-    idea: replyOnIdeaComment,
-    thought: replyOnThoughtComment,
-  };
-
   const mutation = mutationMap[commentType];
 
   return await Hasura(mutation, {

@@ -5,13 +5,13 @@ const {
   updateReplyOnThoughtComment,
 } = require('../queries/mutations');
 
-async function updateReplyComment(commentType, text, replyId) {
-  const mutationMap = {
-    post: updateReplyOnPostComment,
-    idea: updateReplyOnIdeaComment,
-    thought: updateReplyOnThoughtComment,
-  };
+const mutationMap = {
+  post: updateReplyOnPostComment,
+  idea: updateReplyOnIdeaComment,
+  thought: updateReplyOnThoughtComment,
+};
 
+async function updateReplyComment(commentType, text, replyId) {
   const mutation = mutationMap[commentType];
 
   return await Hasura(mutation, {

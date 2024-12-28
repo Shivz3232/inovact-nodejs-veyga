@@ -5,13 +5,13 @@ const {
   removeReplyOnThoughtComment,
 } = require('../queries/mutations');
 
-async function removeReplyFromComment(commentType, replyId) {
-  const mutationMap = {
-    post: removeReplyOnPostComment,
-    idea: removeReplyOnIdeaComment,
-    thought: removeReplyOnThoughtComment,
-  };
+const mutationMap = {
+  post: removeReplyOnPostComment,
+  idea: removeReplyOnIdeaComment,
+  thought: removeReplyOnThoughtComment,
+};
 
+async function removeReplyFromComment(commentType, replyId) {
   const mutation = mutationMap[commentType];
 
   return await Hasura(mutation, {
