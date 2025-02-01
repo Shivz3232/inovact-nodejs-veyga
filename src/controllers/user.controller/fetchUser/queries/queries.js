@@ -152,7 +152,7 @@ const getUserById = `query getUser($id: Int, $cognito_sub: String) {
       sender_id : user1
     }
 
-    connections_aggregate(where: {_or: [ {_and: [{status: {_eq: "connected"}, _or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}]}]} ,
+    connections_aggregate(where: {_or: [ {_and: [{status: {_eq: "connected"}, _or: [{user: {id: {_eq: $id}}}, {userByUser2: {id: {_eq: $id}}}]}]}]} ,
          order_by :{formed_at :desc}){
     aggregate{
       count
@@ -160,8 +160,8 @@ const getUserById = `query getUser($id: Int, $cognito_sub: String) {
   }
   team_members_aggregate(where : {
     user:{
-     cognito_sub: {
-      _eq: $cognito_sub
+     id: {
+      _eq: $id
     }
     }
   }){
