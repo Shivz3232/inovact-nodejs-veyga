@@ -34,6 +34,17 @@ const getAllUsersQuery = `
       cover_photo
       admin
       profile_complete
+      user_skills {
+      id
+      skill
+      level
+    }
+    user_interests {
+      area_of_interest {
+        id
+        interest
+      }
+    }
     }
   }`;
 
