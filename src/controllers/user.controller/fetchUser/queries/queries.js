@@ -59,10 +59,26 @@ const getUser = `query getUser($cognito_sub: String) {
   connections(where: {id: {_eq: 0}}) {
     status
   }
+  connections_aggregate(where: {_or: [ {_and: [{status: {_eq: "connected"}, _or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}]}]} ,
+         order_by :{formed_at :desc}){
+    aggregate{
+      count
+    }
+  }
+  team_members_aggregate(where : {
+    user:{
+     cognito_sub: {
+      _eq: $cognito_sub
+    }
+    }
+  }){
+    aggregate{
+      count
+    }
+  }
 }`;
 
-const getUserById = `
-query getUser($id: Int, $cognito_sub: String) {
+const getUserById = `query getUser($id: Int, $cognito_sub: String) {
   user(where: {id: {_eq: $id}}) {
     id
     user_name
@@ -135,6 +151,24 @@ query getUser($id: Int, $cognito_sub: String) {
       status,
       sender_id : user1
     }
+
+    connections_aggregate(where: {_or: [ {_and: [{status: {_eq: "connected"}, _or: [{user: {cognito_sub: {_eq: $cognito_sub}}}, {userByUser2: {cognito_sub: {_eq: $cognito_sub}}}]}]}]} ,
+         order_by :{formed_at :desc}){
+    aggregate{
+      count
+    }
+  }
+  team_members_aggregate(where : {
+    user:{
+     cognito_sub: {
+      _eq: $cognito_sub
+    }
+    }
+  }){
+    aggregate{
+      count
+    }
+  }
 }`;
 
 module.exports = {
