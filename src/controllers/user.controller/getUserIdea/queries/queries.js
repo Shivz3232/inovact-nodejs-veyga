@@ -3,6 +3,7 @@ const getUserIdeasById = `query getUserIdeasById($user_id: Int, $cognito_sub: St
     id
     title
     description
+    status
     user_id
     team_id
     idea_tags {
@@ -55,6 +56,7 @@ const getUserIdeasByCognitoSub = `query getUserIdeasByCognitoSub($cognito_sub: S
     id
     title
     description
+    status
     user_id
     team_id
     idea_tags {
