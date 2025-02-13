@@ -46,6 +46,19 @@ const getUserIdeasById = `query getUserIdeasById($user_id: Int, $cognito_sub: St
       id
       looking_for_members
       looking_for_mentors
+      name
+      avatar
+      team_members {
+        user {
+          id
+          first_name
+          last_name
+          user_name
+          role
+          admin
+          avatar
+        }
+      }
     }
   }
 }
@@ -99,6 +112,19 @@ const getUserIdeasByCognitoSub = `query getUserIdeasByCognitoSub($cognito_sub: S
       id
       looking_for_members
       looking_for_mentors
+      name
+      avatar
+      team_members {
+        user {
+          id
+          first_name
+          last_name
+          user_name
+          role
+          admin
+          avatar
+        }
+      }
     }
   }
 }`;
