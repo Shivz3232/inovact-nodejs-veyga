@@ -48,6 +48,12 @@ const getUserIdeasById = `query getUserIdeasById($user_id: Int, $cognito_sub: St
       looking_for_mentors
       name
       avatar
+      team_role_requirements{
+        role_name
+        team_skill_requirements{
+          skill_name
+        }
+      }
       team_members {
         user {
           id
@@ -114,6 +120,12 @@ const getUserIdeasByCognitoSub = `query getUserIdeasByCognitoSub($cognito_sub: S
       looking_for_mentors
       name
       avatar
+      team_role_requirements{
+        role_name
+        team_skill_requirements{
+          skill_name
+        }
+      }
       team_members {
         user {
           id

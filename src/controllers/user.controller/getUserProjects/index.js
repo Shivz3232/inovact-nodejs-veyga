@@ -32,6 +32,8 @@ const getUserProject = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(getUserPosts, variables);
 
+  console.log(JSON.stringify(response1));
+
   const cleanedPosts = response1.result.data.project.map(cleanPostDoc);
 
   return res.json(cleanedPosts);

@@ -20,130 +20,6 @@ const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 
-async function handleRoleUpdates(teamId, newRoles, Hasura) {
-  // 1. Get current roles and their associated members and skills
-  const currentRolesResponse = await Hasura(getRoleRequirements, {
-    team_id: teamId,
-  });
-
-  const currentRoles = currentRolesResponse.result.data.team_role_requirements;
-
-  // Create maps for easier lookup
-  const currentRoleMap = new Map(currentRoles.map((role) => [role.role_name, role]));
-
-  const newRoleMap = new Map(newRoles.map((role) => [role.role_name, role]));
-
-  // Arrays to track what needs to be deleted, added, or updated
-  const rolesToDelete = [];
-  const rolesToAdd = [];
-  const rolesToUpdate = [];
-
-  // Find roles to delete or update
-  for (const currentRole of currentRoles) {
-    if (!newRoleMap.has(currentRole.role_name)) {
-      // Role no longer exists in new roles - mark for deletion
-      rolesToDelete.push(currentRole);
-    } else {
-      // Role exists but might need skill updates
-      rolesToUpdate.push({
-        roleId: currentRole.id,
-        currentSkills: currentRole.team_skill_requirements.map((s) => s.skill_name),
-        newSkills: newRoleMap.get(currentRole.role_name).skills_required,
-        members: currentRole.team_members,
-      });
-    }
-  }
-
-  // Find completely new roles to add
-  for (const newRole of newRoles) {
-    if (!currentRoleMap.has(newRole.role_name)) {
-      rolesToAdd.push(newRole);
-    }
-  }
-
-  // Begin transaction for role updates
-  try {
-    // 1. Handle deletions first
-    if (rolesToDelete.length > 0) {
-      const roleIds = rolesToDelete.map((role) => role.id);
-      const memberIdsToDelete = rolesToDelete
-        .flatMap((role) => role.team_members)
-        .map((member) => member.id);
-
-      // Delete in correct order to maintain referential integrity
-      if (memberIdsToDelete.length > 0) {
-        await Hasura(deleteTeamMembers, { memberIds: memberIdsToDelete });
-      }
-
-      await Hasura(deleteRoleSkills, { roleIds });
-      await Hasura(deleteRoles, { roleIds });
-    }
-
-    // 2. Handle updates
-    for (const roleUpdate of rolesToUpdate) {
-      // Update role name if needed
-      const newRoleData = newRoleMap.get(currentRoleMap.get(roleUpdate.roleId)?.role_name);
-      if (
-        newRoleData &&
-        newRoleData.role_name !== currentRoleMap.get(roleUpdate.roleId)?.role_name
-      ) {
-        await Hasura(updateRoleRequirement, {
-          roleId: roleUpdate.roleId,
-          roleName: newRoleData.role_name,
-        });
-      }
-
-      // Update skills
-      await Hasura(deleteRoleSkills, { roleIds: [roleUpdate.roleId] });
-
-      if (newRoleData?.skills_required?.length > 0) {
-        const skillsData = newRoleData.skills_required.map((skill) => ({
-          role_requirement_id: roleUpdate.roleId,
-          skill_name: skill,
-        }));
-
-        await Hasura(addSkillsRequired, { objects: skillsData });
-      }
-    }
-
-    // 3. Handle additions
-    if (rolesToAdd.length > 0) {
-      const roles_data = rolesToAdd.map((role) => ({
-        team_id: teamId,
-        role_name: role.role_name,
-      }));
-
-      const rolesResponse = await Hasura(addRolesRequired, { objects: roles_data });
-
-      if (rolesResponse.success) {
-        const skills_data = [];
-
-        for (let i = 0; i < rolesToAdd.length; i++) {
-          const role = rolesToAdd[i];
-          if (role.skills_required) {
-            for (const skill of role.skills_required) {
-              skills_data.push({
-                role_requirement_id:
-                  rolesResponse.result.data.insert_team_role_requirements.returning[i].id,
-                skill_name: skill,
-              });
-            }
-          }
-        }
-
-        if (skills_data.length > 0) {
-          await Hasura(addSkillsRequired, { objects: skills_data });
-        }
-      }
-    }
-
-    return true;
-  } catch (error) {
-    console.error('Error updating roles:', error);
-    throw error;
-  }
-}
-
 const addProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
   if (!sanitizerErrors.isEmpty()) {
@@ -213,7 +89,35 @@ const addProject = catchAsync(async (req, res) => {
   const response2 = await Hasura(addProjectQuery, projectData);
 
   // Insert roles required and skills required
-  await handleRoleUpdates;
+  role_if: if (roles_required.length > 0 && projectData.team_id) {
+    const roles_data = roles_required.map((ele) => {
+      return {
+        team_id: projectData.team_id,
+        role_name: ele.role_name,
+      };
+    });
+
+    const response1 = await Hasura(addRolesRequired, { objects: roles_data });
+
+    if (!response1.success) break role_if;
+
+    const skills_data = [];
+
+    for (const i in roles_required) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (roles_required.hasOwnProperty(i)) {
+        for (const skill of roles_required[i].skills_required) {
+          skills_data.push({
+            role_requirement_id:
+              response1.result.data.insert_team_role_requirements.returning[i].id,
+            skill_name: skill,
+          });
+        }
+      }
+    }
+
+    await Hasura(addSkillsRequired, { objects: skills_data });
+  }
 
   if (looking_for_members) {
     insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [
