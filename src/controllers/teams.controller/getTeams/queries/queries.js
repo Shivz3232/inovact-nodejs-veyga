@@ -6,7 +6,11 @@ const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
     avatar
     looking_for_members
     looking_for_mentors
-    team_role_requirements {
+    team_role_requirements(where: {
+        is_filled : {
+          _eq: false
+        }
+      } ){
       id
       role_name
       team_skill_requirements {
@@ -100,7 +104,11 @@ const getTeam = `query getTeam($team_id: Int) {
     avatar
     looking_for_members
     looking_for_mentors
-    team_role_requirements {
+    team_role_requirements(where: {
+        is_filled : {
+          _eq: true
+        }
+      } ){
       id
       role_name
       team_skill_requirements {

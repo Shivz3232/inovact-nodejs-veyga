@@ -3,18 +3,17 @@ const catchAsync = require('../../../utils/catchAsync');
 const { query: Hasura } = require('../../../utils/hasura');
 const {
   updateIdea,
-  updateRolesRequired,
-  addRolesRequired,
-  addSkillsRequired,
   updateIdeaFlags,
   UpdateIdeaTeam,
   updateIdeaTags,
   deleteTeam,
   updateLookingForTeamMembersAndMentors,
+  updateDocuments,
 } = require('./queries/mutations');
 const { getUserIdFromCognito, getTeamMembers } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const insertUserActivity = require('../../../utils/insertUserActivity');
+const handleRoleAndSkillUpdates = require('../../../utils/updateRolesAndSkillForPost');
 
 const updateIdeas = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -56,12 +55,7 @@ const updateIdeas = catchAsync(async (req, res) => {
     if (req.body.description) variables.changes.description = req.body.description;
     if (req.body.title) variables.changes.title = req.body.title;
     if (req.body.link) variables.changes.link = req.body.link;
-    if (req.body.status) {
-      const allowed_statuses = ['ideation', 'mvp', 'prototype', 'scaling'];
-      variables.changes.status = allowed_statuses.includes(req.body.status)
-        ? req.body.status
-        : 'ideation';
-    }
+    if (req.body.status !== undefined) variables.changes.status = req.body.status;
 
     // Update idea and get current state
     const response = await Hasura(updateIdea, variables);
@@ -122,7 +116,8 @@ const updateIdeas = catchAsync(async (req, res) => {
         user_id,
         teamName,
         req.body.looking_for_mentors,
-        req.body.looking_for_members
+        req.body.looking_for_members,
+        req.body.team_on_inovact
       );
       team_id = teamCreated.team_id;
 
@@ -132,36 +127,26 @@ const updateIdeas = catchAsync(async (req, res) => {
         newTeamId: team_id,
       });
 
-      // Handle roles and skills
-      if (req.body.roles_required && req.body.roles_required.length > 0) {
-        const roles_data = req.body.roles_required.map((ele) => ({
-          team_id,
-          role_name: ele.role_name,
-        }));
+      currentTeamId = team_id;
+    }
 
-        const rolesResponse = await Hasura(addRolesRequired, { objects: roles_data });
+    // Handle roles and skills
+    if (req.body.roles_required && req.body.roles_required.length > 0 && currentTeamId) {
+      const roleUpdateResult = await handleRoleAndSkillUpdates(
+        currentTeamId,
+        req.body.roles_required,
+        Hasura
+      );
+    }
 
-        if (rolesResponse.success) {
-          const skills_data = [];
-
-          for (let i = 0; i < req.body.roles_required.length; i++) {
-            const role = req.body.roles_required[i];
-            if (role.skills_required) {
-              for (const skill of role.skills_required) {
-                skills_data.push({
-                  role_requirement_id:
-                    rolesResponse.result.data.insert_team_role_requirements.returning[i].id,
-                  skill_name: skill,
-                });
-              }
-            }
-          }
-
-          if (skills_data.length > 0) {
-            await Hasura(addSkillsRequired, { objects: skills_data });
-          }
-        }
-      }
+    // Update documents if provided
+    if (req.body.documents && req.body.documents.length > 0) {
+      const documents = req.body.documents.map((document) => ({
+        name: document.name,
+        url: document.url,
+        idea_id: id,
+      }));
+      await Hasura(updateDocuments, { idea_id: id, documents });
     }
 
     // Update tags if provided

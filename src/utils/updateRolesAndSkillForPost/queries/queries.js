@@ -5,8 +5,8 @@ const getRoleRequirements = `query getRoleRequirements($team_id: Int!) {
     team_id
     team{
         team_members {
-        user_id
-        role_requirement_id
+            user_id
+            role_requirement_id
         }
     }
     team_skill_requirements {

@@ -148,7 +148,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert tags
-  if (project_tags.length) {
+  if (project_tags && project_tags.length) {
     const tags = req.body.project_tags.map((tag_name) => {
       return {
         hashtag: {

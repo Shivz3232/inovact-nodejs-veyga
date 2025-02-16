@@ -9,8 +9,12 @@ const acceptJoinRequest1 = `mutation acceptJoinRequest1($user_id: Int, $team_id:
   }]) {
     affected_rows
   }
-  delete_team_role_requirements(where: {id: {_eq: $role_requirement_id}}) {
-    affected_rows
+  update_team_role_requirements(where: {id: {_eq: $role_requirement_id}},  _set: { is_filled: true }) {
+    returning {
+      id
+      role_name
+      is_filled
+    }
   }
 }`;
 

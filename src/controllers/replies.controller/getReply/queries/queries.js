@@ -9,17 +9,35 @@ const getCommentReplies = `
       id
       text
       created_at
-      user_id
+      user {
+        id
+        avatar
+        first_name
+        last_name
+        role
+      }
       post_comment_replies {
         id
         text
         created_at
-        user_id
+        user {
+          id
+          avatar
+          first_name
+          last_name
+          role
+        }
         post_comment_replies {
           id
           text
           created_at
-          user_id
+          user {
+            id
+            avatar
+            first_name
+            last_name
+            role
+          }
         }
       }
     }
