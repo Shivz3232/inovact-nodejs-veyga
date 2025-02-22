@@ -55,7 +55,11 @@ const getUserPosts = `query getProjects($user_id: Int, $cognito_sub: String) {
           avatar
         }
       }
-      team_role_requirements{
+      team_role_requirements(where: {
+        is_filled : {
+          _eq: true
+        }
+      } ){
         role_name
         team_skill_requirements{
           skill_name

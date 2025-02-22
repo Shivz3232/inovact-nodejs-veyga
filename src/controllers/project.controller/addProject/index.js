@@ -2,7 +2,15 @@
 /* eslint-disable no-labels */
 /* eslint-disable no-restricted-syntax */
 const { validationResult } = require('express-validator');
-const { addProject: addProjectQuery, addMentions, addTags, addDocuments, addRolesRequired, addSkillsRequired, updateUserFlags } = require('./queries/mutations');
+const {
+  addProject: addProjectQuery,
+  addMentions,
+  addTags,
+  addDocuments,
+  addRolesRequired,
+  addSkillsRequired,
+  updateUserFlags,
+} = require('./queries/mutations');
 const { getUser, getMyConnections } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
@@ -21,7 +29,20 @@ const addProject = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, description, title, status, completed, link, looking_for_members, looking_for_mentors, roles_required, mentions, project_tags, documents } = req.body;
+  const {
+    cognito_sub,
+    description,
+    title,
+    status,
+    completed,
+    link,
+    looking_for_members,
+    looking_for_mentors,
+    roles_required,
+    mentions,
+    project_tags,
+    documents,
+  } = req.body;
 
   if (looking_for_members && roles_required.length === 0) {
     return res.status(400).json({
@@ -53,7 +74,13 @@ const addProject = catchAsync(async (req, res) => {
   // Create a default team
 
   if (looking_for_members || looking_for_mentors) {
-    teamCreated = await createDefaultTeam(response1.result.data.user[0].id, req.body.team_name ? req.body.team_name : `${req.body.title} team`, req.body.looking_for_mentors, req.body.looking_for_members, req.body.team_on_inovact);
+    teamCreated = await createDefaultTeam(
+      response1.result.data.user[0].id,
+      req.body.team_name ? req.body.team_name : `${req.body.title} team`,
+      req.body.looking_for_mentors,
+      req.body.looking_for_members,
+      req.body.team_on_inovact
+    );
     projectData.team_id = teamCreated.team_id;
   } else {
     projectData.team_id = null;
@@ -81,7 +108,8 @@ const addProject = catchAsync(async (req, res) => {
       if (roles_required.hasOwnProperty(i)) {
         for (const skill of roles_required[i].skills_required) {
           skills_data.push({
-            role_requirement_id: response1.result.data.insert_team_role_requirements.returning[i].id,
+            role_requirement_id:
+              response1.result.data.insert_team_role_requirements.returning[i].id,
             skill_name: skill,
           });
         }
@@ -92,10 +120,14 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   if (looking_for_members) {
-    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [projectData.team_id]);
+    insertUserActivity('looking-for-team-member', 'positive', response1.result.data.user[0].id, [
+      projectData.team_id,
+    ]);
   }
   if (looking_for_mentors) {
-    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [response2.result.data.insert_project.returning[0].id]);
+    insertUserActivity('looking-for-team-mentor', 'positive', response1.result.data.user[0].id, [
+      response2.result.data.insert_project.returning[0].id,
+    ]);
   }
 
   // Insert mentions
@@ -116,7 +148,7 @@ const addProject = catchAsync(async (req, res) => {
   }
 
   // Insert tags
-  if (project_tags.length) {
+  if (project_tags && project_tags.length) {
     const tags = req.body.project_tags.map((tag_name) => {
       return {
         hashtag: {
@@ -168,7 +200,10 @@ const addProject = catchAsync(async (req, res) => {
     cognito_sub,
   });
 
-  const userConnectionIds = cleanConnections(getConnectionsResponse.result.data.connections, actorId);
+  const userConnectionIds = cleanConnections(
+    getConnectionsResponse.result.data.connections,
+    actorId
+  );
   let isConnectionNotified = false;
 
   if (teamId) {
@@ -198,15 +233,18 @@ const addProject = catchAsync(async (req, res) => {
   insertUserActivity('uploading-project', 'positive', actorId, [projectId]);
 
   const needsProjectUploadFlag = !userEventFlags.has_uploaded_project;
-  const needsTeamFlag = userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
-  const needsMentorFlag = userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
+  const needsTeamFlag =
+    userEventFlags.has_sought_team || userEventFlags.has_sought_team === looking_for_members;
+  const needsMentorFlag =
+    userEventFlags.has_sought_mentor || userEventFlags.has_sought_mentor === looking_for_mentors;
   const needsTeamAndMentorFlag = !userEventFlags.has_sought_team_and_mentor;
 
   if (needsProjectUploadFlag || (needsTeamFlag && needsMentorFlag) || needsTeamAndMentorFlag) {
     userEventFlags.has_uploaded_project = true;
     userEventFlags.has_sought_team = userEventFlags.has_sought_team || looking_for_members;
     userEventFlags.has_sought_mentor = userEventFlags.has_sought_mentor || looking_for_mentors;
-    userEventFlags.has_sought_team_and_mentor = userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
+    userEventFlags.has_sought_team_and_mentor =
+      userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
 
     await Hasura(updateUserFlags, {
       userId: actorId,

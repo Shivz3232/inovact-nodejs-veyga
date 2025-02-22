@@ -1,10 +1,13 @@
-const updatePost = `
-mutation updateProject($id: Int_comparison_exp, $changes: project_set_input) {
+const updatePost = `mutation updateProject($id: Int_comparison_exp, $changes: project_set_input) {
   update_project(where: { id: $id }, _set: $changes) {
     returning {
       id,
       team_id,
-      user_id
+      user_id,
+      team{
+        looking_for_members
+        looking_for_mentors
+      }
     }
   }
 }
@@ -92,6 +95,50 @@ const addSkillsRequired = `mutation addSkillRequired($objects: [team_skill_requi
   }
 }`;
 
+const updateLookingForTeamMembersAndMentors = `mutation updateLookingForTeamMembersAndMentors($teamId:Int, $looking_for_members:Boolean
+, $looking_for_mentors:Boolean){
+  update_team(where: {id: {_eq: $teamId}}, _set: {looking_for_members: $looking_for_members, looking_for_mentors: $looking_for_mentors}) {
+    returning {
+      id
+      looking_for_members
+      looking_for_mentors
+      name
+      avatar
+      chat_id
+      creator_id
+    }
+  }
+}
+`;
+
+const deleteTeamMembers = `mutation deleteTeamMembers($memberIds: [Int!]!) {
+  delete_team_members(where: {id: {_in: $memberIds}}) {
+    affected_rows
+  }
+}`;
+
+const deleteRoleSkills = `mutation deleteRoleSkills($roleIds: [Int!]!) {
+  delete_team_skill_requirements(where: {role_requirement_id: {_in: $roleIds}}) {
+    affected_rows
+  }
+}`;
+
+const deleteRoles = `mutation deleteRoles($roleIds: [Int!]!) {
+  delete_team_role_requirements(where: {id: {_in: $roleIds}}) {
+    affected_rows
+  }
+}`;
+
+const updateRoleRequirement = `mutation updateRoleRequirement($roleId: Int!, $roleName: String!) {
+  update_team_role_requirements_by_pk(
+    pk_columns: {id: $roleId}, 
+    _set: {role_name: $roleName}
+  ) {
+    id
+    role_name
+  }
+}`;
+
 module.exports = {
   updatePost,
   updateRolesRequired,
@@ -103,4 +150,9 @@ module.exports = {
   addRolesRequired,
   addSkillsRequired,
   deleteTeam,
+  updateLookingForTeamMembersAndMentors,
+  deleteTeamMembers,
+  deleteRoleSkills,
+  deleteRoles,
+  updateRoleRequirement,
 };

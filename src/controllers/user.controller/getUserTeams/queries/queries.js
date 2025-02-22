@@ -5,7 +5,11 @@ const getUserTeams = `query getMyTeams($user_id: Int) {
     avatar
     looking_for_members
     looking_for_mentors
-    team_role_requirements {
+    team_role_requirements(where: {
+        is_filled : {
+          _eq: true
+        }
+      } ) {
       role {
         id
         name

@@ -16,8 +16,6 @@ const getProject = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
   const { id } = req.query;
 
-  console.log('Received cognito_sub:', cognito_sub);
-
   const response = await Hasura(getConnections, { cognito_sub });
   if (response.result.data.user.length === 0) {
     return res.status(401).json({
@@ -56,8 +54,6 @@ const getProject = catchAsync(async (req, res) => {
   }
 
   const response1 = await Hasura(queries, variables);
-
-  console.log(JSON.stringify(response1.result.data.project[0]));
 
   if (response1.result.data.project.length === 0) {
     return res.status(400).json({

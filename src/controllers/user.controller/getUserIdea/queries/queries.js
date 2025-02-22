@@ -3,6 +3,7 @@ const getUserIdeasById = `query getUserIdeasById($user_id: Int, $cognito_sub: St
     id
     title
     description
+    status
     user_id
     team_id
     idea_tags {
@@ -45,6 +46,29 @@ const getUserIdeasById = `query getUserIdeasById($user_id: Int, $cognito_sub: St
       id
       looking_for_members
       looking_for_mentors
+      name
+      avatar
+      team_role_requirements(where: {
+        is_filled : {
+          _eq: true
+        }
+      } ){
+        role_name
+        team_skill_requirements{
+          skill_name
+        }
+      }
+      team_members {
+        user {
+          id
+          first_name
+          last_name
+          user_name
+          role
+          admin
+          avatar
+        }
+      }
     }
   }
 }
@@ -55,6 +79,7 @@ const getUserIdeasByCognitoSub = `query getUserIdeasByCognitoSub($cognito_sub: S
     id
     title
     description
+    status
     user_id
     team_id
     idea_tags {
@@ -97,6 +122,29 @@ const getUserIdeasByCognitoSub = `query getUserIdeasByCognitoSub($cognito_sub: S
       id
       looking_for_members
       looking_for_mentors
+      name
+      avatar
+      team_role_requirements(where: {
+        is_filled : {
+          _eq: true
+        }
+      } ){
+        role_name
+        team_skill_requirements{
+          skill_name
+        }
+      }
+      team_members {
+        user {
+          id
+          first_name
+          last_name
+          user_name
+          role
+          admin
+          avatar
+        }
+      }
     }
   }
 }`;

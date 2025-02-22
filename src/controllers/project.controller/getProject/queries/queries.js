@@ -36,6 +36,13 @@ const getProjects = `query getProjects($cognito_sub: String) {
         text
         created_at
         updated_at
+        user {
+            id
+            avatar
+            first_name
+            last_name
+            role
+        }
       }
     }
     project_mentions {
@@ -124,6 +131,13 @@ const getProject = `query getProject($id: Int, $cognito_sub: String) {
         text
         created_at
         updated_at
+        user {
+          id
+          avatar
+          first_name
+          last_name
+          role
+        }
       }
     }
     project_mentions {

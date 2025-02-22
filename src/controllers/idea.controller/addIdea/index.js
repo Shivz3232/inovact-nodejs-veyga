@@ -53,13 +53,11 @@ const addIdeas = catchAsync(async (req, res) => {
 
   const userEventFlags = response1.result.data.user[0].user_action;
 
-  const allowed_statuses = ['ideation', 'mvp/prototype', 'traction'];
-
   const ideaData = {
     description,
     title,
     user_id: response1.result.data.user[0].id,
-    status: allowed_statuses.indexOf(status) > -1 ? req.body.status : 'ideation',
+    status,
     link,
   };
 
