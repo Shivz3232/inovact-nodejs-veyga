@@ -1,4 +1,3 @@
-const { log } = require('../../../../config/logger');
 const { query: Hasura } = require('../../../../utils/hasura');
 const {
   replyOnPostComment,
@@ -11,14 +10,19 @@ const mutationMap = {
   idea: replyOnIdeaComment,
   thought: replyOnThoughtComment,
 };
+
 async function replyComment(commentType, text, commentId, userId, parentReplyId) {
   const mutation = mutationMap[commentType];
 
   return await Hasura(mutation, {
-    text,
-    commentId,
-    userId,
-    parentReplyId,
+    objects: [
+      {
+        text,
+        comment_id: commentId,
+        user_id: userId,
+        ...(parentReplyId && { parent_reply_id: parentReplyId }),
+      },
+    ],
   });
 }
 
