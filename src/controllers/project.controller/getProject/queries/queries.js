@@ -202,6 +202,7 @@ const getConnections = `query getConnections($cognito_sub: String) {
   }
   user (where: {cognito_sub: {_eq: $cognito_sub}}) {
     id
+    role
   }
 }`;
 

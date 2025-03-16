@@ -1,7 +1,12 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const { possibleToJoinTeam } = require('./queries/queries');
-const { addTeamRequestByStudent, addTeamRequestByMentor, addTeamRequestByEntrepreneurAsMember, addTeamRequestByEntrepreneurAsMentor } = require('./queries/mutations');
+const {
+  addTeamRequestByStudent,
+  addTeamRequestByMentor,
+  addTeamRequestByEntrepreneurAsMember,
+  addTeamRequestByEntrepreneurAsMentor,
+} = require('./queries/mutations');
 const notify = require('../../../utils/notify');
 const enqueueEmailNotification = require('../../../utils/enqueueEmailNotification');
 const logger = require('../../../config/logger');

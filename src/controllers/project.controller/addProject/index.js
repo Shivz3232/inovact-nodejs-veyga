@@ -94,6 +94,7 @@ const addProject = catchAsync(async (req, res) => {
       return {
         team_id: projectData.team_id,
         role_name: ele.role_name,
+        role_type: ele.role_type,
       };
     });
 
