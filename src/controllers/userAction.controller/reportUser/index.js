@@ -13,11 +13,12 @@ const reportUser = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, user_id, reason } = req.body;
+  const { cognito_sub, reason } = req.body;
+  const { userId } = req.params;
 
   const userCheckResponse = await Hasura(getUserIds, {
     cognito_sub,
-    reported_user_id: user_id,
+    reported_user_id: userId,
   });
 
   if (!userCheckResponse.result.data.reporter.length) {
@@ -36,9 +37,17 @@ const reportUser = catchAsync(async (req, res) => {
     });
   }
 
+  if (userCheckResponse.result.data.reports.length) {
+    return res.status(404).json({
+      success: false,
+      errorCode: 'userAlreadyReported',
+      errorMessage: 'You have already reported the user',
+    });
+  }
+
   const reporterUserId = userCheckResponse.result.data.reporter[0].id;
 
-  if (reporterUserId === user_id) {
+  if (reporterUserId === userId) {
     return res.status(400).json({
       success: false,
       errorCode: 'SelfReport',
@@ -47,7 +56,7 @@ const reportUser = catchAsync(async (req, res) => {
   }
 
   const reportResponse = await Hasura(reportUserMutation, {
-    userId: user_id,
+    userId,
     reportedBy: reporterUserId,
     reason,
   });

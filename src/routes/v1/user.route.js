@@ -7,6 +7,9 @@ const userActivityController = require('../../controllers/userActivites.controll
 const {
   getUserActionsSanitizer,
   updateUserActionSanitizer,
+  reportUserSanitizer,
+  blockUserSanitizer,
+  unblockUserSanitizer,
 } = require('../../controllers/userAction.controller/sanitizer');
 const {
   createUserSanitizer,
@@ -22,7 +25,6 @@ const {
   getUserFeedbackSanitizer,
   addUserReferralSanitizer,
   getStatsSanitizer,
-  reportUserSanitizer,
 } = require('../../controllers/user.controller/sanitizer');
 const {
   getUserActivitySanitizer,
@@ -72,8 +74,8 @@ router.get('/getStats', getStatsSanitizer, userController.getStats);
 router.get('/actions', getUserActionsSanitizer, userActionController.getUserActions);
 router.put('/actions', updateUserActionSanitizer, userActionController.updateUserActions);
 
-router.post('/:userId/report', reportUserSanitizer, userController.reportUser);
-router.post('/:userId/block', reportUserSanitizer, userController.reportUser);
-router.post('/:userId/unblock n', reportUserSanitizer, userController.reportUser);
+router.post('/:userId/report', reportUserSanitizer, userActionController.reportUser);
+router.post('/:userId/block', blockUserSanitizer, userActionController.blockUser);
+router.post('/:userId/unblock', unblockUserSanitizer, userActionController.unblockUser);
 
 module.exports = router;

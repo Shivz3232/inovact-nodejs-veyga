@@ -13,12 +13,12 @@ const unblockUser = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, user_id } = req.body;
+  const { cognito_sub } = req.body;
+  const { userId } = req.params;
 
-  // Verify both users exist
   const userCheckResponse = await Hasura(getUserIds, {
     cognito_sub,
-    blocked_user_id: user_id,
+    blocked_user_id: userId,
   });
 
   if (!userCheckResponse.result.data.blocker.length) {
@@ -31,13 +31,12 @@ const unblockUser = catchAsync(async (req, res) => {
 
   const blockerUserId = userCheckResponse.result.data.blocker[0].id;
 
-  // Check if block exists
   const blockCheckResponse = await Hasura(checkBlockExists, {
     userId: blockerUserId,
-    blockedUserId: user_id
+    blockedUserId: userId,
   });
-  
-  if (blockCheckResponse.result.data.user_blocks.length === 0) {
+
+  if (blockCheckResponse.result.data.user_blocked_users.length === 0) {
     return res.status(400).json({
       success: false,
       errorCode: 'NotBlocked',
@@ -45,16 +44,15 @@ const unblockUser = catchAsync(async (req, res) => {
     });
   }
 
-  // Remove the block
   const unblockResponse = await Hasura(unblockUserMutation, {
     userId: blockerUserId,
-    blockedUserId: user_id,
+    blockedUserId: userId,
   });
 
   return res.json({
     success: true,
     message: 'User unblocked successfully',
-    affected_rows: unblockResponse.result.data.delete_user_blocks.affected_rows
+    affected_rows: unblockResponse.result.data.delete_user_blocked_users.affected_rows,
   });
 });
 

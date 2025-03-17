@@ -13,12 +13,12 @@ const blockUser = catchAsync(async (req, res) => {
     });
   }
 
-  const { cognito_sub, user_id, reason } = req.body;
+  const { cognito_sub, reason } = req.body;
+  const { userId } = req.params;
 
-  // Verify both users exist
   const userCheckResponse = await Hasura(getUserIds, {
     cognito_sub,
-    blocked_user_id: user_id,
+    blocked_user_id: userId,
   });
 
   if (!userCheckResponse.result.data.blocker.length) {
@@ -39,8 +39,7 @@ const blockUser = catchAsync(async (req, res) => {
 
   const blockerUserId = userCheckResponse.result.data.blocker[0].id;
 
-  // Prevent self-blocking
-  if (blockerUserId === user_id) {
+  if (blockerUserId === userId) {
     return res.status(400).json({
       success: false,
       errorCode: 'SelfBlock',
@@ -48,13 +47,12 @@ const blockUser = catchAsync(async (req, res) => {
     });
   }
 
-  // Check if already blocked
   const blockCheckResponse = await Hasura(checkBlockExists, {
     userId: blockerUserId,
-    blockedUserId: user_id
+    blockedUserId: userId,
   });
-  
-  if (blockCheckResponse.result.data.user_blocks.length > 0) {
+
+  if (blockCheckResponse.result.data.user_blocked_users.length > 0) {
     return res.status(400).json({
       success: false,
       errorCode: 'AlreadyBlocked',
@@ -62,17 +60,16 @@ const blockUser = catchAsync(async (req, res) => {
     });
   }
 
-  // Create the block
   const blockResponse = await Hasura(blockUserMutation, {
     userId: blockerUserId,
-    blockedUserId: user_id,
+    blockedUserId: userId,
     reason,
   });
 
   return res.json({
     success: true,
-    data: blockResponse.result.data.insert_user_blocks_one,
-    message: 'User blocked successfully'
+    data: blockResponse.result.data.insert_user_blocked_users_one,
+    message: 'User blocked successfully',
   });
 });
 

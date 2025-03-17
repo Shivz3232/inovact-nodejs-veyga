@@ -5,6 +5,26 @@ const getUserIds = `query getUserIds($cognito_sub: String!, $reported_user_id: I
   reported: user(where: { id: { _eq: $reported_user_id } }) {
     id
   }
+  reports: user_reports(where: {
+    _and: [
+      {
+        user: {
+          cognito_sub: {
+            _eq: $cognito_sub
+          }
+        }
+      }, 
+      {
+        userByUserId:{
+          id: {
+            _eq: $reported_user_id
+          }
+        }
+      }
+    ]
+  }){
+    id
+  }
 }`;
 
 module.exports = { getUserIds };
