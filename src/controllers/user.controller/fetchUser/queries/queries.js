@@ -171,7 +171,16 @@ const getUserById = `query getUser($id: Int, $cognito_sub: String) {
   }
 }`;
 
+const checkIfUserHasBlocked = `query checkIfUserHasBlocked($userId: Int!) {
+  user_blocked_users(where: {
+    user_id: {_eq: $userId}
+  }, limit: 1) {
+    user_id
+  }
+}`;
+
 module.exports = {
   getUser,
   getUserById,
+  checkIfUserHasBlocked,
 };

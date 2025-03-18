@@ -1,5 +1,5 @@
-const getProjects = `query getProjects($cognito_sub: String) {
-  project(order_by: { created_at: desc } ,where :{user : {status : {_neq:0}}}) {
+const getProjects = `query getProjects($cognito_sub: String,  $blocked_user_ids: [Int!]) {
+  project(order_by: { created_at: desc }, where: { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
     id
     title
     description
@@ -93,8 +93,8 @@ const getProjects = `query getProjects($cognito_sub: String) {
   }
 }`;
 
-const getProject = `query getProject($id: Int, $cognito_sub: String) {
-  project(where: {  id :{_eq: $id}  , user :{status :{_neq:0}}}) {
+const getProject = `query getProject($id: Int, $cognito_sub: String,  $blocked_user_ids: [Int!]) {
+  project(order_by: { created_at: desc }, where: { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
     id
     title
     description
@@ -203,6 +203,15 @@ const getConnections = `query getConnections($cognito_sub: String) {
   user (where: {cognito_sub: {_eq: $cognito_sub}}) {
     id
     role
+  }
+  user_blocked_users(where: {
+    userByUserId:{
+      cognito_sub: {
+        _eq: $cognito_sub
+      }
+    }
+  }){
+    blocked_user_id
   }
 }`;
 

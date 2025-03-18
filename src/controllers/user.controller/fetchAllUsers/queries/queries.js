@@ -1,10 +1,10 @@
 const getAllUsersQuery = `
-  query getAllUsers($cognito_sub: String!) {
+  query getAllUsers($cognito_sub: String!, $usersToExclude: [Int!]) {
     user_info: user(where: { cognito_sub: { _eq: $cognito_sub } }) {
       university
     }
     all_users: user(
-      where: { profile_complete: { _eq: true } }
+      where: { profile_complete: { _eq: true }, id: { _nin: $usersToExclude } }
       order_by: [
         { university: asc_nulls_last },
         { first_name: asc },
@@ -35,17 +35,27 @@ const getAllUsersQuery = `
       admin
       profile_complete
       user_skills {
-      id
-      skill
-      level
-    }
-    user_interests {
-      area_of_interest {
         id
-        interest
+        skill
+        level
       }
-    }
+      user_interests {
+        area_of_interest {
+          id
+          interest
+        }
+      }
     }
   }`;
 
-module.exports = { getAllUsersQuery };
+const getBlockedUsers = `query getBlockedUsers($cognito_sub: String) {
+  user_blocked_users(where: { user:{
+    cognito_sub: {
+      _eq: $cognito_sub
+    }
+  }}) {
+    user_id
+  }
+}`;
+
+module.exports = { getAllUsersQuery, getBlockedUsers };
