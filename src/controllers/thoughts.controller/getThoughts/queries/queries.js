@@ -1,5 +1,5 @@
-const getThoughts = `query getThoughts($cognito_sub: String) {
-  thoughts(order_by: {created_at:desc} ,where :{user : {status : {_neq:0}}}) {
+const getThoughts = `query getThoughts($cognito_sub: String, $blocked_user_ids: [Int!]) {
+  thoughts(order_by: {created_at:desc} ,where :{ user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
     id
     thought
     user_id
@@ -38,8 +38,8 @@ const getThoughts = `query getThoughts($cognito_sub: String) {
 }
 `;
 
-const getThought = `query getThought($id: Int, $cognito_sub: String) {
-  thoughts (where: {  id :{_eq: $id}  , user :{status :{_neq:0}}}) {
+const getThought = `query getThought($id: Int, $cognito_sub: String,  $blocked_user_ids: [Int!]) {
+  thoughts (where: {  id :{_eq: $id}  , { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }}) {
     id
     thought
     user_id
@@ -92,6 +92,15 @@ connections(where: {
 user (where: {cognito_sub: {_eq: $cognito_sub}}) {
   id
 }
+user_blocked_users(where: {
+    userByUserId:{
+      cognito_sub: {
+        _eq: $cognito_sub
+      }
+    }
+  }){
+    blocked_user_id
+  }
 }`;
 
 module.exports = {

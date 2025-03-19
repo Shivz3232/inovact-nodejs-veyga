@@ -37,6 +37,11 @@ const getProject = catchAsync(async (req, res) => {
     }
   });
 
+  // Fetch blocked users
+  const blockedUserIds = response.result.data.user_blocked_users.map(
+    (blockedUser) => blockedUser.blocked_user_id
+  );
+
   let queries;
   let variables;
 
@@ -53,6 +58,8 @@ const getProject = catchAsync(async (req, res) => {
     queries = getProjects;
   }
 
+  variables.blocked_user_ids = blockedUserIds;
+
   const response1 = await Hasura(queries, variables);
 
   if (response1.result.data.project.length === 0) {
@@ -64,11 +71,15 @@ const getProject = catchAsync(async (req, res) => {
     });
   }
 
-  const cleanedPosts = response1.result.data.project.map((doc) => {
-    doc = cleanPostDoc(doc);
-    doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
-    return doc;
-  });
+  const cleanedPosts = response1.result.data.project
+    .filter((doc) => !blockedUserIds.includes(doc.user.id))
+    .map((doc) => {
+      doc = cleanPostDoc(doc);
+      doc.connections_status = connections[doc.user.id]
+        ? connections[doc.user.id]
+        : 'not connected';
+      return doc;
+    });
 
   if (id) return res.json(cleanedPosts[0]);
 

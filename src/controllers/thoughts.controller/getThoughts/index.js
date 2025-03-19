@@ -38,6 +38,10 @@ const getThoughts = catchAsync(async (req, res) => {
     }
   });
 
+  const blockedUserIds = response.result.data.user_blocked_users.map(
+    (blockedUser) => blockedUser.blocked_user_id
+  );
+
   let variables;
   let queries;
 
@@ -55,6 +59,7 @@ const getThoughts = catchAsync(async (req, res) => {
     queries = getThoughtsQuery;
   }
 
+  variables.blocked_user_ids = blockedUserIds;
   const response1 = await Hasura(queries, variables);
 
   if (response1.result.data.thoughts.length === 0) {

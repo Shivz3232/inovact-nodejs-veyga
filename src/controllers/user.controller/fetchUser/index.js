@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const { query: Hasura } = require('../../../utils/hasura');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
-const { getUser, getUserById } = require('./queries/queries');
+const { getUser, getUserById, checkIfUserHasBlocked } = require('./queries/queries');
 const catchAsync = require('../../../utils/catchAsync');
 
 const fetchUser = catchAsync(async (req, res) => {
@@ -21,6 +21,14 @@ const fetchUser = catchAsync(async (req, res) => {
 
   if (id) {
     query = getUserById;
+    const usersToExcludeResponse = await Hasura(checkIfUserHasBlocked, { userId: id });
+    if (usersToExcludeResponse.result.data.user_blocked_users.length !== 0) {
+      return res.status(404).json({
+        success: false,
+        errorCode: 'UserNotFound',
+        errorMessage: 'No user found',
+      });
+    }
 
     variables = {
       id,
