@@ -4,12 +4,37 @@ const userActionController = require('../../controllers/userAction.controller');
 const userController = require('../../controllers/user.controller');
 const userActivityController = require('../../controllers/userActivites.controller');
 
-const { getUserActionsSanitizer, updateUserActionSanitizer } = require('../../controllers/userAction.controller/sanitizer');
-const { createUserSanitizer, addAOISanitizer, deactivateUserSanitizer, deleteAOISanitizer, deleteUserSanitizer, fetchUserSanitizer, getUserPostsSanitizer, getUserTeamsSanitizer, updateUserSanitizer, addUserFeedbackSanitizer, getUserFeedbackSanitizer, addUserReferralSanitizer, getStatsSanitizer } = require('../../controllers/user.controller/sanitizer');
-const { getUserActivitySanitizer, getUserActivitiesSanitizer, insertUserActivitySanitizer } = require('../../controllers/userActivites.controller/sanitizer');
+const {
+  getUserActionsSanitizer,
+  updateUserActionSanitizer,
+  reportUserSanitizer,
+  blockUserSanitizer,
+  unblockUserSanitizer,
+} = require('../../controllers/userAction.controller/sanitizer');
+const {
+  createUserSanitizer,
+  addAOISanitizer,
+  deactivateUserSanitizer,
+  deleteAOISanitizer,
+  deleteUserSanitizer,
+  fetchUserSanitizer,
+  getUserPostsSanitizer,
+  getUserTeamsSanitizer,
+  updateUserSanitizer,
+  addUserFeedbackSanitizer,
+  getUserFeedbackSanitizer,
+  addUserReferralSanitizer,
+  getStatsSanitizer,
+} = require('../../controllers/user.controller/sanitizer');
+const {
+  getUserActivitySanitizer,
+  getUserActivitiesSanitizer,
+  insertUserActivitySanitizer,
+} = require('../../controllers/userActivites.controller/sanitizer');
 
 const router = express.Router();
 
+// Add the route (find an appropriate location in the existing routes)
 router.post('/', createUserSanitizer, userController.createUser);
 
 router.post('/interest', addAOISanitizer, userController.addAreaOfInterest);
@@ -33,7 +58,11 @@ router.get('/feedback', getUserFeedbackSanitizer, userController.getUserFeedback
 // user activities
 router.post('/activity', insertUserActivitySanitizer, userActivityController.insertUserActivity);
 router.get('/activities', getUserActivitiesSanitizer, userActivityController.getUserActivities);
-router.get('/activity/:activityId', getUserActivitySanitizer, userActivityController.getUserActivity);
+router.get(
+  '/activity/:activityId',
+  getUserActivitySanitizer,
+  userActivityController.getUserActivity
+);
 
 // referral
 router.post('/referral', addUserReferralSanitizer, userController.addUserRefferal);
@@ -44,5 +73,9 @@ router.get('/getStats', getStatsSanitizer, userController.getStats);
 // user actions
 router.get('/actions', getUserActionsSanitizer, userActionController.getUserActions);
 router.put('/actions', updateUserActionSanitizer, userActionController.updateUserActions);
+
+router.post('/:userId/report', reportUserSanitizer, userActionController.reportUser);
+router.post('/:userId/block', blockUserSanitizer, userActionController.blockUser);
+router.post('/:userId/unblock', unblockUserSanitizer, userActionController.unblockUser);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const catchAsync = require('../../../utils/catchAsync');
-const { getAllUsersQuery } = require('./queries/queries');
+const { getAllUsersQuery, getBlockedUsers } = require('./queries/queries');
 const { query: Hasura } = require('../../../utils/hasura');
 
 // Helper function to normalize university names
@@ -19,7 +19,12 @@ const universitySimilarity = (uni1, uni2) => {
 
 const getAllUsers = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
-  const response = await Hasura(getAllUsersQuery, { cognito_sub });
+  const usersToExcludeResponse = await Hasura(getBlockedUsers, { cognito_sub });
+  const usersToExclude = usersToExcludeResponse.result.data.user_blocked_users.map(
+    (blockedUser) => blockedUser.user_id
+  );
+
+  const response = await Hasura(getAllUsersQuery, { cognito_sub, usersToExclude });
   const userInfo = response.result.data.user_info[0];
 
   if (!userInfo) {

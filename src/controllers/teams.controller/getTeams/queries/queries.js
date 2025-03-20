@@ -1,4 +1,4 @@
-const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
+const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean, $user_role: team_role) {
   team(where: { team_members: {user: {cognito_sub: {_eq: $cognito_sub}}, _or: [{admin: {_eq: true}}, {admin: {_eq: $admin}}]}}) {
     id
     name
@@ -7,10 +7,9 @@ const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
     looking_for_members
     looking_for_mentors
     team_role_requirements(where: {
-        is_filled : {
-          _eq: true
-        }
-      } ){
+        is_filled : {_eq: true},
+        role_type: {_eq: $user_role}
+      }){
       id
       role_name
       team_skill_requirements {
@@ -96,7 +95,7 @@ const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
 }
 `;
 
-const getTeam = `query getTeam($team_id: Int) {
+const getTeam = `query getTeam($team_id: Int, $user_role: team_role) {
   team(where: {id: { _eq: $team_id }}) {
     id
     name
@@ -105,9 +104,8 @@ const getTeam = `query getTeam($team_id: Int) {
     looking_for_members
     looking_for_mentors
     team_role_requirements(where: {
-        is_filled : {
-          _eq: false
-        }
+        is_filled : {_eq: true},
+        role_type: {_eq: $user_role}
       } ){
       id
       role_name
@@ -194,7 +192,16 @@ const getTeam = `query getTeam($team_id: Int) {
   }
 }`;
 
+const getUserRole = `
+  query getUserRole($cognito_sub: String!) {
+    user(where: {cognito_sub: {_eq: $cognito_sub}}) {
+      role
+    }
+  }
+`;
+
 module.exports = {
   getUserTeams,
   getTeam,
+  getUserRole,
 };

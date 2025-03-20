@@ -1,5 +1,5 @@
-const getIdeas = `query getIdeas($cognito_sub: String) {
-  idea(order_by: {created_at:desc} ,where :{user : {status : {_neq:0}}}) {
+const getIdeas = `query getIdeas($cognito_sub: String,  $blocked_user_ids: [Int!]) {
+  idea(order_by: {created_at:desc} ,where : { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
     id
     title
     description
@@ -65,8 +65,8 @@ const getIdeas = `query getIdeas($cognito_sub: String) {
 }
 `;
 
-const getIdea = `query getIdea($id: Int, $cognito_sub: String) {
-  idea (where: {  id :{_eq: $id}  , user :{status :{_neq:0}}}) {
+const getIdea = `query getIdea($id: Int, $cognito_sub: String,  $blocked_user_ids: [Int!]) {
+  idea (where: {  id :{_eq: $id}, { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }}) {
     id
     title
     description
@@ -146,6 +146,15 @@ connections(where: {
 user (where: {cognito_sub: {_eq: $cognito_sub}}) {
   id
 }
+user_blocked_users(where: {
+    userByUserId:{
+      cognito_sub: {
+        _eq: $cognito_sub
+      }
+    }
+  }){
+    blocked_user_id
+  }
 }`;
 
 module.exports = {

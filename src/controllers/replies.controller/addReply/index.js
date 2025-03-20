@@ -16,7 +16,6 @@ const addReply = catchAsync(async (req, res) => {
   const { text, parentReplyId, cognito_sub, commentType } = req.body;
   const { commentId } = req.params;
 
-  // Fetch User ID
   const response = await Hasura(getUserId, {
     cognito_sub: { _eq: cognito_sub },
   });
@@ -34,7 +33,7 @@ const addReply = catchAsync(async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    data: data.result.data.insert_post_comment_replies_one,
+    data: data.result.data[`insert_${commentType}_comment_replies`],
   });
 });
 
