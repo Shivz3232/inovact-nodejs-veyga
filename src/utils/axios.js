@@ -36,7 +36,6 @@ async function getHostedHasuraInstance() {
   const selectedInstance = hasuraInstances[instanceIndex];
   instanceIndex = (instanceIndex + 1) % hasuraInstances.length; // Update the index for the next request
 
-  console.log('Pratik: Found hosted hasura instance');
   return selectedInstance;
 }
 
@@ -61,12 +60,10 @@ function getProviderHasuraInstance() {
 }
 
 const getBestInstance = async () => {
-  console.log(`Pratik: ${config.NODE_ENV}: ${config.hasuraApi} And ${config.hasuraAdminSecret}`);
   if (config.NODE_ENV !== 'development') {
     const hostedHasuraInstance = await getHostedHasuraInstance();
 
     if (hostedHasuraInstance) {
-      console.log('Pratik: Found hosted hasura instance');
       const instanceAttributes = hostedHasuraInstance.Attributes;
 
       return axios.create({
@@ -85,7 +82,6 @@ const getBestInstance = async () => {
       });
     }
   }
-  console.log('Pratik: Did not found hosted hasura instance');
   return getProviderHasuraInstance();
 };
 

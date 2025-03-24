@@ -7,27 +7,11 @@ const getTeams = catchAsync(async (req, res) => {
   const { team_id } = req.query;
   const { cognito_sub } = req.body;
 
-  const userRoleResponse = await Hasura(getUserRole, { cognito_sub });
-  let userRole = userRoleResponse.result.data.user[0].role;
-
-  if (userRole === 'student') {
-    userRole = 'member';
-  }
-  if (!userRole) {
-    return res.status(400).json({
-      success: false,
-      errorCode: 'NotFound',
-      errorMessage: 'User not found',
-      data: null,
-    });
-  }
-
   let query;
   const variables = {};
 
   if (team_id) {
     variables.team_id = team_id;
-    variables.user_role = userRole;
 
     query = getTeam;
   } else {
@@ -35,7 +19,6 @@ const getTeams = catchAsync(async (req, res) => {
     else variables.admin = false;
 
     variables.cognito_sub = cognito_sub;
-    variables.user_role = userRole;
 
     query = getUserTeams;
   }
