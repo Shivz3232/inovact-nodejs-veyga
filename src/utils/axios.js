@@ -82,7 +82,6 @@ const getBestInstance = async () => {
       });
     }
   }
-
   return getProviderHasuraInstance();
 };
 

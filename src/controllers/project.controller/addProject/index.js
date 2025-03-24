@@ -71,8 +71,6 @@ const addProject = catchAsync(async (req, res) => {
 
   let teamCreated;
 
-  // Create a default team
-
   if (looking_for_members || looking_for_mentors) {
     teamCreated = await createDefaultTeam(
       response1.result.data.user[0].id,
@@ -93,7 +91,7 @@ const addProject = catchAsync(async (req, res) => {
     const roles_data = roles_required.map((ele) => {
       return {
         team_id: projectData.team_id,
-        role_name: ele.role_name,
+        role_name: ele.role_type === 'mentor' ? '' : ele.role_name,
         role_type: ele.role_type,
       };
     });

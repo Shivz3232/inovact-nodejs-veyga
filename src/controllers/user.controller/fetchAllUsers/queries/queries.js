@@ -55,6 +55,7 @@ const getBlockedUsers = `query getBlockedUsers($cognito_sub: String) {
     }
   }}) {
     user_id
+    blocked_user_id
   }
 }`;
 

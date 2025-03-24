@@ -24,6 +24,12 @@ const getAllUsers = catchAsync(async (req, res) => {
     (blockedUser) => blockedUser.user_id
   );
 
+  const blockedUserIds = new Set(
+    usersToExcludeResponse.result.data.user_blocked_users.map(
+      (blockedUser) => blockedUser.blocked_user_id
+    )
+  );
+
   const response = await Hasura(getAllUsersQuery, { cognito_sub, usersToExclude });
   const userInfo = response.result.data.user_info[0];
 
@@ -34,7 +40,12 @@ const getAllUsers = catchAsync(async (req, res) => {
   const { university: userUniversity } = userInfo;
   const allUsers = response.result.data.all_users;
 
-  const sortedUsers = allUsers.sort((a, b) => {
+  const usersWithBlockedFlag = allUsers.map((user) => ({
+    ...user,
+    isBlocked: blockedUserIds.has(user.id),
+  }));
+
+  const sortedUsers = usersWithBlockedFlag.sort((a, b) => {
     const aSimilarity = universitySimilarity(a.university, userUniversity);
     const bSimilarity = universitySimilarity(b.university, userUniversity);
 
