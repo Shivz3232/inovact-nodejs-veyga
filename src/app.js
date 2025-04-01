@@ -89,23 +89,16 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
 
 // For iOS universal links
 app.get('/.well-known/apple-app-site-association', (req, res) => {
-  const filePath = path.join(__dirname, 'public', 'apple-app-site-association');
+  const filePath = path.join(__dirname, 'public', 'apple-app-site-association.json');
 
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      logger.error('Error reading apple-app-site-association file:', err);
+      logger.error('Error reading apple-app-site-association.json file:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
     res.setHeader('Content-Type', 'application/json');
-
-    try {
-      const jsonData = JSON.parse(data);
-      res.json(jsonData);
-    } catch (parseErr) {
-      logger.error('Error parsing apple-app-site-association file:', parseErr);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
+    res.end(data);
   });
 });
 
