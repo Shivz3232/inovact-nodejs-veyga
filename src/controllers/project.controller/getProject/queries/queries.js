@@ -93,8 +93,8 @@ const getProjects = `query getProjects($cognito_sub: String,  $blocked_user_ids:
   }
 }`;
 
-const getProject = `query getProject($id: Int, $cognito_sub: String,  $blocked_user_ids: [Int!]) {
-  project(order_by: { created_at: desc }, where: { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
+const getProject = `query getProject($id: Int, $cognito_sub: String, $blocked_user_ids: [Int!]) {
+  project(order_by: { created_at: desc }, where: { id: {_eq: $id}, user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
     id
     title
     description
@@ -186,8 +186,7 @@ const getProject = `query getProject($id: Int, $cognito_sub: String,  $blocked_u
       }
     }
   }
-}
-`;
+}`;
 
 const getConnections = `query getConnections($cognito_sub: String) {
   connections(where: {
