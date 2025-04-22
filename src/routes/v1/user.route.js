@@ -3,6 +3,7 @@ const express = require('express');
 const userActionController = require('../../controllers/userAction.controller');
 const userController = require('../../controllers/user.controller');
 const userActivityController = require('../../controllers/userActivites.controller');
+const phoneNumberController = require('../../controllers/phoneNumber.controller');
 
 const {
   getUserActionsSanitizer,
@@ -31,6 +32,10 @@ const {
   getUserActivitiesSanitizer,
   insertUserActivitySanitizer,
 } = require('../../controllers/userActivites.controller/sanitizer');
+const {
+  verifyPhoneNumberSanitizer,
+  addPhoneNumberSanitizer,
+} = require('../../controllers/phoneNumber.controller/sanitizer');
 
 const router = express.Router();
 
@@ -77,5 +82,12 @@ router.put('/actions', updateUserActionSanitizer, userActionController.updateUse
 router.post('/:userId/report', reportUserSanitizer, userActionController.reportUser);
 router.post('/:userId/block', blockUserSanitizer, userActionController.blockUser);
 router.post('/:userId/unblock', unblockUserSanitizer, userActionController.unblockUser);
+
+router.post('/phonenumber', addPhoneNumberSanitizer, phoneNumberController.addPhoneNumber);
+router.post(
+  '/phonenumber/verify',
+  verifyPhoneNumberSanitizer,
+  phoneNumberController.verifyPhoneNumber
+);
 
 module.exports = router;
