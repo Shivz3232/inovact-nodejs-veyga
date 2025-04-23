@@ -9,6 +9,7 @@ const {
 const router = express.Router();
 
 router.get('/', getJobsSanitizer, jobController.getJobs);
+router.get('/eligible', getJobsSanitizer, jobController.eligibleForJob);
 router.get('/:jobId', getJobByIdSanitizer, jobController.getJobs);
 router.post('/:jobId/apply', applyForJobSanitizer, jobController.applyForJob);
 
