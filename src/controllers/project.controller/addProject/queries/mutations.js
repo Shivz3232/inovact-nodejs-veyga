@@ -1,8 +1,9 @@
-const addProject = `mutation add_project($description: String!, $title: String!, $user_id: Int, $status: String, $team_id: Int, $completed: Boolean, $link: String) {
-  insert_project(objects: [{title: $title, description: $description, user_id: $user_id, status: $status, team_id: $team_id, completed: $completed, link: $link}]) {
+const addProject = `mutation add_project($description: String!, $title: String!, $user_id: Int, $status: String, $team_id: Int, $completed: Boolean, $link: String, $github_repo_url: String) {
+  insert_project(objects: [{title: $title, description: $description, user_id: $user_id, status: $status, team_id: $team_id, completed: $completed, link: $link, github_repo_url: $github_repo_url}]) {
     returning {
       id
       title
+      github_repo_url
       description
       project_tags {
         hashtag {
@@ -44,8 +45,7 @@ const addProject = `mutation add_project($description: String!, $title: String!,
       }
     }
   }
-}
-`;
+}`;
 
 const addMentions = `mutation addMentions($objects: [project_mentions_insert_input!]!) {
   insert_project_mentions(objects: $objects) {

@@ -57,6 +57,8 @@ const updateProject = catchAsync(async (req, res) => {
     if (req.body.link) variables.changes.link = req.body.link;
     if (req.body.status !== undefined) variables.changes.status = req.body.status;
     if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
+    if (req.body.github_repo_name !== undefined)
+      variables.changes.github_repo_name = req.body.github_repo_name;
 
     // Update project and get current state
     const response = await Hasura(updatePost, variables);
@@ -71,8 +73,6 @@ const updateProject = catchAsync(async (req, res) => {
 
     const { user_id, team_id: currentTeamId } = response.result.data.update_project.returning[0];
 
-    console.log('currentTeamId: ', currentTeamId);
-
     // Check user permission
     if (user_id !== currentUserId) {
       return res.status(403).json({
@@ -82,19 +82,19 @@ const updateProject = catchAsync(async (req, res) => {
       });
     }
 
-    let team_id = currentTeamId;
+    let teamId = currentTeamId;
 
     // Handle project completion
-    if (req.body.completed && currentTeamId) {
+    if (req.body.completed && teamId) {
       const projectFlagsUpdateVariables = {
-        team_id: currentTeamId,
+        teamId,
         lookingForMentors: false,
         lookingForMembers: false,
       };
       await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
 
       const getTeamMembersResponse = await Hasura(getTeamMembers, {
-        team_id: currentTeamId,
+        teamId,
       });
 
       const teamMembers = getTeamMembersResponse.result.data.team_members;
@@ -113,18 +113,18 @@ const updateProject = catchAsync(async (req, res) => {
 
     // Handle team updates
     if (
-      currentTeamId &&
+      teamId &&
       ((response.result.data.update_project.returning[0].team.looking_for_mentors === true &&
         req.body.looking_for_mentors === false) ||
         (response.result.data.update_project.returning[0].team.looking_for_members === true &&
           req.body.looking_for_members === false))
     ) {
       if (!req.body.looking_for_mentors && !req.body.looking_for_members) {
-        await Hasura(deleteTeam, { team_id: currentTeamId });
-        team_id = null;
+        await Hasura(deleteTeam, { teamId });
+        teamId = null;
       } else {
         await Hasura(updateLookingForTeamMembersAndMentors, {
-          teamId: currentTeamId,
+          teamId,
           looking_for_members: req.body.looking_for_members,
           looking_for_mentors: req.body.looking_for_mentors,
         });
@@ -132,7 +132,7 @@ const updateProject = catchAsync(async (req, res) => {
     }
 
     // Create new team if needed
-    if (!currentTeamId && (req.body.looking_for_mentors || req.body.looking_for_members)) {
+    if (!teamId && (req.body.looking_for_mentors || req.body.looking_for_members)) {
       if (!req.body.roles_required || req.body.roles_required.length === 0) {
         return res.status(400).json({
           success: false,
@@ -149,24 +149,18 @@ const updateProject = catchAsync(async (req, res) => {
         req.body.looking_for_members,
         req.body.team_on_inovact
       );
-      team_id = teamCreated.team_id;
+      teamId = teamCreated.team_id;
 
       // Update project with new team
       await Hasura(UpdateProjectTeam, {
         projectId: id,
-        newTeamId: team_id,
+        newTeamId: teamId,
       });
-
-      currentTeamId = team_id;
     }
 
     // Handle roles and skills
-    if (req.body.roles_required && req.body.roles_required.length > 0 && currentTeamId) {
-      const roleUpdateResult = await handleRoleAndSkillUpdates(
-        currentTeamId,
-        req.body.roles_required,
-        Hasura
-      );
+    if (req.body.roles_required && req.body.roles_required.length > 0 && teamId) {
+      await handleRoleAndSkillUpdates(teamId, req.body.roles_required, Hasura);
     }
 
     // Update documents if provided
@@ -196,7 +190,7 @@ const updateProject = catchAsync(async (req, res) => {
 
       await Hasura(updateProjectTags, {
         projectId: id,
-        tags: tags,
+        tags,
       });
     }
 

@@ -32,6 +32,7 @@ const addProject = catchAsync(async (req, res) => {
   const {
     cognito_sub,
     description,
+    github_repo_url,
     title,
     status,
     completed,
@@ -62,6 +63,7 @@ const addProject = catchAsync(async (req, res) => {
   // Insert project
   const projectData = {
     description,
+    github_repo_url,
     title,
     user_id: response1.result.data.user[0].id,
     status,
