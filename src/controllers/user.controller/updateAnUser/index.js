@@ -81,6 +81,11 @@ const updateanUser = catchAsync(async (req, res) => {
     }
   }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
+  if (req.body.portfolio_link) {
+    variables.changes.portfolio_link = req.body.portfolio_link;
+  } else {
+    variables.changes.portfolio_link = null;
+  }
   // eslint-disable-next-line no-prototype-builtins
   if (req.body.hasOwnProperty('profile_complete'))
     variables.changes.profile_complete = req.body.profile_complete;
