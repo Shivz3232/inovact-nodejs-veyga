@@ -1,10 +1,9 @@
 const getEligibilityData = `query GetEligibilityData($cognito_sub: String!) {
-  user_aggregate(where: {cognito_sub: {_eq: $cognito_sub}, phone_number: {_is_null: false}}) {
-    aggregate {
-      count
-    }
+  user(where: {cognito_sub: {_eq: $cognito_sub}}) {
+    phone_number
+    portfolio_link
   }
-  project_aggregate(where: {user: {cognito_sub: {_eq: $cognito_sub}}, github_repo_name: {_is_null: false}}) {
+  project_aggregate(where: {user: {cognito_sub: {_eq: $cognito_sub}}, github_repo_url: {_is_null: false}}) {
     aggregate {
       count
     }

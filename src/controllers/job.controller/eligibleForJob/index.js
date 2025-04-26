@@ -16,15 +16,18 @@ const eligibleForJob = catchAsync(async (req, res) => {
 
   const response = await Hasura(getEligibilityData, { cognito_sub });
 
-  const hasUpdatedPhNo = response.result.data.user_aggregate.aggregate.count === 1;
+  const user = response.result.data.user[0];
+  const hasUpdatedPhNo = user.phone_number != null;
+  const hasUpdatePortfolioLink = user.portfolio_link != null;
   const hasEnoughProjects = response.result.data.project_aggregate.aggregate.count === 3;
 
   return res.json({
     success: true,
     data: {
-      summary: hasUpdatedPhNo && hasEnoughProjects,
+      summary: hasUpdatedPhNo && hasEnoughProjects && hasUpdatePortfolioLink,
       hasUpdatedPhNo,
       hasEnoughProjects,
+      hasUpdatePortfolioLink,
     },
   });
 });
