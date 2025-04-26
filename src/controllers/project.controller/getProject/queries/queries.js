@@ -3,6 +3,7 @@ const getProjects = `query getProjects($cognito_sub: String,  $blocked_user_ids:
     id
     title
     description
+    github_repo_link
     link
     project_tags {
       hashtag {
@@ -98,6 +99,7 @@ const getProject = `query getProject($id: Int, $cognito_sub: String, $blocked_us
     id
     title
     description
+    github_repo_link
     link
     project_tags {
       hashtag {
