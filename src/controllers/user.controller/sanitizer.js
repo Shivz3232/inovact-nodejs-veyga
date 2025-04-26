@@ -32,7 +32,7 @@ const getUserPostsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()];
 
-const updateUserSanitizer = [cognito_sub];
+const updateUserSanitizer = [cognito_sub, body('phone_number').optional().isMobilePhone('en-IN')];
 
 const getStatsSanitizer = [cognito_sub];
 
