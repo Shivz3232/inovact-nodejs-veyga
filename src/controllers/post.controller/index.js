@@ -55,7 +55,9 @@ const getPosts = catchAsync(async (req, res) => {
 
     const cleanedPosts = response1.result.data.project.map((doc) => {
       doc = cleanPostDoc(doc);
-      doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
+      doc.connections_status = connections[doc.user.id]
+        ? connections[doc.user.id]
+        : 'not connected';
       return doc;
     });
 
@@ -77,7 +79,9 @@ const getPosts = catchAsync(async (req, res) => {
 
     const cleanedPosts = response1.result.data.project.map((doc) => {
       doc = cleanPostDoc(doc);
-      doc.connections_status = connections[doc.user.id] ? connections[doc.user.id] : 'not connected';
+      doc.connections_status = connections[doc.user.id]
+        ? connections[doc.user.id]
+        : 'not connected';
       return doc;
     });
 
