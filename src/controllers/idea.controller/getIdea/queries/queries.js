@@ -65,8 +65,14 @@ const getIdeas = `query getIdeas($cognito_sub: String,  $blocked_user_ids: [Int!
 }
 `;
 
-const getIdea = `query getIdea($id: Int, $cognito_sub: String,  $blocked_user_ids: [Int!]) {
-  idea (where: {  id :{_eq: $id}, { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }}) {
+const getIdea = `query getIdea($id: Int, $cognito_sub: String, $blocked_user_ids: [Int!]) {
+  idea(where: {
+    id: { _eq: $id }
+    user: { 
+      status: { _neq: 0 }
+      id: { _nin: $blocked_user_ids }
+    }
+  }) {
     id
     title
     description
@@ -84,7 +90,9 @@ const getIdea = `query getIdea($id: Int, $cognito_sub: String,  $blocked_user_id
         count
       }
     }
-    has_liked: idea_likes_aggregate (where: { user: { cognito_sub: {_eq: $cognito_sub}}}) {
+    has_liked: idea_likes_aggregate(where: { 
+      user: { cognito_sub: { _eq: $cognito_sub } }
+    }) {
       result: aggregate {
         count
       }
@@ -129,8 +137,7 @@ const getIdea = `query getIdea($id: Int, $cognito_sub: String,  $blocked_user_id
     created_at
     updated_at
   }
-}
-`;
+}`;
 
 const getConnections = `query getConnections($cognito_sub: String) {
 connections(where: {

@@ -38,8 +38,14 @@ const getThoughts = `query getThoughts($cognito_sub: String, $blocked_user_ids: 
 }
 `;
 
-const getThought = `query getThought($id: Int, $cognito_sub: String,  $blocked_user_ids: [Int!]) {
-  thoughts (where: {  id :{_eq: $id}  , { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }}) {
+const getThought = `query getThought($id: Int, $cognito_sub: String, $blocked_user_ids: [Int!]) {
+  thoughts(where: {
+    id: { _eq: $id }
+    user: { 
+      status: { _neq: 0 }
+      id: { _nin: $blocked_user_ids }
+    }
+  }) {
     id
     thought
     user_id
@@ -62,12 +68,14 @@ const getThought = `query getThought($id: Int, $cognito_sub: String,  $blocked_u
       }
       text
     }
-    thought_likes: thought_likes_aggregate  {
+    thought_likes: thought_likes_aggregate {
       result: aggregate {
         count
       }
     }
-    has_liked: thought_likes_aggregate (where: { user: { cognito_sub: {_eq: $cognito_sub}}}) {
+    has_liked: thought_likes_aggregate(where: { 
+      user: { cognito_sub: { _eq: $cognito_sub } }
+    }) {
       result: aggregate {
         count
       }
@@ -75,8 +83,7 @@ const getThought = `query getThought($id: Int, $cognito_sub: String,  $blocked_u
     created_at
     updated_at
   }
-  }
-`;
+}`;
 
 const getConnections = `query getConnections($cognito_sub: String) {
 connections(where: {
