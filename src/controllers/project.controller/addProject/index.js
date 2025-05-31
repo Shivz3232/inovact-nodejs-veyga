@@ -20,6 +20,7 @@ const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const { getRecruitmentServerInstance } = require('../../../utils/axios');
+const logger = require('../../../config/logger');
 
 const addProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -257,8 +258,11 @@ const addProject = catchAsync(async (req, res) => {
     });
   }
 
+  // Notify recruitment server of new project for analysis.
   const recruitmentServerInstance = await getRecruitmentServerInstance('/private/project');
-  recruitmentServerInstance.post(null, { project_id: projectId }).catch(console.log);
+  recruitmentServerInstance.post(null, { project_id: projectId }).catch((err) => {
+    logger.error(err.code, err.name, err.message);
+  });
 
   return res.status(201).json({
     success: true,
