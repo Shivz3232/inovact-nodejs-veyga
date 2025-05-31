@@ -110,7 +110,7 @@ const getRecruitmentServerInstance = async (path) => {
   return axios.create({
     baseURL: `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}${path}`,
     headers: {
-      Authorization: config.recruitmentPrivateApiKey,
+      Authorization: `Bearer ${config.recruitmentPrivateApiKey}`,
     },
     httpAgent: new http.Agent({
       keepAlive: true,
