@@ -59,7 +59,7 @@ function getProviderHasuraInstance() {
   });
 }
 
-const getBestInstance = async () => {
+const getBestHasuraInstance = async () => {
   if (config.NODE_ENV !== 'development') {
     const hostedHasuraInstance = await getHostedHasuraInstance();
 
@@ -85,8 +85,49 @@ const getBestInstance = async () => {
   return getProviderHasuraInstance();
 };
 
+const getRecruitmentServerInstance = async (path) => {
+  const params = {
+    ServiceId: config.cloudMapRecruitmentServiceId,
+  };
+
+  const data = await serviceDiscovery
+    .listInstances(params)
+    .promise()
+    .catch(() => {});
+
+  if (!data || !data.Instances || data.Instances.length === 0) {
+    return;
+  }
+
+  const selectedInstance = data.Instances[data.Instances.length - 1];
+
+  if (!selectedInstance) {
+    return;
+  }
+
+  const instanceAttributes = selectedInstance.Attributes;
+
+  return axios.create({
+    baseURL: `http://${instanceAttributes.AWS_INSTANCE_IPV4}:${instanceAttributes.AWS_INSTANCE_PORT}${path}`,
+    headers: {
+      Authorization: config.recruitmentPrivateApiKey,
+    },
+    httpAgent: new http.Agent({
+      keepAlive: true,
+      keepAliveMsecs: 60 * 60 * 1000,
+      maxSockets: Infinity,
+    }),
+    httpsAgent: new https.Agent({
+      keepAlive: true,
+      keepAliveMsecs: 60 * 60 * 1000,
+      maxSockets: Infinity,
+    }),
+  });
+};
+
 module.exports = {
-  createInstance: getBestInstance,
+  createHasuraInstance: getBestHasuraInstance,
   getProviderHasuraInstance,
   getHostedHasuraInstance,
+  getRecruitmentServerInstance,
 };

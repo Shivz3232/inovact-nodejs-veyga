@@ -1,4 +1,4 @@
-const { createInstance: createAxiosInstance } = require('./axios');
+const { createHasuraInstance } = require('./axios');
 
 /**
  * This is a utility function for querying the postgresql database
@@ -7,7 +7,7 @@ const { createInstance: createAxiosInstance } = require('./axios');
  * @returns {Object}
  */
 
-async function query(queryString, variables = {}, axiosInstance = createAxiosInstance()) {
+async function query(queryString, variables = {}, axiosInstance = createHasuraInstance()) {
   axiosInstance = await axiosInstance;
 
   const result = await axiosInstance
