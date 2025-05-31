@@ -17,7 +17,9 @@ const envVarsSchema = Joi.object()
     ACTIVITIES_QUEUE_URL: Joi.string(),
     EMAIL_QUEUE_URL: Joi.string(),
     CLOUD_MAP_HASURA_SERVICE_ID: Joi.string(),
+    CLOUD_MAP_RECRUITMENT_SERVICE_ID: Joi.string(),
     S3_BUCKET: Joi.string().required(),
+    RECRUITMENT_PRIVATE_API_KEY: Joi.string(),
   })
   .unknown();
 
@@ -40,4 +42,6 @@ module.exports = {
   activitiesQueueUrl: envVars.ACTIVITIES_QUEUE_URL,
   cloudMapHasuraServiceId: envVars.CLOUD_MAP_HASURA_SERVICE_ID,
   s3Bucket: envVars.S3_BUCKET,
+  cloudMapRecruitmentServiceId: envVars.CLOUD_MAP_RECRUITMENT_SERVICE_ID,
+  recruitmentPrivateApiKey: envVars.RECRUITMENT_PRIVATE_API_KEY,
 };
