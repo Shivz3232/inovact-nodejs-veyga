@@ -3,6 +3,7 @@ const getUserPosts = `query getProjects($user_id: Int, $cognito_sub: String) {
     id
     title
     description
+    github_repo_url
     link
     project_tags {
       hashtag {

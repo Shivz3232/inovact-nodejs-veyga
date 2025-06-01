@@ -25,6 +25,7 @@ const getUser = `query getUser($cognito_sub: String) {
     website
     profile_complete,
     status,
+    portfolio_link,
     user_action{
      profile_tutorial_complete
       feed_tutorial_complete

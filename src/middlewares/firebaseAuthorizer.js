@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
 const logger = require('../config/logger');
+const getRedirectionLink = require('../utils/getRedirectionLink');
 
 const firebaseConfiguration = JSON.parse(process.env.FIREBASE_ADMIN_CONFIG);
 firebaseConfiguration.private_key = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
@@ -8,7 +9,7 @@ const firebaseAuthorizer = async (req, res, next) => {
   const authorizationToken = await req.headers.authorization;
 
   if (!authorizationToken) {
-    return res.redirect('https://play.google.com/store/apps/details?id=in.pranaydas.inovact');
+    return res.redirect(getRedirectionLink(req.headers['user-agent'] || ''));
   }
 
   const result = await admin
@@ -23,7 +24,7 @@ const firebaseAuthorizer = async (req, res, next) => {
     });
 
   if (!result) {
-    return res.redirect('https://play.google.com/store/apps/details?id=in.pranaydas.inovact');
+    return res.redirect(getRedirectionLink(req.headers['user-agent'] || ''));
   }
 
   req.body.cognito_sub = result.uid;

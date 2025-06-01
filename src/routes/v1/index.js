@@ -1,4 +1,5 @@
 const express = require('express');
+
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const allUsersRoute = require('./alluser.route');
@@ -16,12 +17,14 @@ const projectRoute = require('./project.route');
 const tagRoute = require('./getTags.route');
 const docsRoute = require('./docs.route');
 const fcmRoute = require('./fcm.route');
-const config = require('../../config/config');
-const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 const propellRoute = require('./propell.route');
 const userPointsRoute = require('./userPoints.route');
 const leaderBoardRoute = require('./userLeaderboard.route');
 const referralRoute = require('./referral.route');
+const jobRoute = require('./job.route');
+
+const config = require('../../config/config');
+const firebaseAuthorizer = require('../../middlewares/firebaseAuthorizer');
 
 const router = express.Router();
 
@@ -125,6 +128,11 @@ const defaultRoutes = [
   {
     path: '/leaderBoard',
     route: leaderBoardRoute,
+    needAuthentication: true,
+  },
+  {
+    path: '/job',
+    route: jobRoute,
     needAuthentication: true,
   },
 ];

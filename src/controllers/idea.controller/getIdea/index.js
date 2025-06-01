@@ -66,7 +66,7 @@ const getIdeas = catchAsync(async (req, res) => {
     return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
-      errorMessage: 'Project not found',
+      errorMessage: 'Idea not found',
       data: null,
     });
   }

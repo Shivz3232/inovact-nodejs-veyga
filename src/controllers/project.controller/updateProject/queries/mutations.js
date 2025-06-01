@@ -1,17 +1,16 @@
-const updatePost = `mutation updateProject($id: Int_comparison_exp, $changes: project_set_input) {
-  update_project(where: { id: $id }, _set: $changes) {
+const updatePost = `mutation updateProject($cognito_sub: String!, $id: Int!, $changes: project_set_input) {
+  update_project(where: {id: {_eq: $id}, user: {cognito_sub: {_eq: $cognito_sub}}}, _set: $changes) {
     returning {
-      id,
-      team_id,
-      user_id,
-      team{
+      id
+      team_id
+      user_id
+      team {
         looking_for_members
         looking_for_mentors
       }
     }
   }
-}
-`;
+}`;
 
 const UpdateProjectTeam = `mutation UpdateProjectTeam($projectId: Int!, $newTeamId: Int!) {
   update_project_by_pk(

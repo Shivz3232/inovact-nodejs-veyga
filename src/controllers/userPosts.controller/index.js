@@ -1,5 +1,5 @@
 const { query: Hasura } = require('../../utils/hasura');
-const { getUserId, getUserPosts } = require('./queries/queries.js');
+const { getUserId, getUserPosts } = require('./queries/queries');
 const cleanPostDoc = require('../../utils/cleanPostDoc');
 const catchAsync = require('../../utils/catchAsync');
 

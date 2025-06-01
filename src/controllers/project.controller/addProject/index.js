@@ -19,6 +19,8 @@ const notify = require('../../../utils/notify');
 const cleanConnections = require('../../../utils/cleanConnections');
 const catchAsync = require('../../../utils/catchAsync');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
+const { getRecruitmentServerInstance } = require('../../../utils/axios');
+const logger = require('../../../config/logger');
 
 const addProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -32,6 +34,7 @@ const addProject = catchAsync(async (req, res) => {
   const {
     cognito_sub,
     description,
+    github_repo_url,
     title,
     status,
     completed,
@@ -62,6 +65,7 @@ const addProject = catchAsync(async (req, res) => {
   // Insert project
   const projectData = {
     description,
+    github_repo_url,
     title,
     user_id: response1.result.data.user[0].id,
     status,
@@ -240,16 +244,25 @@ const addProject = catchAsync(async (req, res) => {
 
   if (needsProjectUploadFlag || (needsTeamFlag && needsMentorFlag) || needsTeamAndMentorFlag) {
     userEventFlags.has_uploaded_project = true;
-    userEventFlags.has_sought_team = userEventFlags.has_sought_team || looking_for_members;
-    userEventFlags.has_sought_mentor = userEventFlags.has_sought_mentor || looking_for_mentors;
+    userEventFlags.has_sought_team =
+      userEventFlags.has_sought_team || (looking_for_members != null && looking_for_members);
+    userEventFlags.has_sought_mentor =
+      userEventFlags.has_sought_mentor || (looking_for_mentors != null && looking_for_mentors);
     userEventFlags.has_sought_team_and_mentor =
-      userEventFlags.has_sought_team_and_mentor || (looking_for_members && looking_for_mentors);
+      userEventFlags.has_sought_team_and_mentor ||
+      (userEventFlags.has_sought_team && userEventFlags.has_sought_mentor);
 
     await Hasura(updateUserFlags, {
       userId: actorId,
       userEventFlags,
     });
   }
+
+  // Notify recruitment server of new project for analysis.
+  const recruitmentServerInstance = await getRecruitmentServerInstance('/private/project');
+  recruitmentServerInstance.post(null, { project_id: projectId }).catch((err) => {
+    logger.error(err.code, err.name, err.message);
+  });
 
   return res.status(201).json({
     success: true,

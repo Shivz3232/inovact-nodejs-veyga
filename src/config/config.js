@@ -6,7 +6,9 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const envVarsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string().valid('production', 'development', 'staging', 'test').default('development'),
+    NODE_ENV: Joi.string()
+      .valid('production', 'development', 'staging', 'test')
+      .default('development'),
     PORT: Joi.number().default(3000),
     HASURA_ADMIN_SECRET: Joi.string().required(),
     HASURA_API: Joi.string().required(),
@@ -15,11 +17,15 @@ const envVarsSchema = Joi.object()
     ACTIVITIES_QUEUE_URL: Joi.string(),
     EMAIL_QUEUE_URL: Joi.string(),
     CLOUD_MAP_HASURA_SERVICE_ID: Joi.string(),
+    CLOUD_MAP_RECRUITMENT_SERVICE_ID: Joi.string(),
     S3_BUCKET: Joi.string().required(),
+    RECRUITMENT_PRIVATE_API_KEY: Joi.string(),
   })
   .unknown();
 
-const { value: envVars, error } = envVarsSchema.prefs({ errors: { label: 'key' } }).validate(process.env);
+const { value: envVars, error } = envVarsSchema
+  .prefs({ errors: { label: 'key' } })
+  .validate(process.env);
 
 if (error) {
   throw new Error(`Config validation error: ${error.message}`);
@@ -36,4 +42,6 @@ module.exports = {
   activitiesQueueUrl: envVars.ACTIVITIES_QUEUE_URL,
   cloudMapHasuraServiceId: envVars.CLOUD_MAP_HASURA_SERVICE_ID,
   s3Bucket: envVars.S3_BUCKET,
+  cloudMapRecruitmentServiceId: envVars.CLOUD_MAP_RECRUITMENT_SERVICE_ID,
+  recruitmentPrivateApiKey: envVars.RECRUITMENT_PRIVATE_API_KEY,
 };

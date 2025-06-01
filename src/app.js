@@ -89,7 +89,7 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
 
 // For iOS universal links
 app.get('/.well-known/apple-app-site-association', (req, res) => {
-  const filePath = path.join(__dirname, 'public', 'apple-app-site-association');
+  const filePath = path.join(__dirname, 'public', 'apple-app-site-association.json');
 
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {

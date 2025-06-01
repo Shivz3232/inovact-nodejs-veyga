@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 const { updateUser, addUserSkills, updateUserInterests } = require('./queries/mutations');
 const { getUser, getUserIdFromCognito, getUserActivityDetails } = require('./queries/queries');
 const cleanUserdoc = require('../../../utils/cleanUserDoc');
-const { query: Hasura, checkUniquenessOfPhoneNumber } = require('../../../utils/hasura');
+const { query: Hasura } = require('../../../utils/hasura');
 const catchAsync = require('../../../utils/catchAsync');
 const insertUserActivity = require('../../../utils/insertUserActivity');
 
@@ -28,7 +28,7 @@ const updateanUser = catchAsync(async (req, res) => {
 
   const { id: userId } = response.result.data.user[0];
 
-  const variables = {
+  let variables = {
     cognito_sub: {
       _eq: cognito_sub,
     },
@@ -53,19 +53,7 @@ const updateanUser = catchAsync(async (req, res) => {
   }
 
   if (req.body.avatar) variables.changes.avatar = req.body.avatar;
-  if (req.body.phone_number) {
-    const unique = await checkUniquenessOfPhoneNumber(req.body.phone_number);
-
-    if (!unique) {
-      return res.json({
-        success: false,
-        errorCode: 'PhoneNumberUniquenessException',
-        errorMessage: 'This phone number is already in use',
-      });
-    }
-
-    variables.changes.phone_number = req.body.phone_number;
-  }
+  if (req.body.phone_number) variables.changes.phone_number = req.body.phone_number;
   if (req.body.role) variables.changes.role = req.body.role;
   if (req.body.designation) variables.changes.designation = req.body.designation;
   if (req.body.organization) variables.changes.organization = req.body.organization;
@@ -93,6 +81,12 @@ const updateanUser = catchAsync(async (req, res) => {
     }
   }
   if (req.body.cover_photo) variables.changes.cover_photo = req.body.cover_photo;
+  if (req.body.portfolio_link) {
+    variables.changes.portfolio_link = req.body.portfolio_link;
+  } else {
+    variables.changes.portfolio_link = null;
+  }
+  // eslint-disable-next-line no-prototype-builtins
   if (req.body.hasOwnProperty('profile_complete'))
     variables.changes.profile_complete = req.body.profile_complete;
 
@@ -114,7 +108,6 @@ const updateanUser = catchAsync(async (req, res) => {
   const response1 = await Hasura(updateUser, variables);
 
   // Insert skills
-  //
   if (req.body.user_skills instanceof Array) {
     const user_skills_with_user_id = req.body.user_skills.map((ele) => {
       return {
@@ -123,7 +116,7 @@ const updateanUser = catchAsync(async (req, res) => {
       };
     });
 
-    const variables = {
+    variables = {
       objects: user_skills_with_user_id,
       user_id: response1.result.data.update_user.returning[0].id,
     };
@@ -156,7 +149,7 @@ const updateanUser = catchAsync(async (req, res) => {
       };
     });
 
-    const variables = {
+    variables = {
       objects: interests,
       cognito_sub,
     };

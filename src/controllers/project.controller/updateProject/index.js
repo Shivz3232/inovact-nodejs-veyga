@@ -10,10 +10,12 @@ const {
   deleteTeam,
   updateLookingForTeamMembersAndMentors,
 } = require('./queries/mutations');
-const { getUserIdFromCognito, getTeamMembers } = require('./queries/queries');
+const { getTeamMembers } = require('./queries/queries');
 const createDefaultTeam = require('../../../utils/createDefaultTeam');
 const insertUserActivity = require('../../../utils/insertUserActivity');
 const handleRoleAndSkillUpdates = require('../../../utils/updateRolesAndSkillForPost');
+const { getRecruitmentServerInstance } = require('../../../utils/axios');
+const logger = require('../../../config/logger');
 
 const updateProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -27,27 +29,10 @@ const updateProject = catchAsync(async (req, res) => {
   try {
     const { id, cognito_sub } = req.body;
 
-    // Get user ID from cognito_sub
-    const getUserIdFromCognitoResponse = await Hasura(getUserIdFromCognito, {
-      cognito_sub,
-    });
-
-    if (
-      !getUserIdFromCognitoResponse.result.data.user ||
-      !getUserIdFromCognitoResponse.result.data.user[0]
-    ) {
-      return res.status(404).json({
-        success: false,
-        errorCode: 'UserNotFound',
-        errorMessage: 'User not found',
-      });
-    }
-
-    const currentUserId = getUserIdFromCognitoResponse.result.data.user[0].id;
-
     // Prepare project update variables
     const variables = {
-      id: { _eq: id },
+      cognito_sub,
+      id,
       changes: {},
     };
 
@@ -57,11 +42,13 @@ const updateProject = catchAsync(async (req, res) => {
     if (req.body.link) variables.changes.link = req.body.link;
     if (req.body.status !== undefined) variables.changes.status = req.body.status;
     if (req.body.completed !== undefined) variables.changes.completed = req.body.completed;
+    if (req.body.github_repo_url !== undefined)
+      variables.changes.github_repo_url = req.body.github_repo_url;
 
     // Update project and get current state
     const response = await Hasura(updatePost, variables);
 
-    if (!response.result.data.update_project.returning[0]) {
+    if (response.result.data.update_project.returning.length === 0) {
       return res.status(404).json({
         success: false,
         errorCode: 'ProjectNotFound',
@@ -71,38 +58,27 @@ const updateProject = catchAsync(async (req, res) => {
 
     const { user_id, team_id: currentTeamId } = response.result.data.update_project.returning[0];
 
-    console.log('currentTeamId: ', currentTeamId);
-
-    // Check user permission
-    if (user_id !== currentUserId) {
-      return res.status(403).json({
-        success: false,
-        errorCode: 'Forbidden',
-        errorMessage: 'You do not have permission to update this project',
-      });
-    }
-
-    let team_id = currentTeamId;
+    let teamId = currentTeamId;
 
     // Handle project completion
-    if (req.body.completed && currentTeamId) {
+    if (req.body.completed && teamId) {
       const projectFlagsUpdateVariables = {
-        team_id: currentTeamId,
+        teamId,
         lookingForMentors: false,
         lookingForMembers: false,
       };
       await Hasura(updateProjectFlags, projectFlagsUpdateVariables);
 
       const getTeamMembersResponse = await Hasura(getTeamMembers, {
-        team_id: currentTeamId,
+        teamId,
       });
 
       const teamMembers = getTeamMembersResponse.result.data.team_members;
 
       // Insert activity for all team members
-      for (const member of teamMembers) {
-        await insertUserActivity('completion-of-project-as-team', 'positive', member.user_id, [id]);
-      }
+      teamMembers.forEach((teamMember) => {
+        insertUserActivity('completion-of-project-as-team', 'positive', teamMember.user_id, [id]);
+      });
 
       return res.json({
         success: true,
@@ -113,18 +89,18 @@ const updateProject = catchAsync(async (req, res) => {
 
     // Handle team updates
     if (
-      currentTeamId &&
+      teamId &&
       ((response.result.data.update_project.returning[0].team.looking_for_mentors === true &&
         req.body.looking_for_mentors === false) ||
         (response.result.data.update_project.returning[0].team.looking_for_members === true &&
           req.body.looking_for_members === false))
     ) {
       if (!req.body.looking_for_mentors && !req.body.looking_for_members) {
-        await Hasura(deleteTeam, { team_id: currentTeamId });
-        team_id = null;
+        await Hasura(deleteTeam, { teamId });
+        teamId = null;
       } else {
         await Hasura(updateLookingForTeamMembersAndMentors, {
-          teamId: currentTeamId,
+          teamId,
           looking_for_members: req.body.looking_for_members,
           looking_for_mentors: req.body.looking_for_mentors,
         });
@@ -132,7 +108,7 @@ const updateProject = catchAsync(async (req, res) => {
     }
 
     // Create new team if needed
-    if (!currentTeamId && (req.body.looking_for_mentors || req.body.looking_for_members)) {
+    if (!teamId && (req.body.looking_for_mentors || req.body.looking_for_members)) {
       if (!req.body.roles_required || req.body.roles_required.length === 0) {
         return res.status(400).json({
           success: false,
@@ -149,24 +125,18 @@ const updateProject = catchAsync(async (req, res) => {
         req.body.looking_for_members,
         req.body.team_on_inovact
       );
-      team_id = teamCreated.team_id;
+      teamId = teamCreated.team_id;
 
       // Update project with new team
       await Hasura(UpdateProjectTeam, {
         projectId: id,
-        newTeamId: team_id,
+        newTeamId: teamId,
       });
-
-      currentTeamId = team_id;
     }
 
     // Handle roles and skills
-    if (req.body.roles_required && req.body.roles_required.length > 0 && currentTeamId) {
-      const roleUpdateResult = await handleRoleAndSkillUpdates(
-        currentTeamId,
-        req.body.roles_required,
-        Hasura
-      );
+    if (req.body.roles_required && req.body.roles_required.length > 0 && teamId) {
+      await handleRoleAndSkillUpdates(teamId, req.body.roles_required, Hasura);
     }
 
     // Update documents if provided
@@ -196,9 +166,15 @@ const updateProject = catchAsync(async (req, res) => {
 
       await Hasura(updateProjectTags, {
         projectId: id,
-        tags: tags,
+        tags,
       });
     }
+
+    // Notify recruitment server of new project for analysis.
+    const recruitmentServerInstance = await getRecruitmentServerInstance('/private/project');
+    recruitmentServerInstance.post(null, { project_id: id }).catch((err) => {
+      logger.error(err.code, err.name, err.message);
+    });
 
     return res.json({
       success: true,
@@ -206,7 +182,6 @@ const updateProject = catchAsync(async (req, res) => {
       errorMessage: '',
     });
   } catch (error) {
-    console.error('Project update error:', error);
     return res.status(500).json({
       success: false,
       errorCode: 'UpdateFailed',
