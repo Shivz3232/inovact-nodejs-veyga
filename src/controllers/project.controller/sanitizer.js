@@ -10,7 +10,7 @@ const addProjectSanitizer = [
     .isString()
     .isIn(['just started', 'in progress', 'completed', 'near completion'])
     .withMessage('Invalid status'),
-  body('github_repo_url').optional().isURL(),
+  // body('github_repo_url').optional().isURL(),
 ];
 
 const deleteProjectSanitizer = [body('id', 'Invalid Project ID').exists().toInt()];
