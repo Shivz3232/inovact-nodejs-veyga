@@ -1,11 +1,11 @@
 {
-    "applinks": {
-        "apps": [],
-        "details": [
-            {
-                "appID": "HYZ6K84BW3.in.inovact.social",
-                "paths": [ "/v1/user*", "/v1/post*","/v1/idea*","/v1/thoughts*" ]
-            }
-        ]
-    }
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "HYZ6K84BW3.in.inovact.social",
+        "paths": [ "/v1/post/*", "/v1/idea/*", "/v1/thoughts/*", "/v1/user/*" ]
+      }
+    ]
+  }
 }
