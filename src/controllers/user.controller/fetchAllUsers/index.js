@@ -19,7 +19,9 @@ const { query: Hasura } = require('../../../utils/hasura');
 
 const getAllUsers = catchAsync(async (req, res) => {
   const { cognito_sub } = req.body;
+  const search = req.query.search || '';
   const usersToExcludeResponse = await Hasura(getBlockedUsers, { cognito_sub });
+
   const usersToExclude = usersToExcludeResponse.result.data.user_blocked_users.map(
     (blockedUser) => blockedUser.user_id
   );
@@ -30,14 +32,20 @@ const getAllUsers = catchAsync(async (req, res) => {
     )
   );
 
-  const response = await Hasura(getAllUsersQuery, { cognito_sub, usersToExclude });
+  const searchPattern = `%${search}%`;
+
+  const response = await Hasura(getAllUsersQuery, {
+    cognito_sub,
+    usersToExclude,
+    search: searchPattern,
+  });
   const userInfo = response.result.data.user_info[0];
 
   if (!userInfo) {
     return res.status(404).json({ error: 'User not found' });
   }
 
-  const { university: userUniversity } = userInfo;
+  // const { university: userUniversity } = userInfo;
   const allUsers = response.result.data.all_users;
 
   const usersWithBlockedFlag = allUsers.map((user) => ({
