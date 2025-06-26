@@ -4,6 +4,8 @@ const { deleteUser: deleteUserQuery, addUserCause } = require('./queries/mutatio
 const { getUserId } = require('./queries/queries');
 const { deleteUserFunc } = require('../../../utils/deleteFirebaseUser');
 const catchAsync = require('../../../utils/catchAsync');
+const { getRecruitmentServerInstance } = require('../../../utils/axios');
+const logger = require('../../../config/logger');
 
 const deleteUser = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -33,6 +35,12 @@ const deleteUser = catchAsync(async (req, res) => {
   const response3 = await Hasura(addUserCause, variables);
 
   const response4 = await Hasura(deleteUserQuery, { user_id });
+
+  // Notify recruitment server of the user deletion.
+  const recruitmentServerInstance = await getRecruitmentServerInstance('/private/user/delete');
+  recruitmentServerInstance.post(null, { cognito_sub }).catch((err) => {
+    logger.error(err.code, err.name, err.message);
+  });
 
   return res.status(204).json({
     success: true,
