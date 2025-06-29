@@ -39,7 +39,8 @@ const getAllUsers = catchAsync(async (req, res) => {
     usersToExclude,
     search: searchPattern,
   });
-  const userInfo = response.result.data.user_info[0];
+
+  const userInfo = response.result.data.all_users[0];
 
   if (!userInfo) {
     return res.status(404).json({ error: 'User not found' });
