@@ -11,6 +11,7 @@ const getUserTeams = `query getMyTeams($cognito_sub: String, $admin: Boolean) {
       }){
       id
       role_name
+      role_type
       team_skill_requirements {
         id
         skill_name
@@ -107,6 +108,7 @@ const getTeam = `query getTeam($team_id: Int) {
       } ){
       id
       role_name
+      role_type
       team_skill_requirements {
         id
         skill_name
