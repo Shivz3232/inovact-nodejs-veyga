@@ -26,6 +26,14 @@ const updateanUser = catchAsync(async (req, res) => {
     cognito_sub,
   });
 
+  if (response.result.data.user.length === 0) {
+    return res.status(404).json({
+      success: false,
+      errorCode: 404,
+      errorMessage: 'User not found',
+    });
+  }
+
   const { id: userId } = response.result.data.user[0];
 
   let variables = {
