@@ -9,7 +9,9 @@ const getAllUsersQuery = `
         id: { _nin: $usersToExclude },
         _or: [
           { first_name: { _ilike: $search } },
-          { last_name: { _ilike: $search } }
+          { last_name: { _ilike: $search } },
+          { user_skills: { skill: { _ilike: $search } } },
+          { user_interests: { area_of_interest: { interest: { _ilike: $search } } } }
         ]
       }
       order_by: [
