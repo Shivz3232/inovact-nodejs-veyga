@@ -63,7 +63,12 @@ const updateanUser = catchAsync(async (req, res) => {
   if (req.body.avatar) variables.changes.avatar = req.body.avatar;
   if (req.body.phone_number) variables.changes.phone_number = req.body.phone_number;
   if (req.body.role) variables.changes.role = req.body.role;
-  if (req.body.designation) variables.changes.designation = req.body.designation;
+  if (req.body.designation) {
+    if (req.body.role && req.body.role === 'student') {
+      variables.changes.degree = req.body.designation;
+    }
+    variables.changes.designation = req.body.designation;
+  }
   if (req.body.organization) variables.changes.organization = req.body.organization;
   if (req.body.organizational_role)
     variables.changes.organizational_role = req.body.organizational_role;
