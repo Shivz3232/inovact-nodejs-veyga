@@ -73,7 +73,13 @@ const updateanUser = catchAsync(async (req, res) => {
     variables.changes.journey_start_date = req.body.journey_start_date;
   if (req.body.years_of_professional_experience)
     variables.changes.years_of_professional_experience = req.body.years_of_professional_experience;
-  if (req.body.degree) variables.changes.degree = req.body.degree;
+  if (req.body.degree) {
+    if (req.body.role && req.body.role === 'student') {
+      variables.changes.degree = req.body.designation;
+    } else {
+      variables.changes.degree = req.body.degree;
+    }
+  }
   if (req.body.github_profile) {
     variables.changes.github_profile = req.body.github_profile;
     const activityIdentifier = 'filing-github';
