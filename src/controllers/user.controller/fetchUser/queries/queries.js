@@ -4,6 +4,7 @@ const getUser = `query getUser($cognito_sub: String) {
     user_name
     bio
     avatar
+    degree
     phone_number
     email_id
     designation
@@ -84,6 +85,7 @@ const getUserById = `query getUser($id: Int, $cognito_sub: String) {
     id
     user_name
     bio
+    degree
     avatar
     phone_number
     email_id
