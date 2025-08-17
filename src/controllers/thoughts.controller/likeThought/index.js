@@ -31,7 +31,11 @@ const likeThought = catchAsync(async (req, res) => {
     const response2 = await Hasura(add_likeThought, variable);
 
     // Notify the user
-    await notify(11, thought_id, response1.result.data.user[0].id, [response.result.data.thoughts[0].user_id]).catch(logger.error);
+
+    if (response1.result.data.user[0].id != response.result.data.thoughts[0].user_id)
+      await notify(11, thought_id, response1.result.data.user[0].id, [
+        response.result.data.thoughts[0].user_id,
+      ]).catch(logger.error);
 
     return res.status(201).json({
       success: true,
