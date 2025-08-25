@@ -1,5 +1,15 @@
-const getNotifications = `query getNotifications($cognito_sub: String) {
-  notification(where: {user: {cognito_sub: {_eq: $cognito_sub}}}, order_by: { created_at: desc }) {
+const getNotifications = `query getNotifications($cognito_sub: String, $limit: Int!, $offset: Int!) {
+  notification_aggregate(where: {user: {cognito_sub: {_eq: $cognito_sub}}}) {
+    aggregate {
+      count
+    }
+  }
+  notification(
+    where: {user: {cognito_sub: {_eq: $cognito_sub}}}
+    order_by: { created_at: desc }
+    limit: $limit
+    offset: $offset
+  ) {
     id
     created_at
     status

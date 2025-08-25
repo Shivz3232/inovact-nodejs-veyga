@@ -44,10 +44,42 @@ const getUserMessages = catchAsync(async (req, res) => {
   }
 
   const { cognito_sub } = req.body;
-  const response1 = await Hasura(getUserConnections, { cognito_sub });
+  const pageSize = parseInt(req.query.pageSize, 10) || 20;
+  const pageNumber = parseInt(req.query.pageNumber, 10) || 1;
+  const offset = (pageNumber - 1) * pageSize;
+
+  const response1 = await Hasura(getUserConnections, { cognito_sub, limit: pageSize, offset });
+
+  const totalItems = response1.result.data.connections_aggregate.aggregate.count;
+  const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+  if (pageNumber > totalPages) {
+    return res.json({
+      data: [],
+      pagination: {
+        page: pageNumber,
+        pageSize,
+        totalItems,
+        totalPages,
+        hasNextPage: false,
+        hasPreviousPage: totalPages > 0,
+      },
+    });
+  }
+
   const cleanedResponse = await cleanupResponse(response1.result.data.connections);
 
-  return res.json(cleanedResponse);
+  return res.json({
+    data: cleanedResponse,
+    pagination: {
+      page: pageNumber,
+      pageSize,
+      totalItems,
+      totalPages,
+      hasNextPage: pageNumber < totalPages,
+      hasPreviousPage: pageNumber > 1,
+    },
+  });
 });
 
 module.exports = getUserMessages;
