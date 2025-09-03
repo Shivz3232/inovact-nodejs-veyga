@@ -17,6 +17,7 @@ const getPrivateMessages = `query getPrivateMessages($cognito_sub: String, $user
     id
     encrypted_message
     seen
+    reply_to_message_id
     sender: user {
       id
       first_name

@@ -68,6 +68,7 @@ const getUserConnections = `query getMyConnections($cognito_sub: String, $limit:
         encrypted_message
         created_at
         seen
+        reply_to_message_id
       }
       private_messages_aggregate(where: { _and:{
         seen:{ _eq : false },

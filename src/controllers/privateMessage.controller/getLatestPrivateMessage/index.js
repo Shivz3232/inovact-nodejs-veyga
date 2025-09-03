@@ -35,6 +35,7 @@ const getLatestPrivateMessage = catchAsync(async (req, res) => {
         receiver: messageDoc.receiver,
         message: decryptedMessage,
         seen: messageDoc.seen,
+        replyToPrivateMessageId: messageDoc.reply_to_message_id,
         created_at: messageDoc.created_at,
       };
     })

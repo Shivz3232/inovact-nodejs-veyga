@@ -14,6 +14,7 @@ const cleanupResponse = async (connections) => {
             created_at: private_messages[0].created_at,
             messageSenderId: private_messages[0].primary_user_id,
             messageReceiverId: private_messages[0].secondary_user_id,
+            replyToPrivateMessageId: private_messages[0].reply_to_message_id,
           }
         : null;
 
