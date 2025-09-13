@@ -4,6 +4,12 @@ const cleanThoughtDoc = require('../../../utils/cleanThoughtDoc');
 const { query: Hasura } = require('../../../utils/hasura');
 const { getThought, getThoughts: getThoughtsQuery, getConnections } = require('./queries/queries');
 const recommender = require('./recommender');
+const {
+  validatePaginationParams,
+  createPaginationMeta,
+  createPaginatedResponse,
+  createEmptyPaginatedResponse,
+} = require('../../../utils/pagination');
 
 const getThoughts = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -16,6 +22,9 @@ const getThoughts = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
   const { id } = req.query;
+
+  // Get pagination parameters (only if not fetching single thought)
+  const paginationParams = !id ? validatePaginationParams(req.query) : null;
 
   const response = await Hasura(getConnections, { cognito_sub });
   if (response.result.data.user.length === 0) {
@@ -54,6 +63,8 @@ const getThoughts = catchAsync(async (req, res) => {
   } else {
     variables = {
       cognito_sub,
+      limit: paginationParams.limit,
+      offset: paginationParams.offset,
     };
 
     queries = getThoughtsQuery;
@@ -62,7 +73,13 @@ const getThoughts = catchAsync(async (req, res) => {
   variables.blocked_user_ids = blockedUserIds;
   const response1 = await Hasura(queries, variables);
 
-  if (response1.result.data.thoughts.length === 0) {
+  if (response1.result.data.thoughts.length === 0 && !id) {
+    return res
+      .status(200)
+      .json(createEmptyPaginatedResponse(paginationParams.page, paginationParams.limit));
+  }
+
+  if (response1.result.data.thoughts.length === 0 && id) {
     return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
@@ -79,11 +96,18 @@ const getThoughts = catchAsync(async (req, res) => {
 
   if (id) return res.json(cleanedThoughts[0]);
 
-  const recommendedProjects = await recommender.recommend(cognito_sub, cleanedThoughts);
+  // Get total count for pagination metadata
+  const totalCount = response1.result.data.thoughts_aggregate?.aggregate?.count || 0;
+  const paginationMeta = createPaginationMeta(
+    paginationParams.page,
+    paginationParams.limit,
+    totalCount,
+    cleanedThoughts
+  );
 
-  // TODO: Pagination
+  // const recommendedProjects = await recommender.recommend(cognito_sub, cleanedThoughts);
 
-  return res.json(recommendedProjects);
+  return res.json(createPaginatedResponse(cleanedThoughts, paginationMeta));
 });
 
 module.exports = getThoughts;

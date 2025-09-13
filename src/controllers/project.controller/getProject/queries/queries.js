@@ -1,5 +1,22 @@
-const getProjects = `query getProjects($cognito_sub: String,  $blocked_user_ids: [Int!]) {
-  project(order_by: { created_at: desc }, where: { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
+const getProjects = `query getProjects(
+  $cognito_sub: String,  
+  $blocked_user_ids: [Int!], 
+  $limit: Int, 
+  $offset: Int, 
+) {
+  project(
+    limit: $limit,
+    offset: $offset,
+    order_by: [
+      {created_at: desc}
+    ], 
+    where: { 
+      user: { 
+        status: { _neq: 0 }, 
+        id: { _nin: $blocked_user_ids } 
+      }
+    }
+  ) {
     id
     title
     description
@@ -90,6 +107,18 @@ const getProjects = `query getProjects($cognito_sub: String,  $blocked_user_ids:
           avatar
         }
       }
+    }
+  }
+  project_aggregate(
+    where: { 
+      user: { 
+        status: { _neq: 0 }, 
+        id: { _nin: $blocked_user_ids } 
+      }
+    }
+  ) {
+    aggregate {
+      count
     }
   }
 }`;

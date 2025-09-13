@@ -1,5 +1,22 @@
-const getIdeas = `query getIdeas($cognito_sub: String,  $blocked_user_ids: [Int!]) {
-  idea(order_by: {created_at:desc} ,where : { user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
+const getIdeas = `query getIdeas(
+  $cognito_sub: String,  
+  $blocked_user_ids: [Int!], 
+  $limit: Int, 
+  $offset: Int, 
+) {
+  idea(
+    limit: $limit,
+    offset: $offset,
+    order_by: [
+      {created_at: desc}
+    ],
+    where: { 
+      user: { 
+        status: { _neq: 0 }, 
+        id: { _nin: $blocked_user_ids } 
+      }
+    }
+  ) {
     id
     title
     description
@@ -60,6 +77,18 @@ const getIdeas = `query getIdeas($cognito_sub: String,  $blocked_user_ids: [Int!
           avatar
         }
       }
+    }
+  }
+  idea_aggregate(
+    where: { 
+      user: { 
+        status: { _neq: 0 }, 
+        id: { _nin: $blocked_user_ids } 
+      }
+    }
+  ) {
+    aggregate {
+      count
     }
   }
 }
