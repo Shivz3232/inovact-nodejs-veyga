@@ -14,6 +14,13 @@ const replyOnPostComment = `mutation post_comment_replies($objects: [post_commen
         id
         text
       }
+      project_comment{
+        user{
+          id
+          first_name
+          last_name
+        }
+      }
     }
   }
 }`;
@@ -29,6 +36,13 @@ const replyOnIdeaComment = `mutation idea_comment_replies($objects: [idea_commen
         id
         first_name
         last_name
+      }
+      idea_comment{
+        user{
+          id
+          first_name
+          last_name
+        }
       }
       idea_comment_replies {
         id
@@ -49,6 +63,13 @@ const replyOnThoughtComment = `mutation thought_comment_replies($objects: [thoug
         id
         first_name
         last_name
+      }
+      thought_comment{
+        user{
+          id
+          first_name
+          last_name
+        }
       }
       thought_comment_replies {
         id
