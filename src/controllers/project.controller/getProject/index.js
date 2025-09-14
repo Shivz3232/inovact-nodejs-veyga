@@ -3,6 +3,12 @@ const { query: Hasura } = require('../../../utils/hasura');
 const { getProjects, getProject: getProjectQuery, getConnections } = require('./queries/queries');
 const cleanPostDoc = require('../../../utils/cleanPostDoc');
 const catchAsync = require('../../../utils/catchAsync');
+const {
+  validatePaginationParams,
+  createPaginationMeta,
+  createPaginatedResponse,
+  createEmptyPaginatedResponse,
+} = require('../../../utils/pagination');
 
 const getProject = catchAsync(async (req, res) => {
   const sanitizerErrors = validationResult(req);
@@ -15,6 +21,9 @@ const getProject = catchAsync(async (req, res) => {
 
   const { cognito_sub } = req.body;
   const { id } = req.query;
+
+  // Get pagination parameters (only if not fetching single project)
+  const paginationParams = !id ? validatePaginationParams(req.query) : null;
 
   const response = await Hasura(getConnections, { cognito_sub });
   if (response.result.data.user.length === 0) {
@@ -54,6 +63,8 @@ const getProject = catchAsync(async (req, res) => {
   } else {
     variables = {
       cognito_sub,
+      limit: paginationParams.limit,
+      offset: paginationParams.offset,
     };
     queries = getProjects;
   }
@@ -62,7 +73,13 @@ const getProject = catchAsync(async (req, res) => {
 
   const response1 = await Hasura(queries, variables);
 
-  if (response1.result.data.project.length === 0) {
+  if (response1.result.data.project.length === 0 && !id) {
+    return res
+      .status(200)
+      .json(createEmptyPaginatedResponse(paginationParams.page, paginationParams.limit));
+  }
+
+  if (response1.result.data.project.length === 0 && id) {
     return res.status(400).json({
       success: false,
       errorCode: 'NotFound',
@@ -83,7 +100,16 @@ const getProject = catchAsync(async (req, res) => {
 
   if (id) return res.json(cleanedPosts[0]);
 
-  return res.json(cleanedPosts);
+  // Get total count for pagination metadata
+  const totalCount = response1.result.data.project_aggregate?.aggregate?.count || 0;
+  const paginationMeta = createPaginationMeta(
+    paginationParams.page,
+    paginationParams.limit,
+    totalCount,
+    cleanedPosts
+  );
+
+  return res.json(createPaginatedResponse(cleanedPosts, paginationMeta));
 });
 
 module.exports = getProject;

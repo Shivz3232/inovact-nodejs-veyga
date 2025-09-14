@@ -33,7 +33,10 @@ const likeProject = catchAsync(async (req, res) => {
     const response2 = await Hasura(add_likePost, variable);
 
     // Notify the user
-    await notify(1, project_id, response1.result.data.user[0].id, [response.result.data.project[0].user_id]).catch(console.log);
+    if (response1.result.data.user[0].id != response.result.data.project[0].user_id)
+      await notify(1, project_id, response1.result.data.user[0].id, [
+        response.result.data.project[0].user_id,
+      ]).catch(console.log);
 
     return res.status(200).json({
       success: true,

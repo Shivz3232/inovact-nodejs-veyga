@@ -34,7 +34,13 @@ const getUserTeamsSanitizer = [cognito_sub, query('user_id').optional().toInt()]
 
 const updateUserSanitizer = [
   cognito_sub,
-  body('phone_number').optional().isMobilePhone('en-IN'),
+  body('phone_number')
+    .optional()
+    .custom((value) => {
+      if (value === '') return true;
+      return /^(\+\d{1,3}[-.\s]?)?\d{10}$/.test(value) || /^[6-9]\d{9}$/.test(value);
+    })
+    .withMessage('Invalid phone number format'),
   body('portfolio_link').optional().isURL(),
 ];
 

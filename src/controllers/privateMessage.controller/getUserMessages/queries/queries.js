@@ -1,4 +1,26 @@
-const getUserConnections = `query getMyConnections($cognito_sub: String) {
+const getUserConnections = `query getMyConnections($cognito_sub: String, $limit: Int!, $offset: Int!) {
+    connections_aggregate(
+      where: {
+        _or: [
+          { userByUser2: { cognito_sub: { _eq: $cognito_sub } }, status: { _eq: "pending" } }
+          {
+            _and: [
+              { status: { _eq: "connected" } }
+              {
+                _or: [
+                  { user: { cognito_sub: { _eq: $cognito_sub } } }
+                  { userByUser2: { cognito_sub: { _eq: $cognito_sub } } }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ) {
+      aggregate {
+        count
+      }
+    }
     connections(
       where: {
         _or: [
@@ -16,6 +38,9 @@ const getUserConnections = `query getMyConnections($cognito_sub: String) {
           }
         ]
       }
+      order_by: { formed_at: desc }
+      limit: $limit
+      offset: $offset
     ) {
       id
       user1
@@ -43,20 +68,13 @@ const getUserConnections = `query getMyConnections($cognito_sub: String) {
         encrypted_message
         created_at
         seen
+        reply_to_message_id
       }
       private_messages_aggregate(where: { _and:{
-        seen:{
-          _eq : false
-        },
-        userBySecondaryUserId : {
-          cognito_sub : {
-            _eq: $cognito_sub
-          }
-        }
+        seen:{ _eq : false },
+        userBySecondaryUserId : { cognito_sub : { _eq: $cognito_sub } }
       } }) {
-        aggregate {
-          count
-        }
+        aggregate { count }
       }
     }
     user(where: { cognito_sub: { _eq: $cognito_sub } }) {

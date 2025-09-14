@@ -1,5 +1,23 @@
-const getThoughts = `query getThoughts($cognito_sub: String, $blocked_user_ids: [Int!]) {
-  thoughts(order_by: {created_at:desc} ,where :{ user: { status: { _neq: 0 }, id: { _nin: $blocked_user_ids } } }) {
+const getThoughts = `
+query getThoughts(
+  $cognito_sub: String, 
+  $blocked_user_ids: [Int!], 
+  $limit: Int, 
+  $offset: Int, 
+) {
+  thoughts(
+    limit: $limit,
+    offset: $offset,
+    order_by: [
+      {created_at: desc}
+    ],
+    where: {
+      user: { 
+        status: { _neq: 0 }, 
+        id: { _nin: $blocked_user_ids } 
+      }
+    }
+  ) {
     id
     thought
     user_id
@@ -33,6 +51,18 @@ const getThoughts = `query getThoughts($cognito_sub: String, $blocked_user_ids: 
       first_name
       last_name
       role
+    }
+  }
+  thoughts_aggregate(
+    where: {
+      user: { 
+        status: { _neq: 0 }, 
+        id: { _nin: $blocked_user_ids } 
+      }
+    }
+  ) {
+    aggregate {
+      count
     }
   }
 }

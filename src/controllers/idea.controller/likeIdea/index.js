@@ -44,7 +44,10 @@ const likeIdea = catchAsync(async (req, res) => {
     }
 
     // Notify the user
-    await notify(6, idea_id, response1.result.data.user[0].id, [response.result.data.idea[0].user_id]).catch(logger.error);
+    if (response1.result.data.user[0].id != response.result.data.idea[0].user_id)
+      await notify(6, idea_id, response1.result.data.user[0].id, [
+        response.result.data.idea[0].user_id,
+      ]).catch(logger.error);
 
     return res.status(200).json({
       success: true,
